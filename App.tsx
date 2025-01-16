@@ -35,8 +35,10 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: 'white',
-    fontSize: 34,
+    fontSize: 37,
     fontWeight: 'bold',
+    marginTop: 30,
+    margin: -10,
   },
   body: {
     flex: 1,
