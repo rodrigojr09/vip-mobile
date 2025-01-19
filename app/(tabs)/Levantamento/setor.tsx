@@ -13,22 +13,14 @@ import {
 	StyleSheet,
 } from "react-native";
 
-export default function Levantamento() {
+export default function Setor() {
 	const router = useRouter();
 	const levantamento = useLevantamento();
-
-	const handleCreateLevantamento = () => {
-		if (!levantamento.nome.trim() || !levantamento.responsavel.trim()) {
-			Alert.alert("Atenção! preencha todos os campos");
-		} else {
-			router.push("/Levantamento/resumo");
-		}
-	};
 
 	return (
 		<Container style={styles.formContainer}>
 			<Input
-				placeholder="Digite o nome da empresa..."
+				placeholder="Digite o nome do setor..."
 				value={levantamento.nome}
 				onChange={levantamento.setNome}
 			/>
@@ -37,13 +29,14 @@ export default function Levantamento() {
 				value={levantamento.responsavel}
 				onChange={levantamento.setResponsavel}
 			/>
-			<Button onPress={handleCreateLevantamento}>Criar</Button>
+			<Button onPress={(e) => {}}>Criar</Button>
 		</Container>
 	);
 }
 
 const styles = StyleSheet.create({
 	formContainer: {
+		width: "100%",
 		alignItems: "center",
 		padding: 20,
 	},

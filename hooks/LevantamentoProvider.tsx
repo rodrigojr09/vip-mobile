@@ -1,27 +1,29 @@
-import {
-	LevantamentoSetorType,
-	LevantamentoType,
-} from "@/types/LevantamentoTypes";
+import { VIPEmpresaType, VIPSetorType } from "@/types/LevantamentoTypes";
 import { createContext, ReactNode, useContext, useState } from "react";
 
-const LevantamentoContext = createContext<LevantamentoType | undefined>(
+const LevantamentoContext = createContext<VIPEmpresaType | undefined>(
 	undefined
 );
 
 export const LevantamentoProvider = ({ children }: { children: ReactNode }) => {
 	const [nome, setNome] = useState<string>("");
-	const [auxiliar, setAuxiliar] = useState<string>("");
-	const [setores, setSetores] = useState<LevantamentoSetorType[]>([]);
+	const [responsavel, setResponsavel] = useState<string>("");
+	const [setores, setSetores] = useState<VIPSetorType[]>([]);
 
 	return (
 		<LevantamentoContext.Provider
 			value={{
 				nome,
 				setNome,
-				auxiliar,
-				setAuxiliar,
+				responsavel,
+				setResponsavel,
 				setores,
 				setSetores,
+				clear: () => {
+					setNome("");
+					setResponsavel("");
+					setSetores([]);
+				},
 			}}
 		>
 			{children}

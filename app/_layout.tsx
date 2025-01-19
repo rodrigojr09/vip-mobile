@@ -8,11 +8,15 @@ export default function Layout() {
 			<View style={styles.header}>
 				<Text style={styles.headerText}>Vip Mobile</Text>
 			</View>
-			<Stack
-				screenOptions={{
-					headerShown: false,
-				}}
-			/>
+
+			{/* Conteúdo da aplicação */}
+			<View style={styles.content}>
+				<Stack
+					screenOptions={{
+						headerShown: false,
+					}}
+				/>
+			</View>
 		</View>
 	);
 }
@@ -20,7 +24,8 @@ export default function Layout() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: "#fff",
+		color: "white",
+		backgroundColor: "#0f172a", // Cor slate-900
 	},
 	header: {
 		backgroundColor: "green",
@@ -32,5 +37,9 @@ const styles = StyleSheet.create({
 		color: "white",
 		fontSize: 20,
 		fontWeight: "bold",
+	},
+	content: {
+		flex: 1,
+		backgroundColor: "#0f172a", // Mesma cor de fundo para consistência
 	},
 });
