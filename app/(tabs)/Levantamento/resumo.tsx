@@ -1,15 +1,19 @@
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import Tabela from "@/components/Tabela";
-import { useLevantamento } from "@/hooks/LevantamentoProvider";
+import VIPTabela from "@/components/VIPTabela";
+import {
+	useLevantamento,
+	VIPFuncao,
+	VIPSetor,
+} from "@/hooks/LevantamentoProvider";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
 export default function Resumo() {
 	const levantamento = useLevantamento();
 	const router = useRouter();
-
 	return (
 		<Container style={styles.container}>
 			{/* Título */}
@@ -18,14 +22,25 @@ export default function Resumo() {
 			</Text>
 
 			{/* Tabela */}
-			<Tabela
-				dados={levantamento.setores}
+			<VIPTabela
+				headers={["Nome", "Funções"]}
+				valores={levantamento.setores.map((a) => {
+					return {
+						id: a.id,
+						Nome: a.nome,
+						// prettier-ignore
+						'Funções': a.funcoes.map((b) => b.nome).join(", "),
+					};
+				})}
 				onExcluir={(setor) => {
 					levantamento.setSetores(
-						levantamento.setores.filter((a) => a.nome !== setor)
+						levantamento.setores.filter(
+							(a) => a.id !== setor.id
+						)
 					);
 				}}
 			/>
+			{/* */}
 
 			<Button
 				onPress={(e) => {

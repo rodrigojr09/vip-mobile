@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import Input from "@/components/Input";
-import { useLevantamento } from "@/hooks/LevantamentoProvider";
+import { useLevantamento, VIPSetor } from "@/hooks/LevantamentoProvider";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -16,20 +16,23 @@ import {
 export default function Setor() {
 	const router = useRouter();
 	const levantamento = useLevantamento();
+	const setor = VIPSetor();
 
 	return (
 		<Container style={styles.formContainer}>
 			<Input
 				placeholder="Digite o nome do setor..."
-				value={levantamento.nome}
-				onChange={levantamento.setNome}
+				value={setor.nome}
+				onChange={setor.setNome}
 			/>
-			<Input
-				placeholder="Quem está auxiliando o levantamento?"
-				value={levantamento.responsavel}
-				onChange={levantamento.setResponsavel}
-			/>
-			<Button onPress={(e) => {}}>Criar</Button>
+			<Button
+				onPress={(e) => {
+					levantamento.setSetores([...levantamento.setores, setor]);
+					router.back();
+				}}
+			>
+				Criar
+			</Button>
 		</Container>
 	);
 }

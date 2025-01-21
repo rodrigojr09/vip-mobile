@@ -1,4 +1,3 @@
-import { VIPSetorType } from "@/types/LevantamentoTypes";
 import React from "react";
 import {
 	View,
@@ -9,49 +8,51 @@ import {
 } from "react-native";
 
 interface TabelaProps {
-	dados: VIPSetorType[];
-	onExcluir: (setor: string) => void;
+	headers: string[];
+	valores: { [chave: string]: string }[];
+	onExcluir?: (item: { [chave: string]: string }) => void;
 }
 
-const Tabela: React.FC<TabelaProps> = ({ dados, onExcluir }) => {
+const VIPTabela: React.FC<TabelaProps> = ({ headers, valores, onExcluir }) => {
 	return (
 		<View style={styles.container}>
 			{/* Cabeçalho da tabela */}
 			<View style={[styles.row, styles.headerRow]}>
+				{headers.map((header, index) => (
+					<View key={index} style={[styles.cell, styles.headerCell]}>
+						<Text style={styles.headerText}>{header}</Text>
+					</View>
+				))}
 				<View style={[styles.cell, styles.headerCell]}>
-					<Text style={styles.headerText}>Setor</Text>
-				</View>
-				<View style={[styles.cell, styles.headerCell]}>
-					<Text style={styles.headerText}>Funções</Text>
-				</View>
-				<View style={[styles.cell, styles.headerCell]}>
-					<Text style={styles.headerText}>Ações</Text>
+					<Text style={styles.headerText}></Text>
 				</View>
 			</View>
 
 			{/* Linhas da tabela */}
 			<FlatList
-				data={dados}
+				data={valores}
 				keyExtractor={(item, index) => index.toString()}
 				renderItem={({ item }) => (
 					<View style={styles.row}>
-						<View style={styles.cell}>
-							<Text style={styles.bodyText}>{item.nome}</Text>
-						</View>
-						<View style={styles.cell}>
-							<Text style={styles.bodyText}>
-								{item.funcoes.map((a) => a.nome).join(", ") ||
-									"Nenhuma Função"}
-							</Text>
-						</View>
-						<View style={styles.cell}>
-							<TouchableOpacity
-								style={styles.excluirButton}
-								onPress={() => onExcluir(item.nome)}
-							>
-								<Text style={styles.excluirText}>Excluir</Text>
-							</TouchableOpacity>
-						</View>
+						{headers.map((header) => (
+							<View key={header} style={styles.cell}>
+								<Text style={styles.bodyText}>
+									{item[header]}
+								</Text>
+							</View>
+						))}
+						{onExcluir && (
+							<View style={styles.cell}>
+								<TouchableOpacity
+									style={styles.excluirButton}
+									onPress={() => onExcluir(item)}
+								>
+									<Text style={styles.excluirText}>
+										Excluir
+									</Text>
+								</TouchableOpacity>
+							</View>
+						)}
 					</View>
 				)}
 				ListEmptyComponent={
@@ -129,4 +130,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default Tabela;
+export default VIPTabela;

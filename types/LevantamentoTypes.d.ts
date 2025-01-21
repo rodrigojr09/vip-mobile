@@ -8,6 +8,7 @@ export interface VIPEmpresaType {
 	clear: () => void;
 }
 export interface VIPSetorType {
+	id: string;
 	nome: string;
 	setNome: (value: string) => void;
 	comprimento: string;
@@ -136,14 +137,3 @@ type VIPRiscosTipo =
 	| "Biologico"
 	| "Ergonomico"
 	| "Acidente";
-
-export interface VIPPageProps {
-	router: NextRouter;
-	setHtml: (html: string) => void;
-}
-
-export interface VIPRiscoDBType {
-	_id: any;
-	tipo: string;
-	risco: string;
-}
