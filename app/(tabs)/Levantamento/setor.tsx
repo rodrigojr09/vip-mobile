@@ -6,13 +6,93 @@ import RadioButton from "@/components/RadioButton";
 import { useSetor } from "@/hooks/SetorProvider";
 import { useEmpresa } from "@/hooks/EmpresaProvider";
 import { useRouter } from "expo-router";
-import { StyleSheet } from "react-native";
+import { Alert, StyleSheet } from "react-native";
+import { useEffect } from "react";
 
 export default function Setor() {
 	const router = useRouter();
 
 	const empresa = useEmpresa();
 	const setor = useSetor();
+
+	useEffect(() => {
+		return () => {
+			setor.clear();
+		};
+	}, []);
+
+	const handleCreateSetor = () => {
+		// Validações individuais para os campos
+		if (!setor.nome.trim() || setor.nome.length > 4)
+			return Alert.alert("Erro", "Nome do setor inválido!");
+		if (!setor.largura.trim())
+			return Alert.alert("Erro", "Largura do setor inválida!");
+		if (!setor.comprimento.trim())
+			return Alert.alert("Erro", "Comprimento do setor inválido!");
+		if (!setor.peDireito.trim())
+			return Alert.alert("Erro", "Pé direito do setor inválido!");
+		if (!setor.piso.trim())
+			return Alert.alert("Erro", "Piso do setor inválido!");
+		if (!setor.estrutura.trim())
+			return Alert.alert("Erro", "Estrutura do setor inválida!");
+		if (!setor.forro.trim())
+			return Alert.alert("Erro", "Forro do setor inválido!");
+		if (!setor.iluminacao.natural.trim())
+			return Alert.alert("Erro", "Iluminação natural do setor inválida!");
+		if (!setor.iluminacao.artificial.trim())
+			return Alert.alert("Erro","Iluminação artificial do setor inválida!"
+			);
+		if (!setor.ventilacao.natural.trim())
+			return Alert.alert("Erro", "Ventilação natural do setor inválida!");
+		if (!setor.ventilacao.artificial.trim())
+			return Alert.alert("Erro","Ventilação artificial do setor inválida!"
+			);
+		if (!setor.me.trim())
+			return Alert.alert("Erro", "Máquinas e equipamentos inválidos!");
+		if (!setor.mce.trim())
+			return Alert.alert(
+				"Erro",
+				"Medidas de controle existentes inválidas!"
+			);
+		if (!setor.mcr.trim())
+			return Alert.alert(
+				"Erro",
+				"Medidas de controle recomendadas inválidas!"
+			);
+		if (setor.extintores === undefined)
+			return Alert.alert("Erro", "Extintores do setor inválidos!");
+		if (setor.rotaFuga === undefined)
+			return Alert.alert("Erro", "Rota de fuga inválida!");
+		if (setor.saidaEmergencia === undefined)
+			return Alert.alert("Erro", "Saída de emergência inválida!");
+		if (setor.sinalizacaoEmergencia === undefined)
+			return Alert.alert("Erro", "Sinalização de emergência inválida!");
+
+		// Confirmação se as funções estão vazias
+		if (setor.funcoes.length === 0) {
+			return Alert.alert(
+				"Confirmação",
+				"Realmente não existe nenhuma função no setor?",
+				[
+					{ text: "Cancelar", style: "cancel" },
+					{
+						text: "Confirmar",
+						onPress: () => {
+							// Adiciona o setor após confirmação
+							empresa.setSetores([...empresa.setores, setor]);
+							router.back();
+						},
+					},
+				],
+				{ cancelable: false }
+			);
+		}
+
+		// Adiciona o setor diretamente se há funções
+		empresa.setSetores([...empresa.setores, setor]);
+		router.back();
+	};
+
 	return (
 		<Container style={styles.formContainer} scroller>
 			<Input
@@ -152,9 +232,7 @@ export default function Setor() {
 			</Button>
 			<Button
 				onPress={(e) => {
-					empresa.setSetores([...empresa.setores, setor]);
-					setor.clear();
-					router.back();
+					handleCreateSetor();
 				}}
 			>
 				Criar
@@ -166,6 +244,6 @@ export default function Setor() {
 const styles = StyleSheet.create({
 	formContainer: {
 		width: "100%",
-		padding: 20,
+		paddingHorizontal: 20,
 	},
 });

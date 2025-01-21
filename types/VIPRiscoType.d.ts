@@ -1,4 +1,3 @@
-
 export interface VIPRiscoType {
 	risco: string;
 	setRisco: (value: string) => void;
@@ -25,18 +24,9 @@ export interface VIPEpiType {
 	periodicidade: {
 		tempo: string;
 		setTempo: (value: string) => void;
-		tipo: "Dias" | "Mês" | "Dia" | "Mêses" | undefined;
-		setTipo: (tipo: "Dias" | "Mês" | "Dia" | "Mêses" | undefined) => void;
+		tipo: "Dias" | "Mês" | "Dia" | "Mêses";
+		setTipo: (tipo: "Dias" | "Mês" | "Dia" | "Mêses") => void;
 	};
 	risco?: string;
 	clear: () => void;
 }
-
-
-
-type VIPRiscosTipo =
-	| "Fisico"
-	| "Quimico"
-	| "Biologico"
-	| "Ergonomico"
-	| "Acidente";

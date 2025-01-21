@@ -85,13 +85,13 @@ export function VIPEpi(): VIPEpiType {
 	const [nome, setNome] = useState<string>("");
 	const [periodicidadeTempo, setPeriodicidadeTempo] = useState<string>("");
 	const [periodicidadeTipo, setPeriodicidadeTipo] = useState<
-		"Mês" | "Mêses" | "Dia" | "Dias" | undefined
-	>();
+		"Mês" | "Mêses" | "Dia" | "Dias"
+	>("Dias");
 
 	function clear() {
 		setNome("");
 		setPeriodicidadeTempo("");
-		setPeriodicidadeTipo(undefined);
+		setPeriodicidadeTipo("Dias");
 	}
 
 	return {

@@ -7,11 +7,19 @@ import { useSetor } from "@/hooks/SetorProvider";
 import { useRouter } from "expo-router";
 import { StyleSheet } from "react-native";
 import VIPTabela from "@/components/VIPTabela";
+import RiscoForm from "@/components/RiscoForm";
+import { useEffect } from "react";
 
 export default function Funcao() {
 	const router = useRouter();
 	const setor = useSetor();
 	const funcao = useFuncao();
+
+	useEffect(() => {
+		return () => {
+			funcao.clear();
+		};
+	}, []);
 
 	return (
 		<Container style={styles.formContainer} scroller>
@@ -36,55 +44,56 @@ export default function Funcao() {
 				onChange={funcao.setLux}
 			/>
 			<VIPTabela
-				headers={["Risco", "Fonte"]}
-				valores={[]}
+				headers={["Risco", "Fonte", "Tipo"]}
+				valores={[
+					...funcao.Fisico.riscos.map((a) => {
+						return {
+							Risco: a.risco,
+							Fonte: a.fonteGeradora,
+							Tipo: "Fisico",
+						};
+					}),
+					...funcao.Quimico.riscos.map((a) => {
+						return {
+							Risco: a.risco,
+							Fonte: a.fonteGeradora,
+							Tipo: "Quimico",
+						};
+					}),
+					...funcao.Biologico.riscos.map((a) => {
+						return {
+							Risco: a.risco,
+							Fonte: a.fonteGeradora,
+							Tipo: "Biologico",
+						};
+					}),
+					...funcao.Ergonomico.riscos.map((a) => {
+						return {
+							Risco: a.risco,
+							Fonte: a.fonteGeradora,
+							Tipo: "Ergonomico",
+						};
+					}),
+					...funcao.Acidente.riscos.map((a) => {
+						return {
+							Risco: a.risco,
+							Fonte: a.fonteGeradora,
+							Tipo: "Acidente",
+						};
+					}),
+				]}
 				onExcluir={() => {}}
 			/>
-			<RadioButton
-				placeholder="Fisico "
-				value={funcao.Fisico.existe}
-				setValue={funcao.Fisico.setExiste}
-			/>
-			{funcao.Fisico.existe && (
-				<Button secundary onPress={() => {}}>
-					Adicionar Fisico
-				</Button>
-			)}
-			<RadioButton
-				placeholder="Quimico"
-				value={funcao.Quimico.existe}
-				setValue={funcao.Quimico.setExiste}
-			/>
-			{funcao.Quimico.existe && (
-				<Button secundary onPress={() => {}}>
-					Adicionar Quimico
-				</Button>
-			)}
-			<RadioButton
-				placeholder="Biologico"
-				value={funcao.Biologico.existe}
-				setValue={funcao.Biologico.setExiste}
-			/>
-			{funcao.Biologico.existe && (
-				<Button secundary onPress={() => {}}>
-					Adicionar Biologico
-				</Button>
-			)}
-			<RadioButton
-				placeholder="Ergonomico"
-				value={funcao.Ergonomico.existe}
-				setValue={funcao.Ergonomico.setExiste}
-			/>
-			<RadioButton
-				placeholder="Acidente"
-				value={funcao.Acidente.existe}
-				setValue={funcao.Acidente.setExiste}
-			/>
+
+			<RiscoForm risco="Fisico" />
+			<RiscoForm risco="Quimico" />
+			<RiscoForm risco="Biologico" />
+			<RiscoForm risco="Ergonomico" />
+			<RiscoForm risco="Acidente" />
 
 			<Button
 				onPress={(e) => {
 					setor.setFuncoes([...setor.funcoes, funcao]);
-					funcao.clear();
 					router.back();
 				}}
 			>
@@ -97,6 +106,6 @@ export default function Funcao() {
 const styles = StyleSheet.create({
 	formContainer: {
 		width: "100%",
-		padding: 20,
+		paddingHorizontal: 20,
 	},
 });

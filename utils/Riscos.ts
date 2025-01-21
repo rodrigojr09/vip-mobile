@@ -1,8 +1,9 @@
-export function getRiscos(): {
+export interface RiscoDataType {
 	_id: any;
 	tipo: string;
 	risco: string;
-}[] {
+}
+export function getRiscos(): RiscoDataType[] {
 	return [
 		{
 			_id: { oid: "664788064e9b94949c471c39" },
