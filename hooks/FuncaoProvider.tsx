@@ -1,13 +1,7 @@
 import uuid from "react-native-uuid";
 import { VIPFuncaoType } from "@/types/VIPFuncaoType";
 import { VIPRiscoType } from "@/types/VIPRiscoType";
-import {
-	createContext,
-	ReactNode,
-	useContext,
-	useEffect,
-	useState,
-} from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 const FuncaoContext = createContext<VIPFuncaoType | undefined>(undefined);
 

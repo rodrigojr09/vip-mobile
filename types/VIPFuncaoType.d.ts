@@ -1,4 +1,4 @@
-import { VIPRiscoType } from "./LevantamentoTypes";
+import { VIPRiscoType } from "./VIPRiscoType";
 
 export interface VIPFuncaoType {
 	id: string;

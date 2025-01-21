@@ -2,6 +2,7 @@ import Button from "@/components/Button";
 import Container from "@/components/Container";
 import VIPTabela from "@/components/VIPTabela";
 import { useEmpresa } from "@/hooks/EmpresaProvider";
+import { VIPFuncaoType } from "@/types/VIPFuncaoType";
 import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text } from "react-native";
@@ -22,7 +23,7 @@ export default function Resumo() {
 						id: a.id,
 						Nome: a.nome,
 						// prettier-ignore
-						'Funções': a.funcoes.map((b) => b.nome).join(", "),
+						'Funções': a.funcoes.map((b:VIPFuncaoType) => b.nome).join(", "),
 					};
 				})}
 				onExcluir={(setor) => {

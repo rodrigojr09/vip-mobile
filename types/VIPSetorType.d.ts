@@ -1,7 +1,6 @@
 import { VIPFuncaoType } from "./VIPFuncaoType";
 
 export interface VIPSetorType {
-	maquinas: string;
 	id: string;
 	nome: string;
 	setNome: (value: string) => void;

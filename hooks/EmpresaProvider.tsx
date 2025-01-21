@@ -1,15 +1,8 @@
-import uuid from "react-native-uuid";
 import { VIPEmpresaType } from "@/types/VIPEmpresaType";
-import { VIPFuncaoType } from "@/types/VIPFuncaoType";
 import { VIPRiscoType } from "@/types/VIPRiscoType";
 import { VIPEpiType } from "@/types/VIPRiscoType";
-import {
-	createContext,
-	ReactNode,
-	useContext,
-	useEffect,
-	useState,
-} from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
+import { VIPSetorType } from "@/types/VIPSetorType";
 
 const EmpresaContext = createContext<VIPEmpresaType | undefined>(undefined);
 

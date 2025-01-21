@@ -14,7 +14,6 @@ interface TabelaProps {
 }
 
 const VIPTabela: React.FC<TabelaProps> = ({ headers, valores, onExcluir }) => {
-	console.log(valores)
 	return (
 		<View style={styles.container}>
 			{/* Cabeçalho da tabela */}
@@ -59,7 +58,7 @@ const VIPTabela: React.FC<TabelaProps> = ({ headers, valores, onExcluir }) => {
 				ListEmptyComponent={
 					<View style={styles.emptyRow}>
 						<Text style={styles.emptyText}>
-							Nenhuma Função disponível
+							Nenhuma informação disponível
 						</Text>
 					</View>
 				}

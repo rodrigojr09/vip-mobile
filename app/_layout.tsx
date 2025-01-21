@@ -1,3 +1,4 @@
+import Container from "@/components/Container";
 import { Stack } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 

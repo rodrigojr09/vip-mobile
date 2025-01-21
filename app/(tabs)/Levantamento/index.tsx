@@ -3,13 +3,8 @@ import Container from "@/components/Container";
 import Input from "@/components/Input";
 import { useEmpresa } from "@/hooks/EmpresaProvider";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import {
 	Alert,
-	TextInput,
-	TouchableOpacity,
-	View,
-	Text,
 	StyleSheet,
 } from "react-native";
 

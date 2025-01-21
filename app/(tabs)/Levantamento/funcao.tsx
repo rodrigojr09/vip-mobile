@@ -6,14 +6,15 @@ import RadioButton from "@/components/RadioButton";
 import { useSetor } from "@/hooks/SetorProvider";
 import { useRouter } from "expo-router";
 import { StyleSheet } from "react-native";
+import VIPTabela from "@/components/VIPTabela";
 
-export default function Setor() {
+export default function Funcao() {
 	const router = useRouter();
 	const setor = useSetor();
 	const funcao = useFuncao();
 
 	return (
-		<Container style={styles.formContainer}>
+		<Container style={styles.formContainer} scroller>
 			<Input
 				placeholder="Digite o nome da função"
 				value={funcao.nome}
@@ -34,21 +35,41 @@ export default function Setor() {
 				value={funcao.lux}
 				onChange={funcao.setLux}
 			/>
+			<VIPTabela
+				headers={["Risco", "Fonte"]}
+				valores={[]}
+				onExcluir={() => {}}
+			/>
 			<RadioButton
 				placeholder="Fisico "
 				value={funcao.Fisico.existe}
 				setValue={funcao.Fisico.setExiste}
 			/>
+			{funcao.Fisico.existe && (
+				<Button secundary onPress={() => {}}>
+					Adicionar Fisico
+				</Button>
+			)}
 			<RadioButton
 				placeholder="Quimico"
 				value={funcao.Quimico.existe}
 				setValue={funcao.Quimico.setExiste}
 			/>
+			{funcao.Quimico.existe && (
+				<Button secundary onPress={() => {}}>
+					Adicionar Quimico
+				</Button>
+			)}
 			<RadioButton
 				placeholder="Biologico"
 				value={funcao.Biologico.existe}
 				setValue={funcao.Biologico.setExiste}
 			/>
+			{funcao.Biologico.existe && (
+				<Button secundary onPress={() => {}}>
+					Adicionar Biologico
+				</Button>
+			)}
 			<RadioButton
 				placeholder="Ergonomico"
 				value={funcao.Ergonomico.existe}
@@ -76,7 +97,6 @@ export default function Setor() {
 const styles = StyleSheet.create({
 	formContainer: {
 		width: "100%",
-		alignItems: "center",
 		padding: 20,
 	},
 });

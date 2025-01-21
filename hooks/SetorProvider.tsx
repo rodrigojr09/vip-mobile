@@ -1,6 +1,6 @@
 import { VIPSetorType } from "@/types/VIPSetorType";
 import { VIPFuncaoType } from "@/types/VIPFuncaoType";
-import { createContext, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 import uuid from "react-native-uuid";
 
 const SetorContext = createContext<VIPSetorType | undefined>(undefined);

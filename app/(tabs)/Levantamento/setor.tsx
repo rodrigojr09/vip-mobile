@@ -6,7 +6,6 @@ import RadioButton from "@/components/RadioButton";
 import { useSetor } from "@/hooks/SetorProvider";
 import { useEmpresa } from "@/hooks/EmpresaProvider";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import { StyleSheet } from "react-native";
 
 export default function Setor() {
@@ -15,7 +14,7 @@ export default function Setor() {
 	const empresa = useEmpresa();
 	const setor = useSetor();
 	return (
-		<Container style={styles.formContainer} scroller={true}>
+		<Container style={styles.formContainer} scroller>
 			<Input
 				placeholder="Digite o nome do setor..."
 				value={setor.nome}
@@ -167,8 +166,6 @@ export default function Setor() {
 const styles = StyleSheet.create({
 	formContainer: {
 		width: "100%",
-		height: "auto",
-		//alignItems: "center",
 		padding: 20,
 	},
 });
