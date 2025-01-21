@@ -1,10 +1,13 @@
-import { LevantamentoProvider } from "@/hooks/LevantamentoProvider";
+import { EmpresaProvider } from "@/hooks/EmpresaProvider";
+import { SetorProvider } from "@/hooks/SetorProvider";
 import { Stack } from "expo-router";
 
 export default function Layout() {
 	return (
-		<LevantamentoProvider>
-			<Stack screenOptions={{ headerShown: false }} />
-		</LevantamentoProvider>
+		<EmpresaProvider>
+			<SetorProvider>
+				<Stack screenOptions={{ headerShown: false }} />
+			</SetorProvider>
+		</EmpresaProvider>
 	);
 }

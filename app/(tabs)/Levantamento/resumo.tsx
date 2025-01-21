@@ -1,30 +1,23 @@
 import Button from "@/components/Button";
 import Container from "@/components/Container";
-import Tabela from "@/components/Tabela";
 import VIPTabela from "@/components/VIPTabela";
-import {
-	useLevantamento,
-	VIPFuncao,
-	VIPSetor,
-} from "@/hooks/LevantamentoProvider";
+import { useEmpresa } from "@/hooks/EmpresaProvider";
 import { useRouter } from "expo-router";
-import React, { useEffect } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import React from "react";
+import { StyleSheet, Text } from "react-native";
 
 export default function Resumo() {
-	const levantamento = useLevantamento();
+	const empresa = useEmpresa();
 	const router = useRouter();
 	return (
 		<Container style={styles.container}>
 			{/* Título */}
-			<Text style={styles.title}>
-				Setores da Empresa: {levantamento.nome}
-			</Text>
+			<Text style={styles.title}>Setores da Empresa: {empresa.nome}</Text>
 
 			{/* Tabela */}
 			<VIPTabela
 				headers={["Nome", "Funções"]}
-				valores={levantamento.setores.map((a) => {
+				valores={empresa.setores.map((a) => {
 					return {
 						id: a.id,
 						Nome: a.nome,
@@ -33,10 +26,8 @@ export default function Resumo() {
 					};
 				})}
 				onExcluir={(setor) => {
-					levantamento.setSetores(
-						levantamento.setores.filter(
-							(a) => a.id !== setor.id
-						)
+					empresa.setSetores(
+						empresa.setores.filter((a) => a.id !== setor.id)
 					);
 				}}
 			/>

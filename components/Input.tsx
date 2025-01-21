@@ -3,10 +3,11 @@ import { StyleSheet, TextInput } from "react-native";
 export default function Input({
 	placeholder,
 	value,
-	onChange,
+	onChange,textarea
 }: {
 	placeholder: string;
 	value: string;
+	textarea?: boolean;
 	onChange: (value: string) => void;
 }) {
 	return (
@@ -15,7 +16,9 @@ export default function Input({
 			placeholder={placeholder}
 			placeholderTextColor="#ccc"
 			value={value}
+			multiline={textarea ? true : false}
 			onChangeText={onChange}
+			textAlignVertical="top"
 		/>
 	);
 }

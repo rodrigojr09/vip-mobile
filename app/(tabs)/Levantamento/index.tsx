@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import Input from "@/components/Input";
-import { useLevantamento } from "@/hooks/LevantamentoProvider";
+import { useEmpresa } from "@/hooks/EmpresaProvider";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -15,7 +15,7 @@ import {
 
 export default function Levantamento() {
 	const router = useRouter();
-	const levantamento = useLevantamento();
+	const levantamento = useEmpresa();
 
 	const handleCreateLevantamento = () => {
 		if (!levantamento.nome.trim() || !levantamento.responsavel.trim()) {
@@ -33,7 +33,7 @@ export default function Levantamento() {
 				onChange={levantamento.setNome}
 			/>
 			<Input
-				placeholder="Quem está auxiliando o levantamento?"
+				placeholder="Quem está auxiliando o levantamento ?"
 				value={levantamento.responsavel}
 				onChange={levantamento.setResponsavel}
 			/>

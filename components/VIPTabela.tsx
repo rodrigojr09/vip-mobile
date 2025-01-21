@@ -14,6 +14,7 @@ interface TabelaProps {
 }
 
 const VIPTabela: React.FC<TabelaProps> = ({ headers, valores, onExcluir }) => {
+	console.log(valores)
 	return (
 		<View style={styles.container}>
 			{/* Cabeçalho da tabela */}
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
 	headerCell: {
 		alignItems: "center",
 		justifyContent: "center",
-		paddingHorizontal: 10,
+		paddingHorizontal: 8,
 	},
 	headerText: {
 		fontWeight: "bold",
