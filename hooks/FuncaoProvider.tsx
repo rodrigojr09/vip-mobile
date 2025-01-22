@@ -1,4 +1,5 @@
-import uuid from "react-native-uuid";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
 import { VIPFuncaoType } from "@/types/VIPFuncaoType";
 import { VIPRiscoType } from "@/types/VIPRiscoType";
 import { createContext, ReactNode, useContext, useState } from "react";
@@ -45,7 +46,7 @@ export const FuncaoProvider = ({ children }: { children: ReactNode }) => {
 	return (
 		<FuncaoContext.Provider
 			value={{
-				id: uuid.v4(),
+				id: uuidv4(),
 				nome,
 				setNome,
 				description,
