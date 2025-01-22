@@ -6,16 +6,19 @@
 		"orientation": "portrait",
 		"icon": "./assets/images/icon.png",
 		"scheme": "myapp",
+		"startUrk": "/",
 		"userInterfaceStyle": "automatic",
+		"platforms": ["android"],
 		"newArchEnabled": true,
-		"ios": {
-			"supportsTablet": true
-		},
+     "scripts": {
+      "start": "expo start"
+    },
 		"android": {
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/images/adaptive-icon.png",
 				"backgroundColor": "#000000"
-			}
+			},
+			"package": "mobile.vipprev.com.br"
 		},
 		"web": {
 			"bundler": "metro",
@@ -36,6 +39,14 @@
 		],
 		"experiments": {
 			"typedRoutes": true
+		},
+		"extra": {
+			"router": {
+				"origin": false
+			},
+			"eas": {
+				"projectId": "ab38cd83-26ae-4e74-8228-e6f5e4b796eb"
+			}
 		}
 	}
 }

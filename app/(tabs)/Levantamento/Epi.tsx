@@ -77,7 +77,7 @@ export default function Risco(a: any) {
 				/>
 			)}
 			<View>
-				<Text>Periodicidade</Text>
+			<Text>Periodicidade</Text>
 				<Input
 					placeholder="DD"
 					onChange={epi.periodicidade.setTempo}

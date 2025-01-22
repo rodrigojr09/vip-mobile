@@ -42,7 +42,13 @@ export default function Resumo() {
 				Novo Setor
 			</Button>
 
-			<Button onPress={(e) => {}}>Finalizar Levantamento</Button>
+			<Button
+				onPress={(e) => {
+					router.push("/Levantamento/finalizado");
+				}}
+			>
+				Finalizar Levantamento
+			</Button>
 		</Container>
 	);
 }
