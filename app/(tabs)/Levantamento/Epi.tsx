@@ -86,8 +86,8 @@ export default function Risco(a: any) {
 				<View style={styles.pickerContainer}>
 					<Picker
 						selectedValue={epi.periodicidade.tipo}
-						onValueChange={(value) =>
-							epi.periodicidade.setTipo(value)
+						onValueChange={(value: string) =>
+							epi.periodicidade.setTipo(value as "Dias" | "Mês" | "Dia" | "Mêses")
 						}
 						style={styles.picker}
 					>
