@@ -18,31 +18,13 @@ const SignatureScreen = () => {
 			return;
 		}
 		try {
-			// Gerar o HTML com a assinatura
-			const htmlContent = getHtml(empresa)
-				.replace(
-					"$assinatura",
-					`<img style="width: 100%; height: 100%;" src="${signature}"/>`
-				)
-				.replace("not-assinatura", "");
-
-			// Caminho para salvar o arquivo HTML
-			const filePath = `${FileSystem.documentDirectory}Levantamento-${empresa.nome}.html`;
-
-			// Salvar o arquivo
-			await FileSystem.writeAsStringAsync(filePath, htmlContent, {
-				encoding: FileSystem.EncodingType.UTF8,
+			ScreenOrientation.unlockAsync();
+			router.push({
+				pathname: "/Levantamento/finalizado",
+				params: {
+					assinatura: `<img style="width: 100%; height: 100%;" src="${signature}"/>`,
+				},
 			});
-
-			// Compartilhar o arquivo salvo
-			await Sharing.shareAsync(filePath);
-
-			console.log(
-				"Arquivo gerado e compartilhado com sucesso:",
-				filePath
-			);
-			empresa.clear();
-			router.dismissAll();
 		} catch (error) {
 			console.error("Erro ao salvar ou compartilhar o arquivo:", error);
 			Alert.alert(
@@ -59,11 +41,6 @@ const SignatureScreen = () => {
 			);
 		};
 		lockOrientation();
-
-		// Retorna à orientação padrão ao sair
-		return () => {
-			ScreenOrientation.unlockAsync();
-		};
 	}, []);
 
 	return (
@@ -92,7 +69,7 @@ const SignatureScreen = () => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: "#fff",
+		backgroundColor: "#00a44ff",
 	},
 });
 

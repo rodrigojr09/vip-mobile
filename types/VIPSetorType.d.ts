@@ -47,4 +47,5 @@ export interface VIPSetorType {
 	sinalizacaoEmergencia: boolean | undefined;
 	setSinalizacaoEmergencia: (value: boolean) => void;
 	clear: () => void;
+	load: (setor: VIPSetorType) => void;
 }

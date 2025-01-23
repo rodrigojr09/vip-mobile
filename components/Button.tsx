@@ -18,7 +18,7 @@ export default function Button({
 		<TouchableOpacity
 			style={{
 				...styles.button,
-				backgroundColor: secundary ? "cyan" : "green",
+				backgroundColor: secundary ? "#0069ad" : "green",
 			}}
 			onPress={onPress}
 		>

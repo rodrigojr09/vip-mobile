@@ -1,4 +1,5 @@
 export interface VIPRiscoType {
+	id: string;
 	risco: string;
 	setRisco: (value: string) => void;
 	exposicao: string;
@@ -16,6 +17,7 @@ export interface VIPRiscoType {
 		setExistentes: (value: VIPEpiType[]) => void;
 	};
 	clear: () => void;
+	load: (item: VIPRiscoType) => void;
 }
 
 export interface VIPEpiType {

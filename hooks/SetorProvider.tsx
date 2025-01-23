@@ -1,7 +1,7 @@
 import { VIPSetorType } from "@/types/VIPSetorType";
 import { VIPFuncaoType } from "@/types/VIPFuncaoType";
 import { createContext, ReactNode, useContext, useState } from "react";
-import uuid from "react-native-uuid";
+import { v4 as uuidv4 } from "uuid";
 
 const SetorContext = createContext<VIPSetorType | undefined>(undefined);
 
@@ -56,10 +56,33 @@ export function SetorProvider({ children }: { children: ReactNode }) {
 		setSinalizacaoEmergencia(undefined);
 	};
 
+	const load = (setor: VIPSetorType) => {
+		setNome(setor.nome);
+		setComprimento(setor.comprimento);
+		setLargura(setor.largura);
+		setPeDireito(setor.peDireito);
+		setPiso(setor.piso);
+		setEstrutura(setor.estrutura);
+		setForro(setor.forro);
+		setIluminacaoNatural(setor.iluminacao.natural);
+		setIluminacaoArtificial(setor.iluminacao.artificial);
+		setVentilacaoNatural(setor.ventilacao.natural);
+		setVentilacaoArtificial(setor.ventilacao.artificial);
+		setMe(setor.me);
+		setMce(setor.mce);
+		setMcr(setor.mcr);
+		setFuncoes(setor.funcoes);
+		setImages(setor.images);
+		setExtintores(setor.extintores);
+		setSaidaEmergencia(setor.saidaEmergencia);
+		setRotaFuga(setor.rotaFuga);
+		setSinalizacaoEmergencia(setor.sinalizacaoEmergencia);
+	};
+
 	return (
 		<SetorContext.Provider
 			value={{
-				id: uuid.v4(),
+				id: uuidv4(),
 				nome,
 				setNome,
 				comprimento,
@@ -105,6 +128,7 @@ export function SetorProvider({ children }: { children: ReactNode }) {
 				sinalizacaoEmergencia,
 				setSinalizacaoEmergencia,
 				clear,
+				load,
 			}}
 		>
 			{children}

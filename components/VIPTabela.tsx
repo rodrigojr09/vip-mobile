@@ -10,10 +10,16 @@ import {
 interface TabelaProps {
 	headers: string[];
 	valores: { [chave: string]: string }[];
-	onExcluir?: (item: { [chave: string]: string }) => void;
+	onExcluir?: (item: any) => void;
+	goTo?: (item: any) => void;
 }
 
-const VIPTabela: React.FC<TabelaProps> = ({ headers, valores, onExcluir }) => {
+const VIPTabela: React.FC<TabelaProps> = ({
+	headers,
+	valores,
+	onExcluir,
+	goTo,
+}) => {
 	return (
 		<View style={styles.container}>
 			{/* Cabeçalho da tabela */}
@@ -36,9 +42,15 @@ const VIPTabela: React.FC<TabelaProps> = ({ headers, valores, onExcluir }) => {
 					<View style={styles.row}>
 						{headers.map((header) => (
 							<View key={header} style={styles.cell}>
-								<Text style={styles.bodyText}>
-									{item[header]}
-								</Text>
+								{
+									<TouchableOpacity
+										onPress={() => goTo && goTo(item)}
+									>
+										<Text style={styles.bodyText}>
+											{item[header]}
+										</Text>
+									</TouchableOpacity>
+								}
 							</View>
 						))}
 						{onExcluir && (

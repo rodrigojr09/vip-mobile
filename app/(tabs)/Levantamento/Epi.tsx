@@ -5,6 +5,7 @@ import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
 	FlatList,
+	Image,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
@@ -49,12 +50,30 @@ export default function Epi(a: any) {
 
 	return (
 		<Container style={styles.formContainer} scroller>
-			<View>
+			<View style={{ flexDirection: "row", alignItems: "center" }}>
 				<Input
-					placeholder="Digite um EPI..."
+					style={{ width: "80%" }}
+					placeholder="Digite um risco..."
 					value={query}
 					onChange={handleSearch}
 				/>
+				<TouchableOpacity
+					style={{
+						borderWidth: 1,
+						borderColor: "green",
+						borderRadius: 5,
+						alignItems: "center",
+						width: "15%",
+						marginLeft: 15,
+						padding: 15,
+						backgroundColor: "green",
+					}}
+					onPress={() => handleSelect(query)}
+				>
+					<Text style={{ color: "#FFF", textAlign: "center" }}>
+						+
+					</Text>
+				</TouchableOpacity>
 			</View>
 			{filteredData.length > 0 && (
 				<FlatList
@@ -73,52 +92,66 @@ export default function Epi(a: any) {
 					)}
 				/>
 			)}
-			<View>
-				<Text
-					style={{
-						color: "white",
-						fontSize: 16,
-						textAlign: "center",
-						marginBottom: 3,
-					}}
-				>
-					Periodicidade
-				</Text>
-				<Input
-					placeholder="DD"
-					onChange={epi.periodicidade.setTempo}
-					value={epi.periodicidade.tempo}
-				/>
-				<View style={styles.pickerContainer}>
-					<Picker
-						selectedValue={epi.periodicidade.tipo}
-						onValueChange={(value: string) =>
-							epi.periodicidade.setTipo(
-								value as "Dias" | "Mês" | "Dia" | "Mêses"
-							)
-						}
-						style={styles.picker}
+			{query !== "" && epi.nome === query && (
+				<View>
+					<Text
+						style={{
+							color: "white",
+							fontSize: 16,
+							textAlign: "center",
+							marginBottom: 3,
+						}}
 					>
-						{/* "Dias" | "Mês" | "Dia" | "Mêses" */}
-						<Picker.Item label="Dia" value="Dia" />
-						<Picker.Item label="Dias" value="Dias" />
-						<Picker.Item label="Mês" value="Mês" />
-						<Picker.Item label="Meses" value="Mêses" />
-					</Picker>
+						Periodicidade
+					</Text>
+					<Input
+						placeholder="DD"
+						onChange={epi.periodicidade.setTempo}
+						value={epi.periodicidade.tempo}
+					/>
+					<View style={styles.pickerContainer}>
+						<Picker
+							selectedValue={epi.periodicidade.tipo}
+							onValueChange={(value: string) =>
+								epi.periodicidade.setTipo(
+									value as "Dias" | "Mês" | "Dia" | "Mêses"
+								)
+							}
+							style={styles.picker}
+						>
+							{/* "Dias" | "Mês" | "Dia" | "Mêses" */}
+							<Picker.Item label="Dia" value="Dia" />
+							<Picker.Item label="Dias" value="Dias" />
+							<Picker.Item label="Mês" value="Mês" />
+							<Picker.Item label="Meses" value="Mêses" />
+						</Picker>
+					</View>
 				</View>
-			</View>
+			)}
 
 			<Button
-				onPress={(e) => {
+				onPress={(_e) => {
 					if (params.tipo === "e") {
 						risco.epis.setExistentes([
 							...risco.epis.existentes,
-							{ ...epi, risco: params.risco as string },
+							{
+								nome: epi.nome,
+								clear: epi.clear,
+								periodicidade: epi.periodicidade,
+								risco: params.risco as string,
+								setNome: epi.setNome,
+							},
 						]);
 					} else {
 						risco.epis.setRecomendados([
 							...risco.epis.recomendados,
-							{ ...epi, risco: params.risco as string },
+							{
+								nome: epi.nome,
+								clear: epi.clear,
+								periodicidade: epi.periodicidade,
+								risco: params.risco as string,
+								setNome: epi.setNome,
+							},
 						]);
 					}
 					router.back();

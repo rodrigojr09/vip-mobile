@@ -41,46 +41,6 @@ export function useEmpresa() {
 	return context;
 }
 
-export function VIPRisco(): VIPRiscoType {
-	const [risco, setRisco] = useState<string>("");
-	const [exposicao, setExposicao] = useState<string>("");
-	const [fonteGeradora, setFonteGeradora] = useState<string>("");
-	const [episExistentes, setEPIsExistentes] = useState<VIPEpiType[]>([]);
-	const [episRecomendados, setEPIsRecomendados] = useState<VIPEpiType[]>([]);
-	const [possuiEpi, setPossuiEpi] = useState<boolean | undefined>();
-	const [recomendarEpi, setRecomendarEpi] = useState<boolean | undefined>();
-
-	const clear = () => {
-		setRisco("");
-		setExposicao("");
-		setFonteGeradora("");
-		setEPIsExistentes([]);
-		setEPIsRecomendados([]);
-		setPossuiEpi(undefined);
-		setRecomendarEpi(undefined);
-	};
-
-	return {
-		risco,
-		setRisco,
-		exposicao,
-		setExposicao,
-		fonteGeradora,
-		setFonteGeradora,
-		possuiEpi,
-		setPossuiEpi,
-		recomendarEpi,
-		setRecomendarEpi,
-		epis: {
-			recomendados: episRecomendados,
-			existentes: episExistentes,
-			setExistentes: setEPIsExistentes,
-			setRecomendados: setEPIsRecomendados,
-		},
-		clear,
-	};
-}
-
 export function VIPEpi(): VIPEpiType {
 	const [nome, setNome] = useState<string>("");
 	const [periodicidadeTempo, setPeriodicidadeTempo] = useState<string>("");

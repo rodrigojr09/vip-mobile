@@ -47,13 +47,21 @@ export default function Risco(a: any) {
 		setFilteredData(results as any);
 		if (query !== risco.risco) risco.setRisco("");
 	};
-	console.log(risco.epis);
 	const handleSelect = (item: string) => {
 		setQuery(item);
 		risco.setRisco(item);
 		setFilteredData([]); // Fecha a lista de sugestões
 	};
 	useEffect(() => {
+		if (params.risco && params.id) {
+			const hasRisco = funcao[params.risco as "Acidente"].riscos.find(
+				(a) => a.id === (params.id as string)
+			);
+			if (hasRisco) {
+				risco.load(hasRisco);
+				setQuery(hasRisco.risco);
+			}
+		}
 		return () => {
 			risco.clear();
 		};
@@ -83,12 +91,30 @@ export default function Risco(a: any) {
 
 	return (
 		<Container style={styles.formContainer} scroller>
-			<View>
+			<View style={{ flexDirection: "row", alignItems: "center" }}>
 				<Input
+					style={{ width: "80%" }}
 					placeholder="Digite um risco..."
 					value={query}
 					onChange={handleSearch}
 				/>
+				<TouchableOpacity
+					style={{
+						borderWidth: 1,
+						borderColor: "green",
+						borderRadius: 5,
+						alignItems: "center",
+						width: "15%",
+						marginLeft: 15,
+						padding: 15,
+						backgroundColor: "green",
+					}}
+					onPress={() => handleSelect(query)}
+				>
+					<Text style={{ color: "#FFF", textAlign: "center" }}>
+						+
+					</Text>
+				</TouchableOpacity>
 			</View>
 			{filteredData.length > 0 && (
 				<FlatList
@@ -172,7 +198,7 @@ export default function Risco(a: any) {
 							<VIPTabela
 								headers={["EPI", "Risco", "Periodicidade"]}
 								valores={[
-									...risco.epis.recomendados.map((a) => {
+									...risco.epis.existentes.map((a) => {
 										return {
 											EPI: a.nome,
 											Risco: a.risco || "",
@@ -180,7 +206,13 @@ export default function Risco(a: any) {
 										};
 									}),
 								]}
-								onExcluir={() => {}}
+								onExcluir={(item) => {
+									risco.epis.setExistentes(
+										risco.epis.existentes.filter(
+											(a) => a.nome !== item.EPI
+										)
+									);
+								}}
 							/>
 						</>
 					)}
@@ -216,19 +248,67 @@ export default function Risco(a: any) {
 										};
 									}),
 								]}
-								onExcluir={() => {}}
+								onExcluir={(item) => {
+									risco.epis.setRecomendados(
+										risco.epis.recomendados.filter(
+											(a) => a.nome !== item.EPI
+										)
+									);
+								}}
 							/>
 						</>
 					)}
 				</>
 			)}
-			<Button
-				onPress={(e) => {
-					handleCreateRisco();
-				}}
-			>
-				Adicionar
-			</Button>
+			{!params.risco && (
+				<Button
+					onPress={(e) => {
+						handleCreateRisco();
+					}}
+				>
+					Adicionar
+				</Button>
+			)}
+			{params.risco && (
+				<Button
+					onPress={(e) => {
+						if (!risco.risco.trim())
+							return Alert.alert("Erro", "Selecione um risco");
+						if (!risco.fonteGeradora.trim())
+							return Alert.alert(
+								"Erro",
+								"Digite uma fonte geradora"
+							);
+						if (!risco.exposicao.trim())
+							return Alert.alert(
+								"Erro",
+								"Selecione uma exposição"
+							);
+						if (risco.possuiEpi === undefined)
+							return Alert.alert(
+								"Erro",
+								"Selecione se existe EPI ou não"
+							);
+						if (risco.recomendarEpi === undefined)
+							return Alert.alert(
+								"Erro",
+								"Selecione se deseja recomendar EPI ou não"
+							);
+
+						funcao[params.risco as "Acidente"].setRiscos(
+							funcao[params.risco as "Acidente"].riscos.map(
+								(a) => {
+									if (a.id !== params.id) return a;
+									return risco;
+								}
+							)
+						);
+						router.back();
+					}}
+				>
+					Atualizar
+				</Button>
+			)}
 		</Container>
 	);
 }

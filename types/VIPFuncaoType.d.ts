@@ -41,4 +41,5 @@ export interface VIPFuncaoType {
 		setRiscos: (value: VIPRiscoType[]) => void;
 	};
 	clear: () => void;
+	load: (funcao: VIPFuncaoType) => void;
 }

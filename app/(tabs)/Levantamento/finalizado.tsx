@@ -1,59 +1,75 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { WebView } from "react-native-webview";
-import { useEmpresa } from "@/hooks/EmpresaProvider";
-import { getHtml } from "@/utils/formatHTML";
+import React, { useEffect } from "react";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
+import { Alert, BackHandler, View } from "react-native";
 import Button from "@/components/Button";
+import { useEmpresa } from "@/hooks/EmpresaProvider";
 import { useRouter } from "expo-router";
+import { useSearchParams } from "expo-router/build/hooks";
+import { getHtml } from "@/utils/formatHTML";
+import Container from "@/components/Container";
 
-export default function App() {
-	const empresa = useEmpresa();
+export default function Finalizado() {
 	const router = useRouter();
+	const query = useSearchParams();
+	const empresa = useEmpresa();
+	// Desabilitar o botão de voltar
+	useEffect(() => {
+		const backAction = () => {
+			// Impede que a tela seja fechada com o botão de voltar
 
-	// Certifica-se de que os dados da empresa estão disponíveis antes de gerar o HTML
-	if (!empresa) {
-		return (
-			<View style={styles.center}>
-				<Text>Carregando dados da empresa...</Text>
-			</View>
-		);
+			return true; // Retorna true para impedir a ação de voltar
+		};
+
+		BackHandler.addEventListener("hardwareBackPress", backAction);
+
+		return () => {
+			// Limpeza do evento ao sair da tela
+			BackHandler.removeEventListener("hardwareBackPress", backAction);
+		};
+	}, []);
+	async function handleDownload() {
+		try {
+			// Gerar o HTML com a assinatura
+			const htmlContent = getHtml(empresa)
+				.replace("$assinatura", `${query.get("assinatura")}`)
+				.replace("not-assinatura", "");
+
+			// Caminho para salvar o arquivo HTML
+			const filePath = `${FileSystem.documentDirectory}Levantamento-${empresa.nome}.html`;
+
+			// Salvar o arquivo
+			await FileSystem.writeAsStringAsync(filePath, htmlContent, {
+				encoding: FileSystem.EncodingType.UTF8,
+			});
+
+			// Compartilhar o arquivo salvo
+			await Sharing.shareAsync(filePath);
+
+			console.log(
+				"Arquivo gerado e compartilhado com sucesso:",
+				filePath
+			);
+		} catch (error) {
+			console.error("Erro ao salvar ou compartilhar o arquivo:", error);
+			Alert.alert(
+				"Erro",
+				"Não foi possível salvar ou compartilhar o arquivo."
+			);
+		}
 	}
 
-	const htmlContent = getHtml(empresa);
-
 	return (
-		<View style={styles.container}>
-			<WebView
-				originWhitelist={["*"]}
-				source={{ html: htmlContent }}
-				style={styles.webview}
-				scrollEnabled={true}
-			/>
-			<View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
-				<Button
-					onPress={(e) => {
-						router.push("/Levantamento/assinatura");
-					}}
-				>
-					Assinar Documento
-				</Button>
-			</View>
-		</View>
+		<Container style={{ padding: 10 }}>
+			<Button
+				onPress={() => {
+					empresa.clear();
+					router.replace("/");
+				}}
+			>
+				Ir para o Início
+			</Button>
+			<Button onPress={handleDownload}>Baixar Levantamento</Button>
+		</Container>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: "#fff",
-	},
-	webview: {
-		flex: 1,
-	},
-	center: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-		backgroundColor: "#f0f0f0",
-	},
-});

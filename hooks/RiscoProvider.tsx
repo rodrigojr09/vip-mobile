@@ -1,6 +1,7 @@
 import { VIPRiscoType } from "@/types/VIPRiscoType";
 import { VIPEpiType } from "@/types/VIPRiscoType";
 import { createContext, ReactNode, useContext, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 const RiscoContext = createContext<VIPRiscoType | undefined>(undefined);
 
@@ -23,9 +24,20 @@ export const RiscoProvider = ({ children }: { children: ReactNode }) => {
 		setRecomendarEpi(undefined);
 	};
 
+	const load = (item: VIPRiscoType) => {
+		setRisco(item.risco);
+		setExposicao(item.exposicao);
+		setFonteGeradora(item.fonteGeradora);
+		setEPIsExistentes(item.epis.existentes);
+		setEPIsRecomendados(item.epis.recomendados);
+		setPossuiEpi(item.possuiEpi);
+		setRecomendarEpi(item.recomendarEpi);
+	};
+
 	return (
 		<RiscoContext.Provider
 			value={{
+				id: uuidv4(),
 				risco,
 				setRisco,
 				exposicao,
@@ -43,6 +55,7 @@ export const RiscoProvider = ({ children }: { children: ReactNode }) => {
 					setRecomendados: setEPIsRecomendados,
 				},
 				clear,
+				load,
 			}}
 		>
 			{children}

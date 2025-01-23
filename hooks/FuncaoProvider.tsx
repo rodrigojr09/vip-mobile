@@ -43,6 +43,23 @@ export const FuncaoProvider = ({ children }: { children: ReactNode }) => {
 		setLux("");
 	};
 
+	const load = (funcao: VIPFuncaoType) => {
+		setNome(funcao.nome);
+		setDescription(funcao.description);
+		setFuncionarios(funcao.funcionarios);
+		setLux(funcao.lux);
+		setFisicos(funcao.Fisico.riscos);
+		setQuimicos(funcao.Quimico.riscos);
+		setBiologicos(funcao.Biologico.riscos);
+		setErgonomicos(funcao.Ergonomico.riscos);
+		setAcidentes(funcao.Acidente.riscos);
+		setFisicoExiste(funcao.Fisico.existe);
+		setQuimicoExiste(funcao.Quimico.existe);
+		setBiologicoExiste(funcao.Biologico.existe);
+		setErgonomicoExiste(funcao.Ergonomico.existe);
+		setAcidenteExiste(funcao.Acidente.existe);
+	};
+
 	return (
 		<FuncaoContext.Provider
 			value={{
@@ -86,6 +103,7 @@ export const FuncaoProvider = ({ children }: { children: ReactNode }) => {
 					setRiscos: setQuimicos,
 				},
 				clear,
+				load,
 			}}
 		>
 			{children}
@@ -93,10 +111,13 @@ export const FuncaoProvider = ({ children }: { children: ReactNode }) => {
 	);
 };
 
-export function useFuncao() {
+export function useFuncao(funcao?: VIPFuncaoType) {
 	const context = useContext(FuncaoContext);
 	if (!context) {
 		throw new Error("useFuncao must be used within a FuncaoProvider");
+	}
+
+	if (funcao) {
 	}
 
 	return context;

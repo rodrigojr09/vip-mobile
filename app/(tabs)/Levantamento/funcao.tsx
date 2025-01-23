@@ -3,7 +3,7 @@ import Input from "@/components/Input";
 import Button from "@/components/Button";
 import { useFuncao } from "@/hooks/FuncaoProvider";
 import { useSetor } from "@/hooks/SetorProvider";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Alert, StyleSheet } from "react-native";
 import VIPTabela from "@/components/VIPTabela";
 import RiscoForm from "@/components/RiscoForm";
@@ -13,13 +13,18 @@ export default function Funcao() {
 	const router = useRouter();
 	const setor = useSetor();
 	const funcao = useFuncao();
-
+	const params = useLocalSearchParams();
 	useEffect(() => {
+		if (params.funcao) {
+			const hasFuncao = setor.funcoes.find(
+				(a) => a.id === (params.funcao as string)
+			);
+			if (hasFuncao) funcao.load(hasFuncao);
+		}
 		return () => {
 			funcao.clear();
 		};
 	}, []);
-	console.log(funcao.id);
 	const handleCreateFuncao = () => {
 		if (!funcao.nome.trim()) return Alert.alert("Digite o nome da função");
 		if (!funcao.description.trim())
@@ -71,6 +76,7 @@ export default function Funcao() {
 				valores={[
 					...funcao.Fisico.riscos.map((a) => {
 						return {
+							id: a.id,
 							Risco: a.risco,
 							Fonte: a.fonteGeradora,
 							Tipo: "Fisico",
@@ -78,6 +84,7 @@ export default function Funcao() {
 					}),
 					...funcao.Quimico.riscos.map((a) => {
 						return {
+							id: a.id,
 							Risco: a.risco,
 							Fonte: a.fonteGeradora,
 							Tipo: "Quimico",
@@ -85,6 +92,7 @@ export default function Funcao() {
 					}),
 					...funcao.Biologico.riscos.map((a) => {
 						return {
+							id: a.id,
 							Risco: a.risco,
 							Fonte: a.fonteGeradora,
 							Tipo: "Biologico",
@@ -92,6 +100,7 @@ export default function Funcao() {
 					}),
 					...funcao.Ergonomico.riscos.map((a) => {
 						return {
+							id: a.id,
 							Risco: a.risco,
 							Fonte: a.fonteGeradora,
 							Tipo: "Ergonomico",
@@ -99,13 +108,38 @@ export default function Funcao() {
 					}),
 					...funcao.Acidente.riscos.map((a) => {
 						return {
+							id: a.id,
 							Risco: a.risco,
 							Fonte: a.fonteGeradora,
 							Tipo: "Acidente",
 						};
 					}),
 				]}
-				onExcluir={() => {}}
+				onExcluir={(item: {
+					Risco: string;
+					Fonte: string;
+					Tipo:
+						| "Acidente"
+						| "Ergonomico"
+						| "Biologico"
+						| "Quimico"
+						| "Fisico";
+					id: string;
+				}) => {
+					const riscos = funcao[item.Tipo].riscos;
+					funcao[item.Tipo].setRiscos(
+						riscos.filter((a) => a.id !== item.id)
+					);
+				}}
+				goTo={(item) => {
+					router.push({
+						pathname: "/Levantamento/risco",
+						params: {
+							risco: item.Tipo,
+							id: item.id,
+						},
+					});
+				}}
 			/>
 
 			<RiscoForm risco="Fisico" />
@@ -114,13 +148,61 @@ export default function Funcao() {
 			<RiscoForm risco="Ergonomico" />
 			<RiscoForm risco="Acidente" />
 
-			<Button
-				onPress={(e) => {
-					handleCreateFuncao();
-				}}
-			>
-				Adicionar
-			</Button>
+			{!params.funcao && (
+				<Button
+					onPress={(e) => {
+						handleCreateFuncao();
+					}}
+				>
+					Adicionar
+				</Button>
+			)}
+			{params.funcao && (
+				<Button
+					onPress={(e) => {
+						if (!funcao.nome.trim())
+							return Alert.alert("Digite o nome da função");
+						if (!funcao.description.trim())
+							return Alert.alert("Digite a descrição da função");
+						if (!funcao.funcionarios.trim())
+							return Alert.alert(
+								"Digite o nome dos funcionarios da função"
+							);
+						if (!funcao.lux.trim())
+							return Alert.alert("Digite o LUX da função");
+						if (funcao.Acidente.existe === undefined)
+							return Alert.alert(
+								"Digite se existe risco de Acidente na função"
+							);
+						if (funcao.Ergonomico.existe === undefined)
+							return Alert.alert(
+								"Digite se existe risco de Ergonomico na função"
+							);
+						if (funcao.Biologico.existe === undefined)
+							return Alert.alert(
+								"Digite se existe risco de Biologico na função"
+							);
+						if (funcao.Quimico.existe === undefined)
+							return Alert.alert(
+								"Digite se existe risco de Quimico na função"
+							);
+						if (funcao.Fisico.existe === undefined)
+							return Alert.alert(
+								"Digite se existe risco de Fisico na função"
+							);
+						//Se tudo tiver ok
+						setor.setFuncoes(
+							setor.funcoes.map((a) => {
+								if (a.id !== params.funcao) return a;
+								return funcao;
+							})
+						);
+						router.back();
+					}}
+				>
+					Atualizar
+				</Button>
+			)}
 		</Container>
 	);
 }

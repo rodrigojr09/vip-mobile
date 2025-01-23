@@ -4,14 +4,14 @@ import VIPTabela from "@/components/VIPTabela";
 import { useEmpresa } from "@/hooks/EmpresaProvider";
 import { VIPFuncaoType } from "@/types/VIPFuncaoType";
 import { useRouter } from "expo-router";
+import { Text, StyleSheet } from "react-native";
 import React from "react";
-import { StyleSheet, Text } from "react-native";
 
 export default function Resumo() {
 	const empresa = useEmpresa();
 	const router = useRouter();
 	return (
-		<Container style={styles.container}>
+		<Container style={styles.container} scroller>
 			{/* Título */}
 			<Text style={styles.title}>Setores da Empresa: {empresa.nome}</Text>
 
@@ -23,7 +23,7 @@ export default function Resumo() {
 						id: a.id,
 						Nome: a.nome,
 						// prettier-ignore
-						'Funções': a.funcoes.map((b:VIPFuncaoType) => b.nome).join(", "),
+						'Funções': a.funcoes.map((b: VIPFuncaoType) => b.nome).join(", "),
 					};
 				})}
 				onExcluir={(setor) => {
@@ -31,8 +31,15 @@ export default function Resumo() {
 						empresa.setores.filter((a) => a.id !== setor.id)
 					);
 				}}
+				goTo={(item) => {
+					router.push({
+						pathname: "/Levantamento/setor",
+						params: {
+							setor: item.id,
+						},
+					});
+				}}
 			/>
-			{/* */}
 
 			<Button
 				onPress={(e) => {
@@ -44,7 +51,7 @@ export default function Resumo() {
 
 			<Button
 				onPress={(e) => {
-					router.push("/Levantamento/finalizado");
+					router.push("/Levantamento/rascunho");
 				}}
 			>
 				Finalizar Levantamento
@@ -55,9 +62,8 @@ export default function Resumo() {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
-		paddingTop: 30,
-		paddingHorizontal: 10,
+		width: "100%",
+		paddingHorizontal: 20,
 	},
 	title: {
 		marginVertical: 20,
