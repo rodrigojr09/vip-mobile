@@ -7,20 +7,15 @@ import {
 	FlatList,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from "react-native";
 import { useEffect, useState } from "react";
-import { getRiscos, RiscoDataType } from "@/utils/Riscos";
-import { VIPRiscoType } from "@/types/VIPRiscoType";
-import RadioButton from "@/components/RadioButton";
-import VIPTabela from "@/components/VIPTabela";
-import { VIPEpi, VIPRisco } from "@/hooks/EmpresaProvider";
+import { VIPEpi } from "@/hooks/EmpresaProvider";
 import { useRisco } from "@/hooks/RiscoProvider";
 import getEpis from "@/utils/Epis";
 
-export default function Risco(a: any) {
+export default function Epi(a: any) {
 	const params = useLocalSearchParams();
 	const router = useRouter();
 	const risco = useRisco();
@@ -54,11 +49,13 @@ export default function Risco(a: any) {
 
 	return (
 		<Container style={styles.formContainer} scroller>
-			<Input
-				placeholder="Digite um EPI..."
-				value={query}
-				onChange={handleSearch}
-			/>
+			<View>
+				<Input
+					placeholder="Digite um EPI..."
+					value={query}
+					onChange={handleSearch}
+				/>
+			</View>
 			{filteredData.length > 0 && (
 				<FlatList
 					style={styles.suggestionsList}
@@ -77,7 +74,16 @@ export default function Risco(a: any) {
 				/>
 			)}
 			<View>
-			<Text>Periodicidade</Text>
+				<Text
+					style={{
+						color: "white",
+						fontSize: 16,
+						textAlign: "center",
+						marginBottom: 3,
+					}}
+				>
+					Periodicidade
+				</Text>
 				<Input
 					placeholder="DD"
 					onChange={epi.periodicidade.setTempo}
@@ -87,7 +93,9 @@ export default function Risco(a: any) {
 					<Picker
 						selectedValue={epi.periodicidade.tipo}
 						onValueChange={(value: string) =>
-							epi.periodicidade.setTipo(value as "Dias" | "Mês" | "Dia" | "Mêses")
+							epi.periodicidade.setTipo(
+								value as "Dias" | "Mês" | "Dia" | "Mêses"
+							)
 						}
 						style={styles.picker}
 					>
@@ -102,7 +110,6 @@ export default function Risco(a: any) {
 
 			<Button
 				onPress={(e) => {
-					console.log(params);
 					if (params.tipo === "e") {
 						risco.epis.setExistentes([
 							...risco.epis.existentes,

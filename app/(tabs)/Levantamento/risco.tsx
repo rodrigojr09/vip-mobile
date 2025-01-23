@@ -5,18 +5,16 @@ import { useFuncao } from "@/hooks/FuncaoProvider";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
 	FlatList,
+	Alert,
 	StyleSheet,
 	Text,
-	TextInput,
 	TouchableOpacity,
 	View,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { getRiscos, RiscoDataType } from "@/utils/Riscos";
-import { VIPRiscoType } from "@/types/VIPRiscoType";
 import RadioButton from "@/components/RadioButton";
 import VIPTabela from "@/components/VIPTabela";
-import { VIPRisco } from "@/hooks/EmpresaProvider";
 import { useRisco } from "@/hooks/RiscoProvider";
 
 export default function Risco(a: any) {
@@ -47,6 +45,7 @@ export default function Risco(a: any) {
 				item.risco.toLowerCase().includes(text.toLowerCase())
 		);
 		setFilteredData(results as any);
+		if (query !== risco.risco) risco.setRisco("");
 	};
 	console.log(risco.epis);
 	const handleSelect = (item: string) => {
@@ -59,13 +58,38 @@ export default function Risco(a: any) {
 			risco.clear();
 		};
 	}, []);
+
+	const handleCreateRisco = () => {
+		if (!risco.risco.trim())
+			return Alert.alert("Erro", "Selecione um risco");
+		if (!risco.fonteGeradora.trim())
+			return Alert.alert("Erro", "Digite uma fonte geradora");
+		if (!risco.exposicao.trim())
+			return Alert.alert("Erro", "Selecione uma exposição");
+		if (risco.possuiEpi === undefined)
+			return Alert.alert("Erro", "Selecione se existe EPI ou não");
+		if (risco.recomendarEpi === undefined)
+			return Alert.alert(
+				"Erro",
+				"Selecione se deseja recomendar EPI ou não"
+			);
+
+		funcao[params.tipo as "Acidente"].setRiscos([
+			...funcao[params.tipo as "Acidente"].riscos,
+			risco,
+		]);
+		router.back();
+	};
+
 	return (
 		<Container style={styles.formContainer} scroller>
-			<Input
-				placeholder="Digite um risco..."
-				value={query}
-				onChange={handleSearch}
-			/>
+			<View>
+				<Input
+					placeholder="Digite um risco..."
+					value={query}
+					onChange={handleSearch}
+				/>
+			</View>
 			{filteredData.length > 0 && (
 				<FlatList
 					style={styles.suggestionsList}
@@ -84,7 +108,7 @@ export default function Risco(a: any) {
 				/>
 			)}
 
-			{risco.risco !== "" && (
+			{risco.risco !== "" && risco.risco === query && (
 				<>
 					<Input
 						placeholder="Qual a Fonte Geradora?"
@@ -200,11 +224,7 @@ export default function Risco(a: any) {
 			)}
 			<Button
 				onPress={(e) => {
-					funcao[params.tipo as "Acidente"].setRiscos([
-						...funcao[params.tipo as "Acidente"].riscos,
-						risco,
-					]);
-					router.back();
+					handleCreateRisco();
 				}}
 			>
 				Adicionar

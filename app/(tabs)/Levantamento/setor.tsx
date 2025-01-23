@@ -23,7 +23,7 @@ export default function Setor() {
 
 	const handleCreateSetor = () => {
 		// Validações individuais para os campos
-		if (!setor.nome.trim() || setor.nome.length > 4)
+		if (!setor.nome.trim())
 			return Alert.alert("Erro", "Nome do setor inválido!");
 		if (!setor.largura.trim())
 			return Alert.alert("Erro", "Largura do setor inválida!");

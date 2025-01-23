@@ -1,4 +1,3 @@
-import { VIPFuncaoType } from "@/types/VIPFuncaoType";
 import RadioButton from "./RadioButton";
 import Button from "./Button";
 import { useFuncao } from "@/hooks/FuncaoProvider";

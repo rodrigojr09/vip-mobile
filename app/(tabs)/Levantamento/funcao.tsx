@@ -2,10 +2,9 @@ import Container from "@/components/Container";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
 import { useFuncao } from "@/hooks/FuncaoProvider";
-import RadioButton from "@/components/RadioButton";
 import { useSetor } from "@/hooks/SetorProvider";
 import { useRouter } from "expo-router";
-import { StyleSheet } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 import VIPTabela from "@/components/VIPTabela";
 import RiscoForm from "@/components/RiscoForm";
 import { useEffect } from "react";
@@ -20,6 +19,30 @@ export default function Funcao() {
 			funcao.clear();
 		};
 	}, []);
+	console.log(funcao.id);
+	const handleCreateFuncao = () => {
+		if (!funcao.nome.trim()) return Alert.alert("Digite o nome da função");
+		if (!funcao.description.trim())
+			return Alert.alert("Digite a descrição da função");
+		if (!funcao.funcionarios.trim())
+			return Alert.alert("Digite o nome dos funcionarios da função");
+		if (!funcao.lux.trim()) return Alert.alert("Digite o LUX da função");
+		if (funcao.Acidente.existe === undefined)
+			return Alert.alert("Digite se existe risco de Acidente na função");
+		if (funcao.Ergonomico.existe === undefined)
+			return Alert.alert(
+				"Digite se existe risco de Ergonomico na função"
+			);
+		if (funcao.Biologico.existe === undefined)
+			return Alert.alert("Digite se existe risco de Biologico na função");
+		if (funcao.Quimico.existe === undefined)
+			return Alert.alert("Digite se existe risco de Quimico na função");
+		if (funcao.Fisico.existe === undefined)
+			return Alert.alert("Digite se existe risco de Fisico na função");
+		//Se tudo tiver ok
+		setor.setFuncoes([...setor.funcoes, funcao]);
+		router.back();
+	};
 
 	return (
 		<Container style={styles.formContainer} scroller>
@@ -93,8 +116,7 @@ export default function Funcao() {
 
 			<Button
 				onPress={(e) => {
-					setor.setFuncoes([...setor.funcoes, funcao]);
-					router.back();
+					handleCreateFuncao();
 				}}
 			>
 				Adicionar
