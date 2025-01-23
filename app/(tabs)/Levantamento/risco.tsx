@@ -135,7 +135,7 @@ export default function Risco(a: any) {
 								secundary
 								onPress={(e) => {
 									router.push({
-										pathname: "/Levantamento/epi",
+										pathname: "/Levantamento/Epi",
 										params: {
 											tipo: "e",
 											risco: risco.risco,
@@ -171,7 +171,7 @@ export default function Risco(a: any) {
 								secundary
 								onPress={(e) => {
 									router.push({
-										pathname: "/Levantamento/epi",
+										pathname: "/Levantamento/Epi",
 										params: {
 											tipo: "r",
 											risco: risco.risco,
