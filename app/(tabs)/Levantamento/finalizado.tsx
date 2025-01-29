@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
+import * as ScreenOrientation from "expo-screen-orientation";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
-import { Alert, BackHandler, View } from "react-native";
+import { Alert, BackHandler } from "react-native";
 import Button from "@/components/Button";
 import { useEmpresa } from "@/hooks/EmpresaProvider";
 import { useRouter } from "expo-router";
@@ -20,6 +21,11 @@ export default function Finalizado() {
 
 			return true; // Retorna true para impedir a ação de voltar
 		};
+		(async () => {
+			await ScreenOrientation.lockAsync(
+				ScreenOrientation.OrientationLock.PORTRAIT_UP
+			);
+		})();
 
 		BackHandler.addEventListener("hardwareBackPress", backAction);
 

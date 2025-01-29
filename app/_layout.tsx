@@ -1,14 +1,18 @@
 import Container from "@/components/Container";
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function Layout() {
+	const pathname = usePathname();
+	console.log(pathname);
 	return (
 		<View style={styles.container}>
 			{/* Header */}
-			<View style={styles.header}>
-				<Text style={styles.headerText}>Vip Mobile</Text>
-			</View>
+			{pathname !== "/Levantamento/assinatura" && (
+				<View style={styles.header}>
+					<Text style={styles.headerText}>Vip Mobile</Text>
+				</View>
+			)}
 
 			{/* Conteúdo da aplicação */}
 			<View style={styles.content}>

@@ -18,7 +18,6 @@ const SignatureScreen = () => {
 			return;
 		}
 		try {
-			ScreenOrientation.unlockAsync();
 			router.push({
 				pathname: "/Levantamento/finalizado",
 				params: {
@@ -51,7 +50,7 @@ const SignatureScreen = () => {
 				onEmpty={() =>
 					Alert.alert("Atenção", "Nenhuma assinatura capturada.")
 				}
-				descriptionText="Assine aqui"
+				descriptionText={"Assinatura de: " + empresa.responsavel}
 				clearText="Limpar"
 				confirmText="Confirmar"
 				webStyle={`
