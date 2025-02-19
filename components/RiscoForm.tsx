@@ -21,7 +21,7 @@ export default function RiscoForm({
 				<Button
 					secundary
 					onPress={() => {
-						router.push({
+						router.navigate({
 							pathname: "/Levantamento/risco",
 							params: { tipo: risco },
 						});

@@ -17,7 +17,7 @@ import RadioButton from "@/components/RadioButton";
 import VIPTabela from "@/components/VIPTabela";
 import { useRisco } from "@/hooks/RiscoProvider";
 
-export default function Risco(a: any) {
+export default function Risco() {
 	const params = useLocalSearchParams();
 	const router = useRouter();
 	const funcao = useFuncao();
@@ -185,7 +185,7 @@ export default function Risco(a: any) {
 								secundary
 								onPress={(e) => {
 									router.push({
-										pathname: "/Levantamento/Epi",
+										pathname: "/Levantamento/epi",
 										params: {
 											tipo: "e",
 											risco: risco.risco,
@@ -227,7 +227,7 @@ export default function Risco(a: any) {
 								secundary
 								onPress={(e) => {
 									router.push({
-										pathname: "/Levantamento/Epi",
+										pathname: "/Levantamento/epi",
 										params: {
 											tipo: "r",
 											risco: risco.risco,
