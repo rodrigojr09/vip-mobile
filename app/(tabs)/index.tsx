@@ -13,7 +13,7 @@ export default function App() {
 				Novo Levantamento
 			</Button>
 
-			<Button onPress={(e) => router.push("/")}>Medição de Calor</Button>
+			<Button onPress={(e) => router.push("/Medicao")}>Medição de Calor</Button>
 		</Container>
 	);
 }
