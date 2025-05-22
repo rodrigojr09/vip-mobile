@@ -10,7 +10,12 @@ export const EmpresaProvider = ({ children }: { children: ReactNode }) => {
 	const [nome, setNome] = useState<string>("");
 	const [responsavel, setResponsavel] = useState<string>("");
 	const [setores, setSetores] = useState<VIPSetorType[]>([]);
+	const hoje = new Date();
+	const dia = String(hoje.getDate()).padStart(2, "0");
+	const mes = String(hoje.getMonth() + 1).padStart(2, "0"); // Janeiro = 0
+	const ano = hoje.getFullYear();
 
+	const dataFormatada = `${dia}/${mes}/${ano}`;
 	return (
 		<EmpresaContext.Provider
 			value={{
@@ -20,6 +25,7 @@ export const EmpresaProvider = ({ children }: { children: ReactNode }) => {
 				setResponsavel,
 				setores,
 				setSetores,
+				data: dataFormatada,
 				clear: () => {
 					setNome("");
 					setResponsavel("");

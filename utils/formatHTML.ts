@@ -7,7 +7,8 @@ const assinaturaHtml = `
     <div class="p-2 h-screen">
         <div class="border border-black p-2 h-full">
             <h1 class="font-bold text-2xl my-2 text-center">
-                Levantamento - $empresa.nome
+                Levantamento - $empresa.nome<br>
+                Levantamento feito no dia $data
             </h1>
             <div class="max-w-[90vw] mb-[20vh] break-words mx-auto">
                 <p>Este inventário de riscos e levantamento de dados foi realizado por profissional técnico em segurança do trabalho da empresa Vip Engenharia de Segurança e Medicina do Trabalho, com meu auxílio. Foram levantados o total de $setores.length setores e $atividades.length funções.</p>
@@ -318,5 +319,6 @@ ${assinaturaHtml}
 			eval(empresa.setores.map((a) => a.funcoes.length).join("+")) || 0
 		)
 		.replaceAll("$setores.length", String(empresa.setores.length))
-		.replaceAll("$responsavel", empresa.responsavel);
+		.replaceAll("$responsavel", empresa.responsavel)
+		.replaceAll("$data", empresa.data);
 }

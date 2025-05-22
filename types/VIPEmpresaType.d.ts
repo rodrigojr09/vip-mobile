@@ -6,6 +6,7 @@ export interface VIPEmpresaType {
 	nome: string;
 	setNome: (value: string) => void;
 	setores: VIPSetorType[];
+	data: string;
 	setSetores: (value: VIPSetorType[]) => void;
 	clear: () => void;
 }
