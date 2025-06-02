@@ -1,234 +1,169 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, StyleSheet } from 'react-native';
-import { RadioButton, Checkbox } from 'react-native-paper';
+import Container from "@/components/Container";
+import questions from "@/utils/questions";
+import React, { useState } from "react";
+import {
+	View,
+	Text,
+	TouchableOpacity,
+	ScrollView,
+	StyleSheet,
+	TextInput,
+} from "react-native";
 
-export default function RelatorioVisita() {
-  const [motivos, setMotivos] = useState({
-    tecnica: false,
-    curso: false,
-    levantamento: false,
-    inspecao: false,
-    exame: false,
-  });
+export default function Visita() {
+	const [answers, setAnswers] = useState<{ [key: string]: any }>({});
 
-  const checklistItems = [
-    { label: 'Sinalização de Segurança', field: 'sinalizacao' },
-    { label: 'EPIs disponíveis e uso correto', field: 'epis' },
-    { label: 'Treinamentos atualizados', field: 'treinamentos' },
-    { label: 'Condições das máquinas', field: 'maquinas' },
-    { label: 'Cadeiras e postura', field: 'cadeiras' },
-    { label: '5S - Organização', field: 'cincoS' },
-    { label: 'Instalações elétricas', field: 'eletrica' },
-    { label: 'Proteção contra incêndio', field: 'incendio' },
-    { label: 'Produtos químicos', field: 'quimicos' },
-    { label: 'Ergonomia', field: 'ergonomia' },
-    { label: 'Gestão de resíduos', field: 'residuos' },
-    { label: 'Equipamentos de emergência', field: 'emergencia' },
-  ];
+	const handleAnswer = (path: string, value: boolean) => {
+		setAnswers((prev) => {
+			const current = prev[path]?.value;
 
-  const [checklist, setChecklist] = useState(
-    checklistItems.reduce((acc, item) => {
-      acc[item.field] = { status: '', observacao: '' };
-      return acc;
-    }, {})
-  );
+			// Se clicar de novo no mesmo valor, desmarca e remove filhos
+			if (current === value) {
+				const updated: typeof prev = {};
+				Object.keys(prev).forEach((key) => {
+					if (!key.startsWith(path)) {
+						updated[key] = prev[key];
+					}
+				});
+				return updated;
+			}
 
-  const toggleCheckbox = (field:any) => {
-    setMotivos({ ...motivos, [field]: !motivos[field] });
-  };
+			// Marca nova resposta
+			return {
+				...prev,
+				[path]: {
+					...prev[path],
+					value,
+				},
+			};
+		});
+	};
 
-  const handleRadioChange = (field:any, value:any) => {
-    setChecklist((prev) => ({
-      ...prev,
-      [field]: {
-        ...prev[field],
-        status: value,
-        observacao: value === 'nao-conforme' ? prev[field].observacao : '', // limpa obs se não for "nao-conforme"
-      },
-    }));
-  };
+	const handleObservationChange = (path: string, text: string) => {
+		setAnswers((prev) => ({
+			...prev,
+			[path]: {
+				...prev[path],
+				observation: text,
+			},
+		}));
+	};
 
-  const handleObsChange = (field : any, text : any) => {
-    setChecklist((prev) => ({
-      ...prev,
-      [field]: {
-        ...prev[field],
-        observacao: text,
-      },
-    }));
-  };
+	const renderQuestion = (question: any, path = "") => {
+		const currentPath = path;
+		const selected = answers[currentPath]?.value;
 
-  return (
-    <ScrollView style={styles.container}>
-      {/* Dados da empresa */}
-      <View style={styles.form}>
-        <Text style={styles.reportTitle}>Relatório de Visita</Text>
+		const hasSubQuestion =
+			selected !== undefined &&
+			question.subquest &&
+			question.subquest[selected];
 
-        <View style={styles.row}>
-          <View style={styles.inputBox}>
-            <Text>Empresa:</Text>
-            <TextInput style={styles.input} />
-          </View>
-          <View style={styles.inputBox}>
-            <Text>Endereço:</Text>
-            <TextInput style={styles.input} />
-          </View>
-        </View>
+		return (
+			<View key={currentPath} style={styles.questionBlock}>
+				<Text style={styles.questionText}>{question.label}</Text>
 
-        <Text style={styles.sectionTitle}>Motivo:</Text>
-        <View style={styles.checkboxContainer}>
-          <Checkbox.Item
-            label="Visita Técnica"
-            status={motivos.tecnica ? 'checked' : 'unchecked'}
-            onPress={() => toggleCheckbox('tecnica')}
-          />
-          <Checkbox.Item
-            label="Curso/Treinamento"
-            status={motivos.curso ? 'checked' : 'unchecked'}
-            onPress={() => toggleCheckbox('curso')}
-          />
-          <Checkbox.Item
-            label="Levantamento de Dados"
-            status={motivos.levantamento ? 'checked' : 'unchecked'}
-            onPress={() => toggleCheckbox('levantamento')}
-          />
-          <Checkbox.Item
-            label="Inspeção"
-            status={motivos.inspecao ? 'checked' : 'unchecked'}
-            onPress={() => toggleCheckbox('inspecao')}
-          />
-          <Checkbox.Item
-            label="Exame Médico"
-            status={motivos.exame ? 'checked' : 'unchecked'}
-            onPress={() => toggleCheckbox('exame')}
-          />
-        </View>
+				<View style={styles.buttonGroup}>
+					<TouchableOpacity
+						style={[
+							styles.choiceButton,
+							selected === true && styles.choiceButtonSelectedGreen,
+						]}
+						onPress={() => handleAnswer(currentPath, true)}
+					>
+						<Text style={styles.choiceLabel}>Sim</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={[
+							styles.choiceButton,
+							selected === false && styles.choiceButtonSelectedRed,
+						]}
+						onPress={() => handleAnswer(currentPath, false)}
+					>
+						<Text style={styles.choiceLabel}>Não</Text>
+					</TouchableOpacity>
+				</View>
 
-        <View style={styles.inputBox}>
-          <Text>Data:</Text>
-          <TextInput style={styles.input} placeholder="DD/MM/AAAA" />
-        </View>
-      </View>
+				{selected !== undefined && !hasSubQuestion && (
+					<TextInput
+						style={styles.observationInput}
+						placeholder="Observações (opcional)"
+						placeholderTextColor="#aaa"
+						multiline
+						value={answers[currentPath]?.observation || ""}
+						onChangeText={(text) =>
+							handleObservationChange(currentPath, text)
+						}
+					/>
+				)}
 
-      {/* Checklist com observações */}
-      <View style={styles.form}>
-        <Text style={styles.reportTitle}>Checklist de Visita</Text>
+				{hasSubQuestion &&
+					renderQuestion(
+						question.subquest[selected],
+						`${currentPath}-${selected}`
+					)}
+			</View>
+		);
+	};
 
-        <View style={styles.row}>
-          <View style={styles.inputBox}>
-            <Text>Responsável por acompanhar:</Text>
-            <TextInput style={styles.input} />
-          </View>
-          <View style={styles.inputBox}>
-            <Text>Técnico Responsável:</Text>
-            <TextInput style={styles.input} />
-          </View>
-        </View>
-
-        {checklistItems.map((item) => (
-          <View key={item.field} style={styles.radioGroup}>
-            <Text style={styles.radioLabel}>{item.label}:</Text>
-            <RadioButton.Group
-              onValueChange={(value) => handleRadioChange(item.field, value)}
-              value={checklist[item.field].status}
-            >
-              <View style={styles.radioRow}>
-                <RadioButton value="conforme" />
-                <Text>Conforme</Text>
-                <RadioButton value="nao-conforme" />
-                <Text>Não Conforme</Text>
-                <RadioButton value="nao-aplicado" />
-                <Text>Não Aplicado</Text>
-              </View>
-            </RadioButton.Group>
-
-            {/* Observação aparece se "Não Conforme" */}
-            {checklist[item.field].status === 'nao-conforme' && (
-              <View style={styles.obsContainer}>
-                <Text style={styles.obsLabel}>Observação:</Text>
-                <TextInput
-                  style={styles.obsInput}
-                  multiline
-                  numberOfLines={2}
-                  value={checklist[item.field].observacao}
-                  onChangeText={(text) => handleObsChange(item.field, text)}
-                  placeholder="Descreva o problema encontrado"
-                />
-              </View>
-            )}
-          </View>
-        ))}
-      </View>
-    </ScrollView>
-  );
+	return (
+		<Container>
+			<ScrollView contentContainerStyle={styles.container}>
+				{questions.map((q, idx) => renderQuestion(q, `q${idx}`))}
+			</ScrollView>
+		</Container>
+	);
 }
-
+ // Estilização dos botões 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    padding: 10,
-  },
-  form: {
-    borderWidth: 1,
-    borderColor: '#000',
-    padding: 10,
-    marginBottom: 20,
-    borderRadius: 5,
-  },
-  reportTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  row: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  inputBox: {
-    flex: 1,
-    marginBottom: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#000',
-    padding: 5,
-    borderRadius: 4,
-    marginTop: 2,
-  },
-  checkboxContainer: {
-    marginBottom: 10,
-  },
-  sectionTitle: {
-    fontWeight: '600',
-    marginBottom: 5,
-  },
-  radioGroup: {
-    marginBottom: 15,
-  },
-  radioLabel: {
-    fontWeight: '600',
-    marginBottom: 5,
-  },
-  radioRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    flexWrap: 'wrap',
-  },
-  obsContainer: {
-    marginTop: 5,
-  },
-  obsLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  obsInput: {
-    borderWidth: 1,
-    borderColor: '#000',
-    borderRadius: 4,
-    padding: 5,
-    textAlignVertical: 'top',
-  },
+	container: {
+		padding: 16,
+		backgroundColor: "#121212",
+	},
+	questionBlock: {
+		marginBottom: 32,
+		padding: 20,
+		borderRadius: 16,
+		backgroundColor: "#1f1f1f",
+		elevation: 3,
+	},
+	questionText: {
+		fontSize: 20,
+		color: "#ffffff",
+		fontWeight: "bold",
+		marginBottom: 20,
+	},
+	buttonGroup: {
+		flexDirection: "row",
+		justifyContent: "space-around",
+	},
+	choiceButton: {
+		alignItems: "center",
+		justifyContent: "center",
+		backgroundColor: "#2e2e2e",
+		paddingVertical: 16,
+		paddingHorizontal: 24,
+		borderRadius: 12,
+		width: "45%",
+	},
+	choiceButtonSelectedGreen: {
+		backgroundColor: "#4caf50",
+	},
+	choiceButtonSelectedRed: {
+		backgroundColor: "#f44336",
+	},
+	choiceLabel: {
+		color: "#fff",
+		fontSize: 18,
+		fontWeight: "600",
+	},
+	observationInput: {
+		marginTop: 16,
+		backgroundColor: "#2a2a2a",
+		color: "#fff",
+		padding: 12,
+		borderRadius: 12,
+		fontSize: 16,
+		minHeight: 60,
+		textAlignVertical: "top",
+	},
 });
