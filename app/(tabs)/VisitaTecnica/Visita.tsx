@@ -13,7 +13,7 @@ import {
 export default function Visita() {
 	const [answers, setAnswers] = useState<{ [key: string]: any }>({});
 
-	const handleAnswer = (path: string, value: boolean) => {
+	const handleAnswer = (path: string, value: boolean | string) => {
 		setAnswers((prev) => {
 			const current = prev[path]?.value;
 
@@ -29,13 +29,20 @@ export default function Visita() {
 			}
 
 			// Marca nova resposta
-			return {
+			const updatedAnswer = {
 				...prev,
 				[path]: {
 					...prev[path],
 					value,
 				},
 			};
+
+			// Se selecionar N/A, remove a observação
+			if (value === "NA") {
+				updatedAnswer[path].observation = "";
+			}
+
+			return updatedAnswer;
 		});
 	};
 
@@ -63,27 +70,31 @@ export default function Visita() {
 				<Text style={styles.questionText}>{question.label}</Text>
 
 				<View style={styles.buttonGroup}>
-					<TouchableOpacity
-						style={[
-							styles.choiceButton,
-							selected === true && styles.choiceButtonSelectedGreen,
-						]}
-						onPress={() => handleAnswer(currentPath, true)}
-					>
-						<Text style={styles.choiceLabel}>Sim</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						style={[
-							styles.choiceButton,
-							selected === false && styles.choiceButtonSelectedRed,
-						]}
-						onPress={() => handleAnswer(currentPath, false)}
-					>
-						<Text style={styles.choiceLabel}>Não</Text>
-					</TouchableOpacity>
+					{["Sim", "Não", "N/A"].map((label) => {
+						const value = label === "Sim" ? true : label === "Não" ? false : "NA";
+						const isSelected = selected === value;
+
+						return (
+							<TouchableOpacity
+								key={label}
+								style={[
+									styles.choiceButton,
+									isSelected &&
+										(value === true
+											? styles.choiceButtonSelectedGreen
+											: value === false
+											? styles.choiceButtonSelectedRed
+											: styles.choiceButtonSelectedGray),
+								]}
+								onPress={() => handleAnswer(currentPath, value)}
+							>
+								<Text style={styles.choiceLabel}>{label}</Text>
+							</TouchableOpacity>
+						);
+					})}
 				</View>
 
-				{selected !== undefined && !hasSubQuestion && (
+				{selected !== undefined && selected !== "NA" && !hasSubQuestion && (
 					<TextInput
 						style={styles.observationInput}
 						placeholder="Observações (opcional)"
@@ -99,7 +110,7 @@ export default function Visita() {
 				{hasSubQuestion &&
 					renderQuestion(
 						question.subquest[selected],
-						`${currentPath}-${selected}`
+						`${currentPath}.${selected}` // Caminho hierárquico correto
 					)}
 			</View>
 		);
@@ -113,7 +124,8 @@ export default function Visita() {
 		</Container>
 	);
 }
- // Estilização dos botões 
+
+// Estilização dos botões e containers
 const styles = StyleSheet.create({
 	container: {
 		padding: 16,
@@ -143,13 +155,16 @@ const styles = StyleSheet.create({
 		paddingVertical: 16,
 		paddingHorizontal: 24,
 		borderRadius: 12,
-		width: "45%",
+		elevation: 2,
 	},
 	choiceButtonSelectedGreen: {
-		backgroundColor: "#4caf50",
+		backgroundColor: "#4caf50", // Verde para Sim
 	},
 	choiceButtonSelectedRed: {
-		backgroundColor: "#f44336",
+		backgroundColor: "#f44336", // Vermelho para Não
+	},
+	choiceButtonSelectedGray: {
+		backgroundColor: "#9e9e9e", // Cinza para N/A
 	},
 	choiceLabel: {
 		color: "#fff",

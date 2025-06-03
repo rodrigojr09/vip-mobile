@@ -282,7 +282,7 @@ const questions = [
 		label: "Gestão de resíduos",
 		subquest: {
 			true: {
-				label: "Os resíduos estão sendo corretamente segregados e armazenados?",
+				label: "Os resíduos estão sendo corretamente segregados, armazenados e descartados?",
 				subquest: {
 					true: {
 						label: "Existe coleta seletiva e destinação final adequada?",
