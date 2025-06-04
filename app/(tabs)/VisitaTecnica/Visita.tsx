@@ -13,11 +13,16 @@ import {
 export default function Visita() {
 	const [answers, setAnswers] = useState<{ [key: string]: any }>({});
 
+	// Estados do cabeçalho (dados da visita)
+	const [empresa, setEmpresa] = useState("");
+	const [visitante, setVisitante] = useState("");
+	const [acompanhante, setAcompanhante] = useState("");
+	const [data, setData] = useState("");
+
 	const handleAnswer = (path: string, value: boolean | string) => {
 		setAnswers((prev) => {
 			const current = prev[path]?.value;
 
-			// Se clicar de novo no mesmo valor, desmarca e remove filhos
 			if (current === value) {
 				const updated: typeof prev = {};
 				Object.keys(prev).forEach((key) => {
@@ -28,7 +33,6 @@ export default function Visita() {
 				return updated;
 			}
 
-			// Marca nova resposta
 			const updatedAnswer = {
 				...prev,
 				[path]: {
@@ -37,7 +41,6 @@ export default function Visita() {
 				},
 			};
 
-			// Se selecionar N/A, remove a observação
 			if (value === "NA") {
 				updatedAnswer[path].observation = "";
 			}
@@ -110,7 +113,7 @@ export default function Visita() {
 				{hasSubQuestion &&
 					renderQuestion(
 						question.subquest[selected],
-						`${currentPath}.${selected}` // Caminho hierárquico correto
+						`${currentPath}.${selected}`
 					)}
 			</View>
 		);
@@ -119,18 +122,88 @@ export default function Visita() {
 	return (
 		<Container>
 			<ScrollView contentContainerStyle={styles.container}>
+				{/* TABELA DE DADOS */}
+				<View style={styles.headerTable}>
+
+					<View style={styles.row}>
+						<TextInput
+							style={styles.input}
+							placeholder="Nome da empresa"
+							placeholderTextColor="#aaa"
+							value={empresa}
+							onChangeText={setEmpresa}
+						/>
+					</View>
+
+					<View style={styles.row}>
+						<TextInput
+							style={styles.input}
+							placeholder="Nome do Técnico"
+							placeholderTextColor="#aaa"
+							value={visitante}
+							onChangeText={setVisitante}
+						/>
+					</View>
+
+					<View style={styles.row}>
+						<TextInput
+							style={styles.input}
+							placeholder="Responsável (Cliente)"
+							placeholderTextColor="#aaa"
+							value={acompanhante}
+							onChangeText={setAcompanhante}
+						/>
+					</View>
+				</View>
+
+				{/* PERGUNTAS */}
 				{questions.map((q, idx) => renderQuestion(q, `q${idx}`))}
 			</ScrollView>
 		</Container>
 	);
 }
 
-// Estilização dos botões e containers
 const styles = StyleSheet.create({
 	container: {
 		padding: 16,
 		backgroundColor: "#121212",
 	},
+
+	// Header (Tabela)
+	headerTable: {
+		marginBottom: 32,
+		padding: 20,
+		borderRadius: 16,
+		backgroundColor: "#1f1f1f",
+		elevation: 3,
+	},
+	headerTitle: {
+		fontSize: 22,
+		fontWeight: "bold",
+		color: "#fff",
+		marginBottom: 16,
+		textAlign: "center",
+	},
+	row: {
+		flexDirection: "row",
+		alignItems: "center",
+		marginBottom: 12,
+	},
+	label: {
+		width: 110,
+		color: "#fff",
+		fontSize: 16,
+	},
+	input: {
+		flex: 1,
+		backgroundColor: "#2a2a2a",
+		color: "#fff",
+		padding: 10,
+		borderRadius: 8,
+		fontSize: 16,
+	},
+
+	// Questões
 	questionBlock: {
 		marginBottom: 32,
 		padding: 20,
@@ -158,13 +231,13 @@ const styles = StyleSheet.create({
 		elevation: 2,
 	},
 	choiceButtonSelectedGreen: {
-		backgroundColor: "#4caf50", // Verde para Sim
+		backgroundColor: "#4caf50",
 	},
 	choiceButtonSelectedRed: {
-		backgroundColor: "#f44336", // Vermelho para Não
+		backgroundColor: "#f44336",
 	},
 	choiceButtonSelectedGray: {
-		backgroundColor: "#9e9e9e", // Cinza para N/A
+		backgroundColor: "#9e9e9e",
 	},
 	choiceLabel: {
 		color: "#fff",
