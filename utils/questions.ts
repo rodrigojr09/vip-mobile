@@ -163,7 +163,7 @@ const questions = [
 			},
 		},
 	},*/
-	{
+	/*{
 		label: "Instalações elétricas em conformidade?",
 		subquest: {
 			true: {
@@ -193,8 +193,8 @@ const questions = [
 				},
 			},
 		},
-	},
-	{
+	},*/
+	/*{
 		label: "A empresa possui sistema de Proteção contra incêndio?",
 		subquest: {
 			true: {
@@ -224,7 +224,7 @@ const questions = [
 				},
 			},
 		},
-	},
+	},*/
 	/*{
 		label: "Armazenamento de produtos químicos",
 		subquest: {
@@ -256,7 +256,7 @@ const questions = [
 			},
 		},
 	},*/
-	{
+	/*{
 		label: "Os postos de trabalho estão ergonomicamente adequados?",
 		subquest: {
 			true: {
@@ -277,7 +277,7 @@ const questions = [
 				},
 			},
 		},
-	},
+	},*/	
 	/*{
 		label: "Gestão de resíduos",
 		subquest: {
@@ -309,7 +309,7 @@ const questions = [
 			},
 		},
 	},*/
-	{
+	/*{
 		label: "Os funcionarios possuem acesso a equipamentos de emergência?",
 		subquest: {
 			true: {
@@ -339,7 +339,7 @@ const questions = [
 				},
 			},
 		},
-	},
+	},*?
 	/*{
 		label: "A Documentação de segurança atualizada?",
 		subquest: {
@@ -371,7 +371,7 @@ const questions = [
 			},
 		},
 	},*/
-	{
+	/*{
 		label: "Inspeção de escadas, plataformas e andaimes",
 		subquest: {
 			true: {
@@ -397,7 +397,7 @@ const questions = [
 				},
 			},
 		},
-	},
+	},*/
 	{
 		label: "Controle de acesso a áreas restritas",
 		subquest: {
@@ -646,7 +646,7 @@ const questions = [
 			},
 		},
 	},
-	{
+	/*{
 		label: "Controle de agentes biológicos",
 		subquest: {
 			true: {
@@ -924,7 +924,7 @@ const questions = [
 				},
 			},
 		},
-	},
+	},*/ 
 ];
 
 export default questions;

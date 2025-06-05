@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
 		borderRadius: 16,
 		backgroundColor: "#1f1f1f",
 		elevation: 3,
-	},
+	},   
 	headerTitle: {
 		fontSize: 22,
 		fontWeight: "bold",
