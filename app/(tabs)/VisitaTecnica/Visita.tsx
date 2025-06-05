@@ -1,5 +1,5 @@
 import Container from "@/components/Container";
-import questions from "@/utils/questions";
+import questions, { Question } from "@/utils/questions";
 import React, { useState } from "react";
 import {
 	View,
@@ -11,46 +11,20 @@ import {
 } from "react-native";
 
 export default function Visita() {
-	const [answers, setAnswers] = useState<{ [key: string]: any }>({});
+	const [questoes, setQuestoes] = useState<Question[]>([]);
 
-	// Estados do cabeçalho (dados da visita)
 	const [empresa, setEmpresa] = useState("");
 	const [visitante, setVisitante] = useState("");
 	const [acompanhante, setAcompanhante] = useState("");
-	const [data, setData] = useState("");
 
 	const handleAnswer = (path: string, value: boolean | string) => {
-		setAnswers((prev) => {
-			const current = prev[path]?.value;
-
-			if (current === value) {
-				const updated: typeof prev = {};
-				Object.keys(prev).forEach((key) => {
-					if (!key.startsWith(path)) {
-						updated[key] = prev[key];
-					}
-				});
-				return updated;
-			}
-
-			const updatedAnswer = {
-				...prev,
-				[path]: {
-					...prev[path],
-					value,
-				},
-			};
-
-			if (value === "NA") {
-				updatedAnswer[path].observation = "";
-			}
-
-			return updatedAnswer;
+		setQuestoes((prev) => {
+			
 		});
 	};
 
 	const handleObservationChange = (path: string, text: string) => {
-		setAnswers((prev) => ({
+		setQuestoes((prev) => ({
 			...prev,
 			[path]: {
 				...prev[path],
@@ -61,7 +35,7 @@ export default function Visita() {
 
 	const renderQuestion = (question: any, path = "") => {
 		const currentPath = path;
-		const selected = answers[currentPath]?.value;
+		const selected = questoes[currentPath]?.value;
 
 		const hasSubQuestion =
 			selected !== undefined &&
@@ -103,7 +77,7 @@ export default function Visita() {
 						placeholder="Observações (opcional)"
 						placeholderTextColor="#aaa"
 						multiline
-						value={answers[currentPath]?.observation || ""}
+						value={questoes[currentPath]?.observation || ""}
 						onChangeText={(text) =>
 							handleObservationChange(currentPath, text)
 						}

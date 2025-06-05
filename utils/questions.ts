@@ -1,4 +1,12 @@
-const questions = [
+export interface Question {
+    label: string;
+    subquest?: {
+        true?: Question
+        false?: Question
+    }
+}
+
+const questions:Question[] = [
 	{
 		label: "Existe Sinalização de Segurança?",
 		subquest: {
