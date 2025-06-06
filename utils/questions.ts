@@ -936,3 +936,70 @@ const questions:Question[] = [
 ];
 
 export default questions;
+
+const nQuestions = [
+	{
+		Id: "b3f1d8d2-7205-4bd9-b6aa-9d3c4507de42",
+		label: "Equipamentos de Proteção Individual (EPIs) estão sendo utilizados corretamente?",
+		next: {
+			true: "d1a82ae5-9c2d-4b0e-8ae2-7f8a8c5d7f6a",
+			false: "2b158157-469e-4c4a-a3de-b5fcd37c3905",
+			none: "",
+		},
+	},
+	{
+		Id: "d1a82ae5-9c2d-4b0e-8ae2-7f8a8c5d7f6a",
+		label: "Os EPIs estão em bom estado de conservação?",
+		next: {
+			true: "13fc1e5d-5b0b-4628-a8ea-e2a17c2d8e63",
+			false: "dbcb2cc6-8632-4626-bb06-3d4f7c3227b9",
+			none: "",
+		},
+	},
+	{
+		Id: "13fc1e5d-5b0b-4628-a8ea-e2a17c2d8e63",
+		label: "São adequados para as atividades executadas?",
+		next: {
+			true: "",
+			false: "",
+			none: "",
+		},
+	},
+	{
+		Id: "dbcb2cc6-8632-4626-bb06-3d4f7c3227b9",
+		label: "Existe sinalização indicando o uso obrigatório de EPIs?",
+		next: {
+			true: "",
+			false: "",
+			none: "",
+		},
+	},
+
+	{
+		Id: "2b158157-469e-4c4a-a3de-b5fcd37c3905",
+		label: "Quais EPIs estão faltando?",
+		next: {
+			true: "a865fa3b-b209-4ccf-a07a-80236051a530",
+			false: "53be3b77-9b55-4a94-a1a9-218a9250b4b6",
+			none: "",
+		},
+	},
+	{
+		Id: "a865fa3b-b209-4ccf-a07a-80236051a530",
+		label: "Foi realizada orientação sobre a obrigatoriedade dos EPIs?",
+		next: {
+			true: "",
+			false: "",
+			none: "",
+		},
+	},
+	{
+		Id: "53be3b77-9b55-4a94-a1a9-218a9250b4b6",
+		label: "Houve resistência por parte dos colaboradores para o uso dos EPIs?",
+		next: {
+			true: "",
+			false: "",
+			none: "",
+		},
+	},
+];
