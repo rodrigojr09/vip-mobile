@@ -1,6 +1,6 @@
 import Container from "@/components/Container";
-import questions, { Question } from "@/utils/questions";
-import React, { useState } from "react";
+import questionsData, { Question } from "@/utils/questions";
+import React, { useState, useEffect } from "react";
 import {
 	View,
 	Text,
@@ -10,46 +10,79 @@ import {
 	TextInput,
 } from "react-native";
 
-export default function Visita() {
-	const [questoes, setQuestoes] = useState<Question[]>([]);
+type Resposta = {
+	value: boolean | "NA";
+	observation?: string;
+};
 
+export default function Visita() {
+	const [respostas, setRespostas] = useState<Record<string, Resposta>>({});
 	const [empresa, setEmpresa] = useState("");
 	const [visitante, setVisitante] = useState("");
 	const [acompanhante, setAcompanhante] = useState("");
+	const [fluxoIds, setFluxoIds] = useState<string[]>([]);
 
-	const handleAnswer = (path: string, value: boolean | string) => {
-		setQuestoes((prev) => {
-			
-		});
+	const perguntas: Record<string, Question> = questionsData.reduce(
+		(acc, q) => ({ ...acc, [q.id]: q }),
+		{}
+	);
+
+	// Inicializa com a primeira pergunta
+	useEffect(() => {
+		const primeiras = questionsData.filter((q) => q.first);
+		if (primeiras) {
+			setFluxoIds(primeiras.map(a=>a.id));
+		}
+	}, []);
+
+	const handleAnswer = (id: string, value: boolean | "NA") => {
+		setRespostas((prev) => ({
+			...prev,
+			[id]: {
+				...prev[id],
+				value,
+			},
+		}));
+
+		const nextId =
+			value === true
+				? perguntas[id].next.true
+				: value === false
+				? perguntas[id].next.false
+				: perguntas[id].next.none;
+
+		if (nextId && !fluxoIds.includes(nextId)) {
+			setFluxoIds((prev) => [...prev, nextId]);
+		}
 	};
 
-	const handleObservationChange = (path: string, text: string) => {
-		setQuestoes((prev) => ({
+	const handleObservationChange = (id: string, text: string) => {
+		setRespostas((prev) => ({
 			...prev,
-			[path]: {
-				...prev[path],
+			[id]: {
+				...prev[id],
 				observation: text,
 			},
 		}));
 	};
 
-	const renderQuestion = (question: any, path = "") => {
-		const currentPath = path;
-		const selected = questoes[currentPath]?.value;
-
-		const hasSubQuestion =
-			selected !== undefined &&
-			question.subquest &&
-			question.subquest[selected];
+	const renderQuestion = (id: string) => {
+		const pergunta = perguntas[id];
+		const resposta = respostas[id]?.value;
 
 		return (
-			<View key={currentPath} style={styles.questionBlock}>
-				<Text style={styles.questionText}>{question.label}</Text>
+			<View key={id} style={styles.questionBlock}>
+				<Text style={styles.questionText}>{pergunta.label}</Text>
 
 				<View style={styles.buttonGroup}>
 					{["Sim", "Não", "N/A"].map((label) => {
-						const value = label === "Sim" ? true : label === "Não" ? false : "NA";
-						const isSelected = selected === value;
+						const value =
+							label === "Sim"
+								? true
+								: label === "Não"
+								? false
+								: "NA";
+						const isSelected = resposta === value;
 
 						return (
 							<TouchableOpacity
@@ -63,7 +96,7 @@ export default function Visita() {
 											? styles.choiceButtonSelectedRed
 											: styles.choiceButtonSelectedGray),
 								]}
-								onPress={() => handleAnswer(currentPath, value)}
+								onPress={() => handleAnswer(id, value)}
 							>
 								<Text style={styles.choiceLabel}>{label}</Text>
 							</TouchableOpacity>
@@ -71,24 +104,18 @@ export default function Visita() {
 					})}
 				</View>
 
-				{selected !== undefined && selected !== "NA" && !hasSubQuestion && (
+				{resposta !== undefined && resposta !== "NA" && !pergunta.next && (
 					<TextInput
 						style={styles.observationInput}
 						placeholder="Observações (opcional)"
 						placeholderTextColor="#aaa"
 						multiline
-						value={questoes[currentPath]?.observation || ""}
+						value={respostas[id]?.observation || ""}
 						onChangeText={(text) =>
-							handleObservationChange(currentPath, text)
+							handleObservationChange(id, text)
 						}
 					/>
 				)}
-
-				{hasSubQuestion &&
-					renderQuestion(
-						question.subquest[selected],
-						`${currentPath}.${selected}`
-					)}
 			</View>
 		);
 	};
@@ -96,9 +123,7 @@ export default function Visita() {
 	return (
 		<Container>
 			<ScrollView contentContainerStyle={styles.container}>
-				{/* TABELA DE DADOS */}
 				<View style={styles.headerTable}>
-
 					<View style={styles.row}>
 						<TextInput
 							style={styles.input}
@@ -108,7 +133,6 @@ export default function Visita() {
 							onChangeText={setEmpresa}
 						/>
 					</View>
-
 					<View style={styles.row}>
 						<TextInput
 							style={styles.input}
@@ -118,7 +142,6 @@ export default function Visita() {
 							onChangeText={setVisitante}
 						/>
 					</View>
-
 					<View style={styles.row}>
 						<TextInput
 							style={styles.input}
@@ -130,8 +153,8 @@ export default function Visita() {
 					</View>
 				</View>
 
-				{/* PERGUNTAS */}
-				{questions.map((q, idx) => renderQuestion(q, `q${idx}`))}
+				{/* Perguntas sequenciais */}
+				{fluxoIds.map((id) => renderQuestion(id))}
 			</ScrollView>
 		</Container>
 	);
@@ -142,31 +165,17 @@ const styles = StyleSheet.create({
 		padding: 16,
 		backgroundColor: "#121212",
 	},
-
-	// Header (Tabela)
 	headerTable: {
 		marginBottom: 32,
 		padding: 20,
 		borderRadius: 16,
 		backgroundColor: "#1f1f1f",
 		elevation: 3,
-	},   
-	headerTitle: {
-		fontSize: 22,
-		fontWeight: "bold",
-		color: "#fff",
-		marginBottom: 16,
-		textAlign: "center",
 	},
 	row: {
 		flexDirection: "row",
 		alignItems: "center",
 		marginBottom: 12,
-	},
-	label: {
-		width: 110,
-		color: "#fff",
-		fontSize: 16,
 	},
 	input: {
 		flex: 1,
@@ -176,8 +185,6 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		fontSize: 16,
 	},
-
-	// Questões
 	questionBlock: {
 		marginBottom: 32,
 		padding: 20,

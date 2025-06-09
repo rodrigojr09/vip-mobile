@@ -1,12 +1,5 @@
-export interface Question {
-    label: string;
-    subquest?: {
-        true?: Question
-        false?: Question
-    }
-}
-
-const questions:Question[] = [
+/* Questions Old*/
+[
 	{
 		label: "Existe Sinalização de Segurança?",
 		subquest: {
@@ -285,7 +278,7 @@ const questions:Question[] = [
 				},
 			},
 		},
-	},*/	
+	},*/
 	/*{
 		label: "Gestão de resíduos",
 		subquest: {
@@ -932,74 +925,464 @@ const questions:Question[] = [
 				},
 			},
 		},
-	},*/ 
+	},*/
 ];
+
+const questions = [
+	{
+		id: "id_1a2b3c",
+		label: "Controle de agentes químicos",
+		next: { true: "id_4d5e6f", false: "id_m3n4o5", none: null },
+		first: true,
+	},
+	{
+		id: "id_4d5e6f",
+		label: "Os agentes químicos estão controlados conforme FISPQ?",
+		next: { true: "id_7g8h9i", false: "id_j0k1l2", none: null },
+	},
+	{
+		id: "id_7g8h9i",
+		label: "Os EPIs utilizados são compatíveis com os riscos?",
+		next: null,
+	},
+	{
+		id: "id_j0k1l2",
+		label: "Foi solicitada adequação dos EPIs fornecidos?",
+		next: null,
+	},
+	{
+		id: "id_m3n4o5",
+		label: "A manipulação dos produtos oferece riscos diretos?",
+		next: { true: "id_p6q7r8", false: "id_s9t0u1", none: null },
+	},
+	{
+		id: "id_p6q7r8",
+		label: "A atividade foi suspensa ou isolada?",
+		next: null,
+	},
+	{
+		id: "id_s9t0u1",
+		label: "A equipe foi instruída a reforçar as medidas preventivas?",
+		next: null,
+	},
+	{
+		id: "id_8d36b9c",
+		label: "Somente pessoas autorizadas têm acesso?",
+		next: null,
+	},
+	{
+		id: "id_0d9525c",
+		label: "Há registros de acessos indevidos ou não autorizados?",
+		next: null,
+	},
+	{
+		id: "id_1bcec23",
+		label: "O acesso às áreas restritas está devidamente controlado?",
+		next: { true: "id_8d36b9c", false: "id_0d9525c", none: null },
+	},
+	{
+		id: "id_feca5e4",
+		label: "Há necessidade de medidas imediatas de controle?",
+		next: null,
+	},
+	{
+		id: "id_79ba23e",
+		label: "Há plano para instalação de controle de acesso?",
+		next: null,
+	},
+	{
+		id: "id_97ad8e5",
+		label: "A ausência de controle representa risco à segurança?",
+		next: { true: "id_feca5e4", false: "id_79ba23e", none: null },
+	},
+	{
+		id: "id_a2f0a51",
+		label: "Controle de acesso a áreas restritas",
+		next: { true: "id_1bcec23", false: "id_97ad8e5", none: null },
+		first: true,
+	},
+	{
+		id: "id_43a3d75",
+		label: "Os trabalhadores conhecem as áreas de risco?",
+		next: null,
+	},
+	{
+		id: "id_b740bc9",
+		label: "É necessário reforçar a comunicação sobre os riscos?",
+		next: null,
+	},
+	{
+		id: "id_d898a5d",
+		label: "O mapa de risco está visível e atualizado?",
+		next: { true: "id_43a3d75", false: "id_b740bc9", none: null },
+	},
+	{
+		id: "id_7da190a",
+		label: "Deve-se providenciar a atualização e divulgação imediata?",
+		next: null,
+	},
+	{
+		id: "id_1b17f23",
+		label: "Outros meios estão sendo utilizados para informar os riscos?",
+		next: null,
+	},
+	{
+		id: "id_b0ff441",
+		label: "A ausência do mapa compromete a percepção dos riscos?",
+		next: { true: "id_7da190a", false: "id_1b17f23", none: null },
+	},
+	{
+		id: "id_d6bcb03",
+		label: "Presença de mapa de risco atualizado",
+		next: { true: "id_d898a5d", false: "id_b0ff441", none: null },
+		first: true,
+	},
+	{
+		id: "id_7d497f9",
+		label: "Há treinamentos periódicos sobre evacuação?",
+		next: null,
+	},
+	{
+		id: "id_421c20d",
+		label: "Está prevista a realização de simulado?",
+		next: null,
+	},
+	{
+		id: "id_76efdcf",
+		label: "O plano está divulgado e sinalizado corretamente?",
+		next: { true: "id_7d497f9", false: "id_421c20d", none: null },
+	},
+	{
+		id: "id_cfff365",
+		label: "É necessária a implantação urgente do plano?",
+		next: null,
+	},
+	{
+		id: "id_491ba0c",
+		label: "Há outro sistema de orientação em caso de emergência?",
+		next: null,
+	},
+	{
+		id: "id_93c2680",
+		label: "A ausência do plano compromete a resposta a emergências?",
+		next: { true: "id_cfff365", false: "id_491ba0c", none: null },
+	},
+	{
+		id: "id_620e27c",
+		label: "Plano de emergência e abandono divulgado e sinalizado",
+		next: { true: "id_76efdcf", false: "id_93c2680", none: null },
+		first: true,
+	},
+	{
+		id: "id_a7a0da5",
+		label: "Há manutenção e limpeza periódica?",
+		next: null,
+	},
+	{
+		id: "id_e67a67a",
+		label: "Há necessidade de ajustes na frequência de limpeza?",
+		next: null,
+	},
+	{
+		id: "id_a36131e",
+		label: "As áreas estão limpas, organizadas e em bom estado?",
+		next: { true: "id_a7a0da5", false: "id_e67a67a", none: null },
+	},
+	{
+		id: "id_a084b5a",
+		label: "Foram tomadas medidas imediatas para melhoria?",
+		next: null,
+	},
+	{
+		id: "id_4c39f0f",
+		label: "Há planejamento para reestruturação dos espaços?",
+		next: null,
+	},
+	{
+		id: "id_ce6f9d8",
+		label: "As condições identificadas afetam o bem-estar dos trabalhadores?",
+		next: { true: "id_a084b5a", false: "id_4c39f0f", none: null },
+	},
+	{
+		id: "id_c3d9f58",
+		label: "Condições dos banheiros e áreas de descanso",
+		next: { true: "id_a36131e", false: "id_ce6f9d8", none: null },
+		first: true,
+	},
+	{
+		id: "id_d7bed24",
+		label: "Há monitoramento periódico da qualidade do ar?",
+		next: null,
+	},
+	{
+		id: "id_9672fcc",
+		label: "Foi recomendada a implantação de controle da qualidade do ar?",
+		next: null,
+	},
+	{
+		id: "id_6fd5f7a",
+		label: "A ventilação é adequada para o ambiente de trabalho?",
+		next: { true: "id_d7bed24", false: "id_9672fcc", none: null },
+	},
+	{
+		id: "id_4dc9838",
+		label: "Foram propostas melhorias imediatas?",
+		next: null,
+	},
+	{
+		id: "id_0080fa2",
+		label: "Há plano de ação gradual para correção?",
+		next: null,
+	},
+	{
+		id: "id_f56aeb6",
+		label: "A ventilação inadequada impacta a saúde dos trabalhadores?",
+		next: { true: "id_4dc9838", false: "id_0080fa2", none: null },
+	},
+	{
+		id: "id_1f10836",
+		label: "Ventilação e qualidade do ar no ambiente",
+		next: { true: "id_6fd5f7a", false: "id_f56aeb6", none: null },
+		first: true,
+	},
+	{
+		id: "id_08a2085",
+		label: "Os trabalhadores utilizam os protetores corretamente?",
+		next: null,
+	},
+	{
+		id: "id_d7cd18d",
+		label: "Há falhas na adesão ao uso de protetores?",
+		next: null,
+	},
+	{
+		id: "id_defd103",
+		label: "O controle de ruído está adequado (medições, protetores)?",
+		next: { true: "id_08a2085", false: "id_d7cd18d", none: null },
+	},
+	{
+		id: "id_610388e",
+		label: "Foram tomadas ações corretivas ou de mitigação?",
+		next: null,
+	},
+	{
+		id: "id_51ebce2",
+		label: "Está em andamento estudo técnico para melhorias?",
+		next: null,
+	},
+	{
+		id: "id_6a31362",
+		label: "O ruído excessivo pode causar danos à saúde?",
+		next: { true: "id_610388e", false: "id_51ebce2", none: null },
+	},
+	{
+		id: "id_7c0c77d",
+		label: "Controle de ruído",
+		next: { true: "id_defd103", false: "id_6a31362", none: null },
+		first: true,
+	},
+	{
+		id: "id_0a2bcb1",
+		label: "Os trabalhadores têm pausas e hidratação adequadas?",
+		next: null,
+	},
+	{
+		id: "id_b2b5fa4",
+		label: "Há recomendações para ajustes no regime de trabalho?",
+		next: null,
+	},
+	{
+		id: "id_e8a76ab",
+		label: "Há controle adequado da exposição ao calor?",
+		next: { true: "id_0a2bcb1", false: "id_b2b5fa4", none: null },
+	},
+	{
+		id: "id_93f7ee4",
+		label: "Há ações corretivas imediatas em andamento?",
+		next: null,
+	},
+	{
+		id: "id_04b0bc9",
+		label: "Está sendo feito monitoramento técnico da exposição?",
+		next: null,
+	},
+	{
+		id: "id_52dd9b9",
+		label: "A exposição térmica está acima dos limites aceitáveis?",
+		next: { true: "id_93f7ee4", false: "id_04b0bc9", none: null },
+	},
+	{
+		id: "id_cc56f6f",
+		label: "Controle de calor ou exposição a agentes térmicos",
+		next: { true: "id_e8a76ab", false: "id_52dd9b9", none: null },
+		first: true,
+	},
+	{
+		id: "id_1109bc4",
+		label: "As placas de sinalização estão em bom estado (sem danos ou desgastes)?",
+		next: null,
+	},
+	{
+		id: "id_2e3df49",
+		label: "As placas precisam ser substituídas ou reforçadas?",
+		next: null,
+	},
+	{
+		id: "id_32b839e",
+		label: "A sinalização de segurança está visível e compreensível?",
+		next: { true: "id_1109bc4", false: "id_2e3df49", none: null },
+	},
+	{
+		id: "id_6b0f11c",
+		label: "É necessário providenciar a instalação imediata de sinalização adequada?",
+		next: null,
+	},
+	{
+		id: "id_89703fd",
+		label: "Existe outro meio seguro de orientação além da sinalização formal?",
+		next: null,
+	},
+	{
+		id: "id_6d43647",
+		label: "A ausência de sinalização representa risco aos trabalhadores?",
+		next: { true: "id_6b0f11c", false: "id_89703fd", none: null },
+	},
+	{
+		id: "id_09a3804",
+		label: "Existe Sinalização de Segurança?",
+		next: { true: "id_32b839e", false: "id_6d43647", none: null },
+		first: true,
+	},
+	{
+		id: "id_3b65f57",
+		label: "Os trabalhadores demonstram entendimento sobre a importância do uso dos EPIs?",
+		next: null,
+	},
+	{
+		id: "id_ba5ff5c",
+		label: "Houve orientação ou treinamento recente sobre o uso correto dos EPIs?",
+		next: null,
+	},
+	{
+		id: "id_8cfced2",
+		label: "Os EPIs estão sendo usados corretamente durante as atividades?",
+		next: { true: "id_3b65f57", false: "id_ba5ff5c", none: null },
+	},
+	{
+		id: "id_1d38928",
+		label: "Há fiscalização do uso correto dos EPIs pelos supervisores?",
+		next: null,
+	},
+	{
+		id: "id_3247cda",
+		label: "Os EPIs estão disponíveis para todos os trabalhadores?",
+		next: { true: "id_8cfced2", false: "id_1d38928", none: null },
+	},
+	{
+		id: "id_9551f22",
+		label: "Já foi feita a solicitação de reposição ou compra desses EPIs?",
+		next: null,
+	},
+	{
+		id: "id_e7eb755",
+		label: "A ausência dos EPIs pode causar riscos imediatos à saúde dos trabalhadores?",
+		next: null,
+	},
+	{
+		id: "id_8eac4dd",
+		label: "Há falta de algum EPI essencial para a atividade?",
+		next: { true: "id_9551f22", false: "id_e7eb755", none: null },
+	},
+	{
+		id: "id_748b457",
+		label: "EPIs disponíveis e em uso correto?",
+		next: { true: "id_3247cda", false: "id_8eac4dd", none: null },
+		first: true,
+	},
+	{
+		id: "id_794de8c",
+		label: "Há registros documentados dos treinamentos realizados?",
+		next: null,
+	},
+	{
+		id: "id_6ef3d31",
+		label: "Os treinamentos foram aplicados informalmente, sem documentação?",
+		next: null,
+	},
+	{
+		id: "id_c1c2d1a",
+		label: "Os trabalhadores passaram por treinamentos de segurança atualizados?",
+		next: { true: "id_794de8c", false: "id_6ef3d31", none: null },
+	},
+	{
+		id: "id_cc8a8bb",
+		label: "É necessário agendar treinamentos obrigatórios com urgência?",
+		next: null,
+	},
+	{
+		id: "id_e0bf9f2",
+		label: "Há previsão de treinamentos futuros já planejados?",
+		next: null,
+	},
+	{
+		id: "id_1a2f974",
+		label: "A ausência de treinamentos compromete a execução segura das tarefas?",
+		next: { true: "id_cc8a8bb", false: "id_e0bf9f2", none: null },
+	},
+	{
+		id: "id_83422b2",
+		label: "Os Treinamentos de segurança estão atualizados?",
+		next: { true: "id_c1c2d1a", false: "id_1a2f974", none: null },
+		first: true,
+	},
+	{
+		id: "id_a193a4d",
+		label: "As manutenções estão sendo realizadas periodicamente?",
+		next: null,
+	},
+	{
+		id: "id_50a81c7",
+		label: "Existe um plano de manutenção preventiva em andamento?",
+		next: null,
+	},
+	{
+		id: "id_ccd0099",
+		label: "As máquinas estão em bom estado de conservação e funcionamento?",
+		next: { true: "id_a193a4d", false: "id_50a81c7", none: null },
+	},
+	{
+		id: "id_dbfc73b",
+		label: "Foi sinalizado o equipamento defeituoso e suspenso o uso?",
+		next: null,
+	},
+	{
+		id: "id_3ba0315",
+		label: "As maquinas/equipamentos com defeito continuam em uso?",
+		next: null,
+	},
+	{
+		id: "id_60fef4e",
+		label: "Há máquinas ou equipamentos com defeitos que oferecem riscos?",
+		next: { true: "id_dbfc73b", false: "id_3ba0315", none: null },
+	},
+	{
+		id: "id_8867c4a",
+		label: "Possui máquinas e equipamentos?",
+		next: { true: "id_ccd0099", false: "id_60fef4e", none: null },
+		first: true,
+	},
+];
+
+
+export interface Question {
+    id: string;
+    label: string;
+    next: {
+        true: string;
+        false: string;
+        none: string | null;
+    };
+    first?: boolean;
+}
 
 export default questions;
-
-const nQuestions = [
-	{
-		Id: "b3f1d8d2-7205-4bd9-b6aa-9d3c4507de42",
-		label: "Equipamentos de Proteção Individual (EPIs) estão sendo utilizados corretamente?",
-		next: {
-			true: "d1a82ae5-9c2d-4b0e-8ae2-7f8a8c5d7f6a",
-			false: "2b158157-469e-4c4a-a3de-b5fcd37c3905",
-			none: "",
-		},
-	},
-	{
-		Id: "d1a82ae5-9c2d-4b0e-8ae2-7f8a8c5d7f6a",
-		label: "Os EPIs estão em bom estado de conservação?",
-		next: {
-			true: "13fc1e5d-5b0b-4628-a8ea-e2a17c2d8e63",
-			false: "dbcb2cc6-8632-4626-bb06-3d4f7c3227b9",
-			none: "",
-		},
-	},
-	{
-		Id: "13fc1e5d-5b0b-4628-a8ea-e2a17c2d8e63",
-		label: "São adequados para as atividades executadas?",
-		next: {
-			true: "",
-			false: "",
-			none: "",
-		},
-	},
-	{
-		Id: "dbcb2cc6-8632-4626-bb06-3d4f7c3227b9",
-		label: "Existe sinalização indicando o uso obrigatório de EPIs?",
-		next: {
-			true: "",
-			false: "",
-			none: "",
-		},
-	},
-
-	{
-		Id: "2b158157-469e-4c4a-a3de-b5fcd37c3905",
-		label: "Quais EPIs estão faltando?",
-		next: {
-			true: "a865fa3b-b209-4ccf-a07a-80236051a530",
-			false: "53be3b77-9b55-4a94-a1a9-218a9250b4b6",
-			none: "",
-		},
-	},
-	{
-		Id: "a865fa3b-b209-4ccf-a07a-80236051a530",
-		label: "Foi realizada orientação sobre a obrigatoriedade dos EPIs?",
-		next: {
-			true: "",
-			false: "",
-			none: "",
-		},
-	},
-	{
-		Id: "53be3b77-9b55-4a94-a1a9-218a9250b4b6",
-		label: "Houve resistência por parte dos colaboradores para o uso dos EPIs?",
-		next: {
-			true: "",
-			false: "",
-			none: "",
-		},
-	},
-];
