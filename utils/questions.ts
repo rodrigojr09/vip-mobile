@@ -1373,16 +1373,15 @@ const questions = [
 	},
 ];
 
-
 export interface Question {
-    id: string;
-    label: string;
-    next: {
-        true: string;
-        false: string;
-        none: string | null;
-    };
-    first?: boolean;
+	id: string;
+	label: string;
+	next: {
+		true: string;
+		false: string;
+		none: string | null;
+	} | null;
+	first?: boolean;
 }
 
 export default questions;

@@ -15,23 +15,30 @@ type Resposta = {
 	observation?: string;
 };
 
+interface Pergunta {
+	id: string;
+	status: "Sim" | "Não" | "N/A" | null;
+}
+
 export default function Visita() {
 	const [respostas, setRespostas] = useState<Record<string, Resposta>>({});
 	const [empresa, setEmpresa] = useState("");
 	const [visitante, setVisitante] = useState("");
 	const [acompanhante, setAcompanhante] = useState("");
-	const [fluxoIds, setFluxoIds] = useState<string[]>([]);
 
-	const perguntas: Record<string, Question> = questionsData.reduce(
-		(acc, q) => ({ ...acc, [q.id]: q }),
-		{}
-	);
+	const [questions, setQuestions] = useState<Pergunta[]>([]);
 
-	// Inicializa com a primeira pergunta
 	useEffect(() => {
 		const primeiras = questionsData.filter((q) => q.first);
 		if (primeiras) {
-			setFluxoIds(primeiras.map(a=>a.id));
+			setQuestions(
+				primeiras.map((a) => {
+					return {
+						id: a.id,
+						status: null,
+					};
+				})
+			);
 		}
 	}, []);
 
@@ -104,18 +111,20 @@ export default function Visita() {
 					})}
 				</View>
 
-				{resposta !== undefined && resposta !== "NA" && !pergunta.next && (
-					<TextInput
-						style={styles.observationInput}
-						placeholder="Observações (opcional)"
-						placeholderTextColor="#aaa"
-						multiline
-						value={respostas[id]?.observation || ""}
-						onChangeText={(text) =>
-							handleObservationChange(id, text)
-						}
-					/>
-				)}
+				{resposta !== undefined &&
+					resposta !== "NA" &&
+					!pergunta.next && (
+						<TextInput
+							style={styles.observationInput}
+							placeholder="Observações (opcional)"
+							placeholderTextColor="#aaa"
+							multiline
+							value={respostas[id]?.observation || ""}
+							onChangeText={(text) =>
+								handleObservationChange(id, text)
+							}
+						/>
+					)}
 			</View>
 		);
 	};
