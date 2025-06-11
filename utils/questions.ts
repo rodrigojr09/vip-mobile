@@ -1,5 +1,5 @@
 /* Questions Old*/
-[
+const questions: Question[] = [
 	{
 		label: "Existe Sinalização de Segurança?",
 		subquest: {
@@ -8,11 +8,11 @@
 				subquest: {
 					true: {
 						label: "As placas de sinalização estão em bom estado (sem danos ou desgastes)?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "As placas precisam ser substituídas ou reforçadas?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -21,11 +21,11 @@
 				subquest: {
 					true: {
 						label: "É necessário providenciar a instalação imediata de sinalização adequada?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Existe outro meio seguro de orientação além da sinalização formal?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -42,17 +42,17 @@
 						subquest: {
 							true: {
 								label: "Os trabalhadores demonstram entendimento sobre a importância do uso dos EPIs?",
-								subquest: {},
+								subquest: null,
 							},
 							false: {
 								label: "Houve orientação ou treinamento recente sobre o uso correto dos EPIs?",
-								subquest: {},
+								subquest: null,
 							},
 						},
 					},
 					false: {
 						label: "Há fiscalização do uso correto dos EPIs pelos supervisores?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -61,11 +61,11 @@
 				subquest: {
 					true: {
 						label: "Já foi feita a solicitação de reposição ou compra desses EPIs?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "A ausência dos EPIs pode causar riscos imediatos à saúde dos trabalhadores?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -79,11 +79,11 @@
 				subquest: {
 					true: {
 						label: "Há registros documentados dos treinamentos realizados?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Os treinamentos foram aplicados informalmente, sem documentação?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -92,11 +92,11 @@
 				subquest: {
 					true: {
 						label: "É necessário agendar treinamentos obrigatórios com urgência?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há previsão de treinamentos futuros já planejados?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -110,11 +110,11 @@
 				subquest: {
 					true: {
 						label: "As manutenções estão sendo realizadas periodicamente?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Existe um plano de manutenção preventiva em andamento?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -123,11 +123,11 @@
 				subquest: {
 					true: {
 						label: "Foi sinalizado o equipamento defeituoso e suspenso o uso?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "As maquinas/equipamentos com defeito continuam em uso?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -141,11 +141,11 @@
 				subquest: {
 					true: {
 						label: "Há rotina estabelecida de limpeza e organização?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "A limpeza é realizada eventualmente ou por necessidade?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -154,11 +154,11 @@
 				subquest: {
 					true: {
 						label: "Foram feitas recomendações imediatas de limpeza e organização?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há justificativa temporária para a situação identificada?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -172,11 +172,11 @@
 				subquest: {
 					true: {
 						label: "Há manutenção preventiva do sistema elétrico?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Foram encontrados pequenos ajustes pendentes?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -185,11 +185,11 @@
 				subquest: {
 					true: {
 						label: "É necessária intervenção imediata nas instalações elétricas?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Os riscos foram mapeados e controlados temporariamente?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -203,11 +203,11 @@
 				subquest: {
 					true: {
 						label: "Os dispositivos de combate a incêndio estão sinalizados e acessíveis?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há falhas pontuais de sinalização ou acesso?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -216,11 +216,11 @@
 				subquest: {
 					true: {
 						label: "Foram emitidas recomendações para regularização?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Medidas paliativas foram adotadas provisoriamente?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -234,11 +234,11 @@
 				subquest: {
 					true: {
 						label: "Há sinalização e segregação correta de substâncias incompatíveis?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "A sinalização ou contenção precisa ser reforçada?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -247,11 +247,11 @@
 				subquest: {
 					true: {
 						label: "Foi determinada a correção imediata da situação?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "A área está isolada e sob controle até a adequação?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -262,18 +262,18 @@
 		subquest: {
 			true: {
 				label: "Foram observadas boas práticas de postura, altura e iluminação?",
-				subquest: {},
+				subquest: null,
 			},
 			false: {
 				label: "Foram identificados riscos ergonômicos significativos?",
 				subquest: {
 					true: {
 						label: "Há plano de intervenção ergonômica em andamento?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "A situação exige avaliação especializada urgente?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -287,11 +287,11 @@
 				subquest: {
 					true: {
 						label: "Existe coleta seletiva e destinação final adequada?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Algumas melhorias no sistema de gestão foram recomendadas?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -300,11 +300,11 @@
 				subquest: {
 					true: {
 						label: "A situação exige providências imediatas?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "A empresa tem plano de adequação em andamento?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -318,11 +318,11 @@
 				subquest: {
 					true: {
 						label: "Os funcionários sabem utilizá-los em caso de necessidade?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "É necessário reforçar treinamentos de emergência?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -331,11 +331,11 @@
 				subquest: {
 					true: {
 						label: "Foram feitas recomendações imediatas de correção?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há planos para melhoria de acesso e sinalização?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -349,11 +349,11 @@
 				subquest: {
 					true: {
 						label: "Os documentos estão disponíveis para consulta imediata?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Os documentos estão disponíveis, mas de forma parcial?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -362,11 +362,11 @@
 				subquest: {
 					true: {
 						label: "Foi iniciado processo de regularização imediata?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "A regularização será feita em prazo previamente definido?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -380,18 +380,18 @@
 				subquest: {
 					true: {
 						label: "As inspeções são feitas periodicamente?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Foram encontradas estruturas danificadas ou mal fixadas?",
 						subquest: {
 							true: {
 								label: "Foi determinada a interdição ou reparo imediato?",
-								subquest: {},
+								subquest: null,
 							},
 							false: {
 								label: "As falhas não oferecem risco imediato, mas requerem atenção?",
-								subquest: {},
+								subquest: null,
 							},
 						},
 					},
@@ -407,11 +407,11 @@
 				subquest: {
 					true: {
 						label: "Somente pessoas autorizadas têm acesso?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há registros de acessos indevidos ou não autorizados?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -420,11 +420,11 @@
 				subquest: {
 					true: {
 						label: "Há necessidade de medidas imediatas de controle?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há plano para instalação de controle de acesso?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -438,11 +438,11 @@
 				subquest: {
 					true: {
 						label: "Os trabalhadores conhecem as áreas de risco?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "É necessário reforçar a comunicação sobre os riscos?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -451,11 +451,11 @@
 				subquest: {
 					true: {
 						label: "Deve-se providenciar a atualização e divulgação imediata?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Outros meios estão sendo utilizados para informar os riscos?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -469,11 +469,11 @@
 				subquest: {
 					true: {
 						label: "Há treinamentos periódicos sobre evacuação?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Está prevista a realização de simulado?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -482,11 +482,11 @@
 				subquest: {
 					true: {
 						label: "É necessária a implantação urgente do plano?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há outro sistema de orientação em caso de emergência?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -500,11 +500,11 @@
 				subquest: {
 					true: {
 						label: "Há manutenção e limpeza periódica?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há necessidade de ajustes na frequência de limpeza?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -513,11 +513,11 @@
 				subquest: {
 					true: {
 						label: "Foram tomadas medidas imediatas para melhoria?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há planejamento para reestruturação dos espaços?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -531,11 +531,11 @@
 				subquest: {
 					true: {
 						label: "Há monitoramento periódico da qualidade do ar?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Foi recomendada a implantação de controle da qualidade do ar?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -544,11 +544,11 @@
 				subquest: {
 					true: {
 						label: "Foram propostas melhorias imediatas?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há plano de ação gradual para correção?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -562,11 +562,11 @@
 				subquest: {
 					true: {
 						label: "Os trabalhadores utilizam os protetores corretamente?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há falhas na adesão ao uso de protetores?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -575,11 +575,11 @@
 				subquest: {
 					true: {
 						label: "Foram tomadas ações corretivas ou de mitigação?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Está em andamento estudo técnico para melhorias?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -593,11 +593,11 @@
 				subquest: {
 					true: {
 						label: "Os trabalhadores têm pausas e hidratação adequadas?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há recomendações para ajustes no regime de trabalho?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -606,11 +606,11 @@
 				subquest: {
 					true: {
 						label: "Há ações corretivas imediatas em andamento?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Está sendo feito monitoramento técnico da exposição?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -624,11 +624,11 @@
 				subquest: {
 					true: {
 						label: "Os EPIs utilizados são compatíveis com os riscos?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Foi solicitada adequação dos EPIs fornecidos?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -637,11 +637,11 @@
 				subquest: {
 					true: {
 						label: "A atividade foi suspensa ou isolada?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "A equipe foi instruída a reforçar as medidas preventivas?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -655,11 +655,11 @@
 				subquest: {
 					true: {
 						label: "O ambiente está higienizado e livre de contaminações?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Foram recomendadas melhorias no plano de limpeza?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -668,11 +668,11 @@
 				subquest: {
 					true: {
 						label: "Foi realizada desinfecção ou isolamento da área?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Está sendo programada ação sanitária imediata?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -686,11 +686,11 @@
 				subquest: {
 					true: {
 						label: "São realizadas inspeções periódicas?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há plano para iniciar rotina de inspeção?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -699,11 +699,11 @@
 				subquest: {
 					true: {
 						label: "Os equipamentos foram interditados ou ajustados?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "As falhas foram mapeadas para correção futura?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -717,11 +717,11 @@
 				subquest: {
 					true: {
 						label: "Há manutenção preventiva dos pisos?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Foi recomendado plano de manutenção periódica?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -730,11 +730,11 @@
 				subquest: {
 					true: {
 						label: "Foi feita sinalização e correção emergencial?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há plano de adequação em prazo determinado?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -748,11 +748,11 @@
 				subquest: {
 					true: {
 						label: "Os temas abordados são relevantes e atuais?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há sugestões de melhoria para os conteúdos?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -761,11 +761,11 @@
 				subquest: {
 					true: {
 						label: "Foi recomendada a implementação das campanhas?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Outras formas de conscientização estão sendo usadas?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -779,11 +779,11 @@
 				subquest: {
 					true: {
 						label: "As medidas de controle estão implantadas?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Foram recomendadas ações complementares?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -792,11 +792,11 @@
 				subquest: {
 					true: {
 						label: "Foi determinada ação imediata de contenção?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "A situação está sob observação técnica?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -810,11 +810,11 @@
 				subquest: {
 					true: {
 						label: "São usados materiais fotoluminescentes ou com backup?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há recomendações para adaptação da sinalização?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -823,11 +823,11 @@
 				subquest: {
 					true: {
 						label: "Foram propostas medidas urgentes de correção?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Há medidas provisórias em estudo?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -841,11 +841,11 @@
 				subquest: {
 					true: {
 						label: "São verificadas regularmente?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Foi recomendada inspeção periódica formalizada?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -854,11 +854,11 @@
 				subquest: {
 					true: {
 						label: "Foi determinada correção urgente?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "A liberação das rotas já foi planejada?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -872,11 +872,11 @@
 				subquest: {
 					true: {
 						label: "As inspeções estão documentadas?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Foi recomendada melhoria na documentação?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -885,11 +885,11 @@
 				subquest: {
 					true: {
 						label: "Foi feita substituição ou recarga imediata?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "A substituição foi programada em prazo definido?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -903,11 +903,11 @@
 				subquest: {
 					true: {
 						label: "A manutenção está sendo feita periodicamente?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "Foi sugerida a criação de rotina de inspeção?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -916,11 +916,11 @@
 				subquest: {
 					true: {
 						label: "Foi determinada correção imediata?",
-						subquest: {},
+						subquest: null,
 					},
 					false: {
 						label: "As falhas foram documentadas para correção futura?",
-						subquest: {},
+						subquest: null,
 					},
 				},
 			},
@@ -928,7 +928,8 @@
 	},*/
 ];
 
-const questions = [
+/*
+[
 	{
 		id: "id_1a2b3c",
 		label: "Controle de agentes químicos",
@@ -1372,16 +1373,14 @@ const questions = [
 		first: true,
 	},
 ];
+*/
 
 export interface Question {
-	id: string;
 	label: string;
-	next: {
-		true: string;
-		false: string;
-		none: string | null;
+	subquest: {
+		true: Question;
+		false: Question;
 	} | null;
-	first?: boolean;
 }
 
 export default questions;

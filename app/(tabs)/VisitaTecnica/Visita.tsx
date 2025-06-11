@@ -1,6 +1,6 @@
 import Container from "@/components/Container";
-import questionsData, { Question } from "@/utils/questions";
-import React, { useState, useEffect } from "react";
+import questions, { Question } from "@/utils/questions";
+import React, { useState, useEffect, ReactNode } from "react";
 import {
 	View,
 	Text,
@@ -11,119 +11,122 @@ import {
 } from "react-native";
 
 type Resposta = {
-	value: boolean | "NA";
+	pergunta: string;
+	value: "Sim" | "Não" | "N/A" | null;
 	observation?: string;
 };
 
-interface Pergunta {
-	id: string;
-	status: "Sim" | "Não" | "N/A" | null;
-}
-
 export default function Visita() {
-	const [respostas, setRespostas] = useState<Record<string, Resposta>>({});
+	const [respostas, setRespostas] = useState<Resposta[]>([]);
 	const [empresa, setEmpresa] = useState("");
 	const [visitante, setVisitante] = useState("");
 	const [acompanhante, setAcompanhante] = useState("");
-
-	const [questions, setQuestions] = useState<Pergunta[]>([]);
+	const [perguntas, setPerguntas] = useState<Question[]>([]);
 
 	useEffect(() => {
-		const primeiras = questionsData.filter((q) => q.first);
-		if (primeiras) {
-			setQuestions(
-				primeiras.map((a) => {
-					return {
-						id: a.id,
-						status: null,
-					};
-				})
-			);
-		}
+		setPerguntas(questions);
 	}, []);
 
-	const handleAnswer = (id: string, value: boolean | "NA") => {
-		setRespostas((prev) => ({
-			...prev,
-			[id]: {
-				...prev[id],
-				value,
-			},
-		}));
-
-		const nextId =
-			value === true
-				? perguntas[id].next.true
-				: value === false
-				? perguntas[id].next.false
-				: perguntas[id].next.none;
-
-		if (nextId && !fluxoIds.includes(nextId)) {
-			setFluxoIds((prev) => [...prev, nextId]);
+	function setStatus(pergunta: string, status: Resposta["value"]) {
+		if (respostas.find((r) => r.pergunta === pergunta)) {
+			setRespostas((prev) =>
+				prev.map((r) =>
+					r.pergunta === pergunta ? { ...r, value: status === r.value ? null : status } : r
+				)
+			);
+		} else {
+			setRespostas((prev) => [
+				...prev,
+				{
+					pergunta,
+					value: status,
+				},
+			]);
 		}
-	};
+	}
 
-	const handleObservationChange = (id: string, text: string) => {
-		setRespostas((prev) => ({
-			...prev,
-			[id]: {
-				...prev[id],
-				observation: text,
-			},
-		}));
-	};
+	function setObs(
+		pergunta: string,
+		status: Resposta["value"],
+		obs: string
+	) {
+		if (respostas.find((r) => r.pergunta === pergunta)) {
+			setRespostas((prev) =>
+				prev.map((r) =>
+					r.pergunta === pergunta ? { ...r, observation: obs } : r
+				)
+			);
+		} else {
+			setRespostas((prev) => [
+				...prev,
+				{
+					pergunta,
+					value: status,
+					observation: obs,
+				},
+			]);
+		}
+	}
 
-	const renderQuestion = (id: string) => {
-		const pergunta = perguntas[id];
-		const resposta = respostas[id]?.value;
+	function getObsCampo(
+		label: string,
+		status: Resposta["value"],	
+		obs?: string
+	) {
+		return (
+			<TextInput
+				style={styles.observationInput}
+				placeholder="Observações (opcional)"
+				placeholderTextColor="#aaa"
+				multiline
+				value={obs}
+				onChangeText={(text) => setObs(label, status, text)}
+			/>
+		);
+	}
 
+	const renderQuestion = ({ label, subquest }: Question) => {
+		const id = Math.floor(Math.random() * 1000).toString();
+		const status = respostas.find((r) => r.pergunta === label)?.value;
 		return (
 			<View key={id} style={styles.questionBlock}>
-				<Text style={styles.questionText}>{pergunta.label}</Text>
+				<Text style={styles.questionText}>{label}</Text>
 
 				<View style={styles.buttonGroup}>
-					{["Sim", "Não", "N/A"].map((label) => {
-						const value =
-							label === "Sim"
-								? true
-								: label === "Não"
-								? false
-								: "NA";
-						const isSelected = resposta === value;
-
+					{["Sim", "Não", "N/A"].map((key) => {
+						const isSelected = status === key;
 						return (
 							<TouchableOpacity
-								key={label}
+								key={id + key}
 								style={[
 									styles.choiceButton,
 									isSelected &&
-										(value === true
+										(status === "Sim"
 											? styles.choiceButtonSelectedGreen
-											: value === false
+											: status === "Não"
 											? styles.choiceButtonSelectedRed
 											: styles.choiceButtonSelectedGray),
 								]}
-								onPress={() => handleAnswer(id, value)}
+								onPress={() =>
+									setStatus(label, key as Resposta["value"])
+								}
 							>
-								<Text style={styles.choiceLabel}>{label}</Text>
+								<Text style={styles.choiceLabel}>{key}</Text>
 							</TouchableOpacity>
 						);
 					})}
 				</View>
 
-				{resposta !== undefined &&
-					resposta !== "NA" &&
-					!pergunta.next && (
-						<TextInput
-							style={styles.observationInput}
-							placeholder="Observações (opcional)"
-							placeholderTextColor="#aaa"
-							multiline
-							value={respostas[id]?.observation || ""}
-							onChangeText={(text) =>
-								handleObservationChange(id, text)
-							}
-						/>
+				{subquest && status &&
+					status !== "N/A" &&
+					renderQuestion(
+						subquest[status === "Sim" ? "true" : "false"]
+					)}
+				{status && (status === "N/A" || !subquest) &&
+					getObsCampo(
+						label,
+						status as Resposta["value"],
+						respostas.find((r) => r.pergunta === label)?.observation
 					)}
 			</View>
 		);
@@ -162,8 +165,8 @@ export default function Visita() {
 					</View>
 				</View>
 
-				{/* Perguntas sequenciais */}
-				{fluxoIds.map((id) => renderQuestion(id))}
+				{/* Renderiza todas as perguntas sequencialmente */}
+				{perguntas.map((p) => renderQuestion(p))}
 			</ScrollView>
 		</Container>
 	);
