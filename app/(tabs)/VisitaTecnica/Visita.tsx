@@ -1,6 +1,8 @@
+import Button from "@/components/Button";
 import Container from "@/components/Container";
 import questions, { Question } from "@/utils/questions";
-import React, { useState, useEffect, ReactNode } from "react";
+import { getHtmlVisita } from "@/utils/Visita/formatHTML";
+import React, { useState, useEffect, JSX } from "react";
 import {
 	View,
 	Text,
@@ -10,10 +12,42 @@ import {
 	TextInput,
 } from "react-native";
 
-type Resposta = {
+export type Resposta = {
 	pergunta: string;
 	value: "Sim" | "Não" | "N/A" | null;
 	observation?: string;
+};
+
+const ObservacaoCampo = ({
+	label,
+	status,
+	initialValue,
+	onChange,
+}: {
+	label: string;
+	status: Resposta["value"];
+	initialValue?: string;
+	onChange: (label: string, status: Resposta["value"], obs: string) => void;
+}) => {
+	const [text, setText] = useState(initialValue || "");
+
+	useEffect(() => {
+		setText(initialValue || "");
+	}, [initialValue]);
+
+	return (
+		<TextInput
+			style={styles.observationInput}
+			placeholder="Observações (opcional)"
+			placeholderTextColor="#aaa"
+			multiline
+			value={text}
+			onChangeText={(value) => {
+				setText(value);
+				onChange(label, status, value);
+			}}
+		/>
+	);
 };
 
 export default function Visita() {
@@ -28,68 +62,41 @@ export default function Visita() {
 	}, []);
 
 	function setStatus(pergunta: string, status: Resposta["value"]) {
-		if (respostas.find((r) => r.pergunta === pergunta)) {
-			setRespostas((prev) =>
-				prev.map((r) =>
-					r.pergunta === pergunta ? { ...r, value: status === r.value ? null : status } : r
+		setRespostas((prev) =>
+			prev
+				.map((r) =>
+					r.pergunta === pergunta
+						? { ...r, value: r.value === status ? null : status }
+						: r
 				)
-			);
-		} else {
-			setRespostas((prev) => [
-				...prev,
-				{
-					pergunta,
-					value: status,
-				},
-			]);
-		}
-	}
-
-	function setObs(
-		pergunta: string,
-		status: Resposta["value"],
-		obs: string
-	) {
-		if (respostas.find((r) => r.pergunta === pergunta)) {
-			setRespostas((prev) =>
-				prev.map((r) =>
-					r.pergunta === pergunta ? { ...r, observation: obs } : r
+				.concat(
+					prev.some((r) => r.pergunta === pergunta)
+						? []
+						: [{ pergunta, value: status }]
 				)
-			);
-		} else {
-			setRespostas((prev) => [
-				...prev,
-				{
-					pergunta,
-					value: status,
-					observation: obs,
-				},
-			]);
-		}
-	}
-
-	function getObsCampo(
-		label: string,
-		status: Resposta["value"],	
-		obs?: string
-	) {
-		return (
-			<TextInput
-				style={styles.observationInput}
-				placeholder="Observações (opcional)"
-				placeholderTextColor="#aaa"
-				multiline
-				value={obs}
-				onChangeText={(text) => setObs(label, status, text)}
-			/>
 		);
 	}
 
-	const renderQuestion = ({ label, subquest }: Question) => {
-		const id = Math.floor(Math.random() * 1000).toString();
+	function setObs(pergunta: string, status: Resposta["value"], obs: string) {
+		setRespostas((prev) => {
+			const existing = prev.find((r) => r.pergunta === pergunta);
+			if (existing) {
+				return prev.map((r) =>
+					r.pergunta === pergunta ? { ...r, observation: obs } : r
+				);
+			}
+			return [
+				...prev,
+				{ pergunta, value: status || null, observation: obs },
+			];
+		});
+	}
+
+	const renderQuestion = ({ label, subquest }: Question): JSX.Element => {
 		const status = respostas.find((r) => r.pergunta === label)?.value;
+
 		return (
-			<View key={id} style={styles.questionBlock}>
+			<View key={label} style={styles.questionBlock}>
 				<Text style={styles.questionText}>{label}</Text>
 
 				<View style={styles.buttonGroup}>
@@ -97,7 +104,7 @@ export default function Visita() {
 						const isSelected = status === key;
 						return (
 							<TouchableOpacity
-								key={id + key}
+								key={label + key}
 								style={[
 									styles.choiceButton,
 									isSelected &&
@@ -117,20 +124,39 @@ export default function Visita() {
 					})}
 				</View>
 
-				{subquest && status &&
+				{subquest &&
+					status &&
 					status !== "N/A" &&
+					subquest[status === "Sim" ? "true" : "false"] &&
 					renderQuestion(
 						subquest[status === "Sim" ? "true" : "false"]
 					)}
-				{status && (status === "N/A" || !subquest) &&
-					getObsCampo(
-						label,
-						status as Resposta["value"],
-						respostas.find((r) => r.pergunta === label)?.observation
-					)}
+
+				{status && (status === "N/A" || !subquest) && (
+					<ObservacaoCampo
+						label={label}
+						status={status}
+						initialValue={
+							respostas.find((r) => r.pergunta === label)
+								?.observation
+						}
+						onChange={setObs}
+					/>
+				)}
 			</View>
 		);
 	};
+
+	function handleSave() {
+		const html = getHtmlVisita({
+			empresa,
+			acompanhante,
+			perguntas,
+			respostas,
+			visitante,
+		});
+		console.log(html);
+	}
 
 	return (
 		<Container>
@@ -165,8 +191,9 @@ export default function Visita() {
 					</View>
 				</View>
 
-				{/* Renderiza todas as perguntas sequencialmente */}
 				{perguntas.map((p) => renderQuestion(p))}
+
+				<Button onPress={handleSave}>Salvar</Button>
 			</ScrollView>
 		</Container>
 	);
