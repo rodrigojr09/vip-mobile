@@ -9,17 +9,17 @@ import { useRouter } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
 import { getHtml } from "@/utils/formatHTML";
 import Container from "@/components/Container";
+import { useVisita } from "@/hooks/VisitaProvider";
+import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 
 export default function Finalizado() {
 	const router = useRouter();
 	const query = useSearchParams();
-	const empresa = useEmpresa();
-	// Desabilitar o botão de voltar
+	const visita = useVisita();
+	
 	useEffect(() => {
 		const backAction = () => {
-			// Impede que a tela seja fechada com o botão de voltar
-
-			return true; // Retorna true para impedir a ação de voltar
+			return true;
 		};
 		(async () => {
 			await ScreenOrientation.lockAsync(
@@ -33,12 +33,12 @@ export default function Finalizado() {
 	async function handleDownload() {
 		try {
 			// Gerar o HTML com a assinatura
-			const htmlContent = getHtml(empresa)
+			const htmlContent = getHtmlVisita(visita)
 				.replace("$assinatura", `${query.get("assinatura")}`)
 				.replace("not-assinatura", "");
 
 			// Caminho para salvar o arquivo HTML
-			const filePath = `${FileSystem.documentDirectory}Levantamento-${empresa.nome}.html`;
+			const filePath = `${FileSystem.documentDirectory}Visita-${visita.empresa}.html`;
 
 			// Salvar o arquivo
 			await FileSystem.writeAsStringAsync(filePath, htmlContent, {
@@ -65,7 +65,7 @@ export default function Finalizado() {
 		<Container style={{ padding: 10 }}>
 			<Button
 				onPress={() => {
-					empresa.clear();
+					visita.clear();
 					router.replace("/");
 				}}
 			>

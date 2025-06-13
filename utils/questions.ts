@@ -1,3 +1,5 @@
+import { Question } from "@/types/VIPVisitaType";
+
 /* Questions Old*/
 const questions: Question[] = [
 	{
@@ -1374,13 +1376,5 @@ const questions: Question[] = [
 	},
 ];
 */
-
-export interface Question {
-	label: string;
-	subquest: {
-		true: Question;
-		false: Question;
-	} | null;
-}
 
 export default questions;

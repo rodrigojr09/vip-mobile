@@ -1,13 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import * as ScreenOrientation from "expo-screen-orientation";
-import { View, StyleSheet, Alert } from "react-native";
-import Signature, { SignatureViewRef } from "react-native-signature-canvas";
-import { useEmpresa } from "@/hooks/EmpresaProvider";
 import { useRouter } from "expo-router";
+import React, { useRef, useEffect } from "react";
+import { Alert, StyleSheet, View } from "react-native";
+import * as ScreenOrientation from "expo-screen-orientation";
+import Signature, { SignatureViewRef } from "react-native-signature-canvas";
 
 const SignatureScreen = () => {
 	const ref = useRef<SignatureViewRef>(null);
-	const empresa = useEmpresa();
 	const router = useRouter();
 	const handleSignature = async (signature: string) => {
 		if (!signature) {
@@ -16,7 +14,7 @@ const SignatureScreen = () => {
 		}
 		try {
 			router.push({
-				pathname: "/Levantamento/finalizado",
+				pathname: "/VisitaTecnica/finalizado",
 				params: {
 					assinatura: `<img style="width: 100%; height: 100%;" src="${signature}"/>`,
 				},
@@ -47,7 +45,7 @@ const SignatureScreen = () => {
 				onEmpty={() =>
 					Alert.alert("Atenção", "Nenhuma assinatura capturada.")
 				}
-				descriptionText={"Assinatura de: " + empresa.responsavel}
+				descriptionText={"Assinatura de: "}
 				clearText="Limpar"
 				confirmText="Confirmar"
 				webStyle={`

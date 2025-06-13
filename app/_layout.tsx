@@ -8,7 +8,7 @@ export default function Layout() {
 	return (
 		<View style={styles.container}>
 			{/* Header */}
-			{pathname !== "/Levantamento/assinatura" && (
+			{!pathname.endsWith("assinatura")&& (
 				<View style={styles.header}>
 					<Text style={styles.headerText}>Vip Mobile</Text>
 				</View>

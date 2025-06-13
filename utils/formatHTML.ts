@@ -13,7 +13,7 @@ const assinaturaHtml = `
             <div class="max-w-[90vw] mb-[20vh] break-words mx-auto">
                 <p>Este inventário de riscos e levantamento de dados foi realizado por profissional técnico em segurança do trabalho da empresa Vip Engenharia de Segurança e Medicina do Trabalho, com meu auxílio. Foram levantados o total de $setores.length setores e $atividades.length funções.</p>
                 <p>Confirmo que fui designado como responsável por informar todos os dados necessários para a elaboração da documentação de Saude e Segurança do Trabalho da empresa "$empresa.nome".</p>
-                <p>Após conferencia de todos os dados favor assinar com nome legível abaixo.</p>
+                <p>Declaro que, após verificar e confirmar a veracidade dos dados apresentados, aposto abaixo minha assinatura legível.</p>
             </div>
             <div class="max-w-[90vw] mx-auto text-center not-assinatura">
                 $assinatura

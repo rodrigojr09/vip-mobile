@@ -1,7 +1,10 @@
 import Button from "@/components/Button";
 import Container from "@/components/Container";
-import questions, { Question } from "@/utils/questions";
+import { useVisita } from "@/hooks/VisitaProvider";
+import { Question, Resposta } from "@/types/VIPVisitaType";
+import questions from "@/utils/questions";
 import { getHtmlVisita } from "@/utils/Visita/formatHTML";
+import { useRouter } from "expo-router";
 import React, { useState, useEffect, JSX } from "react";
 import {
 	View,
@@ -11,12 +14,6 @@ import {
 	StyleSheet,
 	TextInput,
 } from "react-native";
-
-export type Resposta = {
-	pergunta: string;
-	value: "Sim" | "Não" | "N/A" | null;
-	observation?: string;
-};
 
 const ObservacaoCampo = ({
 	label,
@@ -51,15 +48,18 @@ const ObservacaoCampo = ({
 };
 
 export default function Visita() {
-	const [respostas, setRespostas] = useState<Resposta[]>([]);
-	const [empresa, setEmpresa] = useState("");
-	const [visitante, setVisitante] = useState("");
-	const [acompanhante, setAcompanhante] = useState("");
-	const [perguntas, setPerguntas] = useState<Question[]>([]);
-
-	useEffect(() => {
-		setPerguntas(questions);
-	}, []);
+	const {
+		empresa,
+		acompanhante,
+		visitante,
+		perguntas,
+		respostas,
+		setRespostas,
+		setAcompanhante,
+		setVisitante,
+		setEmpresa,
+	} = useVisita();
+	const router = useRouter();
 
 	function setStatus(pergunta: string, status: Resposta["value"]) {
 		setRespostas((prev) =>
@@ -148,14 +148,7 @@ export default function Visita() {
 	};
 
 	function handleSave() {
-		const html = getHtmlVisita({
-			empresa,
-			acompanhante,
-			perguntas,
-			respostas,
-			visitante,
-		});
-		console.log(html);
+		router.push({ pathname: "/VisitaTecnica/resumo" });
 	}
 
 	return (

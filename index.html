@@ -53,24 +53,33 @@
     <div class="pergunta">
         <p class="label">
             Existe Sinalização de Segurança?
-            <span class="status-Sim">Sim</span>
+            <span class="status-Não">Não</span>
         </p>
 
-        <div class="pergunta">
-            <p class="label">
-                A sinalização de segurança está visível e compreensível?
-                <span class="status-Não">Não</span>
-            </p>
+    </div><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 
-            <div class="pergunta">
-                <p class="label">
-                    As placas precisam ser substituídas ou reforçadas?
-                    <span class="status-N/A">N/A</span>
-                </p>
-                <p>Jshshhshshs</p>
+    <div class="p-2 h-screen">
+        <div class="border border-black p-2 h-full">
+            <h1 class="font-bold text-2xl my-2 text-center">
+                Levantamento - $empresa.nome<br>
+                Levantamento feito no dia $data
+            </h1>
+            <div class="max-w-[90vw] mb-[20vh] break-words mx-auto">
+                <p>Este inventário de riscos e levantamento de dados foi realizado por profissional técnico em segurança
+                    do trabalho da empresa Vip Engenharia de Segurança e Medicina do Trabalho, com meu auxílio. Foram
+                    levantados o total de $setores.length setores e $atividades.length funções.</p>
+                <p>Confirmo que fui designado como responsável por informar todos os dados necessários para a elaboração
+                    da documentação de Saude e Segurança do Trabalho da empresa "$empresa.nome".</p>
+                <p>Declaro que, após verificar e confirmar a veracidade dos dados apresentados, aposto abaixo minha assinatura legível.</p>
+            </div>
+            <div class="max-w-[90vw] mx-auto text-center not-assinatura">
+                $assinatura
+                <div class="border-b border-black mx-auto max-w-[90vw]"></div>
+                $responsavel
             </div>
         </div>
-    </div><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+    </div>
+
 </body>
 
 </html>
