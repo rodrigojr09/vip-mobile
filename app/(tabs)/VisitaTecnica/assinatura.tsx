@@ -34,7 +34,7 @@ const SignatureScreen = () => {
 				ScreenOrientation.OrientationLock.LANDSCAPE
 			);
 		};
-		lockOrientation();
+        lockOrientation();
 	}, []);
 
 	return (
@@ -46,13 +46,14 @@ const SignatureScreen = () => {
 					Alert.alert("Atenção", "Nenhuma assinatura capturada.")
 				}
 				descriptionText={"Assinatura de: "}
-				clearText="Limpar"
+                clearText="Limpar"
 				confirmText="Confirmar"
-				webStyle={`
-						.m-signature-pad {
+                webStyle={`
+                    .m-signature-pad {
 							box-shadow: none;
 							border: 2px solid red;
 							margin: 0;
+                            height:200%;
 						}
 					`}
 			/>
@@ -62,7 +63,7 @@ const SignatureScreen = () => {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+        flex: 1,
 		backgroundColor: "#00a44ff",
 	},
 });

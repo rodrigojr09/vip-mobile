@@ -28,7 +28,8 @@ export default function Layout() {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+        flex: 1,
+        paddingVertical: 30,
 		color: "white",
 		backgroundColor: "#0f172a", // Cor slate-900
 	},
@@ -44,7 +45,7 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 	},
 	content: {
-		flex: 1,
+        flex: 1,
 		backgroundColor: "#0f172a", // Mesma cor de fundo para consistência
 	},
 });

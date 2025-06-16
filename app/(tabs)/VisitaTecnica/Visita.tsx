@@ -13,6 +13,7 @@ import {
 	ScrollView,
 	StyleSheet,
 	TextInput,
+	Alert,
 } from "react-native";
 
 const ObservacaoCampo = ({
@@ -148,6 +149,27 @@ export default function Visita() {
 	};
 
 	function handleSave() {
+		if (empresa.trim().length === 0)
+			return Alert.alert(
+				"Atenção! O nome da empresa precisa ser preenchido"
+			);
+		if (visitante.trim().length === 0)
+			return Alert.alert(
+				"Atenção! O nome do técnico precisa ser preenchido"
+			);
+		if (acompanhante.trim().length === 0)
+			return Alert.alert(
+				"Atenção! O nome do cliente responsável precisa ser preenchido"
+			);
+		if (
+			perguntas.filter(
+				(a) =>
+					!respostas.find((r) => r.pergunta === a.label) ||
+					respostas.find((r) => r.pergunta === a.label)?.value ===
+						null
+			).length > 0
+		)
+			return Alert.alert("Atenção! Preencha todas as perguntas.");
 		router.push({ pathname: "/VisitaTecnica/resumo" });
 	}
 
