@@ -1,4 +1,5 @@
 import { useRouter } from "expo-router";
+import * as Device from 'expo-device';
 import React, { useRef, useEffect } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import * as ScreenOrientation from "expo-screen-orientation";
@@ -35,7 +36,9 @@ const SignatureScreen = () => {
 			);
 		};
         lockOrientation();
-	}, []);
+    }, []);
+    
+    const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
 	return (
 		<View style={styles.container}>
@@ -53,7 +56,7 @@ const SignatureScreen = () => {
 							box-shadow: none;
 							border: 2px solid red;
 							margin: 0;
-                            height:100%;
+                            height: ${isTablet ? 200 : 100}%;
 						}
 					`}
 			/>

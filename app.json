@@ -4,6 +4,7 @@
     "slug": "vip-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
+
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
@@ -16,7 +17,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "mobile.vipprev.com.br"
+      "package": "mobile.vipsst.com.br"
     },
     "web": {
       "bundler": "metro",
@@ -49,7 +50,7 @@
       }
     },
     "ios": {
-      "bundleIdentifier": "mobile.vipprev.com.br"
+      "bundleIdentifier": "mobile.vipsst.com.br"
     }
   }
 }

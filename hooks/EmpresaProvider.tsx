@@ -1,5 +1,4 @@
 import { VIPEmpresaType } from "@/types/VIPEmpresaType";
-import { VIPRiscoType } from "@/types/VIPRiscoType";
 import { VIPEpiType } from "@/types/VIPRiscoType";
 import { createContext, ReactNode, useContext, useState } from "react";
 import { VIPSetorType } from "@/types/VIPSetorType";

@@ -33,18 +33,30 @@ export default function Risco() {
 
 	const [filteredData, setFilteredData] = useState<RiscoDataType[]>([]);
 
+	const normalize = (str: string) =>
+		str
+			.normalize("NFD")
+			.replace(/[\u0300-\u036f]/g, "")
+			.toLowerCase();
+
 	const handleSearch = (text: string) => {
 		setQuery(text);
+
 		if (text.trim().length === 0) {
 			setFilteredData([]);
 			return;
 		}
+
+		const normalizedText = normalize(text);
+
 		const results = getRiscos().filter(
 			(item) =>
 				item.tipo === (params.tipo as any) &&
-				item.risco.toLowerCase().includes(text.toLowerCase())
+				normalize(item.risco).includes(normalizedText) 
 		);
+
 		setFilteredData(results as any);
+
 		if (query !== risco.risco) risco.setRisco("");
 	};
 	const handleSelect = (item: string) => {

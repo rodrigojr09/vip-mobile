@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import * as Device from "expo-device";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { View, StyleSheet, Alert } from "react-native";
 import Signature, { SignatureViewRef } from "react-native-signature-canvas";
@@ -39,6 +40,8 @@ const SignatureScreen = () => {
 		lockOrientation();
 	}, []);
 
+    const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+
 	return (
 		<View style={styles.container}>
 			<Signature
@@ -55,6 +58,7 @@ const SignatureScreen = () => {
 							box-shadow: none;
 							border: 2px solid red;
 							margin: 0;
+                            height: ${isTablet ? 200 : 100}%;
 						}
 					`}
 			/>
