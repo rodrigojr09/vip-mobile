@@ -53,7 +53,7 @@ const SignatureScreen = () => {
 							box-shadow: none;
 							border: 2px solid red;
 							margin: 0;
-                            height:200%;
+                            height:100%;
 						}
 					`}
 			/>

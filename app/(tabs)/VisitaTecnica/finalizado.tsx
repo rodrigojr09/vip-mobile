@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import * as Print from "expo-print";
 import * as ScreenOrientation from "expo-screen-orientation";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
@@ -11,6 +12,7 @@ import { getHtml } from "@/utils/formatHTML";
 import Container from "@/components/Container";
 import { useVisita } from "@/hooks/VisitaProvider";
 import { getHtmlVisita } from "@/utils/Visita/formatHTML";
+import { abrirArquivo } from "@/utils/abrirArquivo";
 
 export default function Finalizado() {
 	const router = useRouter();
@@ -38,15 +40,19 @@ export default function Finalizado() {
 				.replace("not-assinatura", "");
 
 			// Caminho para salvar o arquivo HTML
-			const filePath = `${FileSystem.documentDirectory}Visita-${visita.empresa}.html`;
+			const filePath = `${visita.empresa}.pdf`;
 
 			// Salvar o arquivo
-			await FileSystem.writeAsStringAsync(filePath, htmlContent, {
-				encoding: FileSystem.EncodingType.UTF8,
-			});
+            const data = await Print.printToFileAsync({
+                html: htmlContent,
+                base64: true,
+                textZoom: 100,
+                useMarkupFormatter: true
+            });
 
+            
 			// Compartilhar o arquivo salvo
-			await Sharing.shareAsync(filePath);
+			abrirArquivo(data.uri);
 
 			console.log(
 				"Arquivo gerado e compartilhado com sucesso:",
