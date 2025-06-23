@@ -1,18 +1,20 @@
 import { fetchQuests, getQuests } from "@/utils/API/Quests";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
+import questions from "@/utils/questions";
 import { Stack, usePathname } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function Layout() {
-	const pathname = usePathname();
+    const pathname = usePathname();
     const [loading, setLoading] = useState(true);
     useEffect(() => {
-        fetchQuests().then(() => {
-            const quests = getQuests();
-            console.log(quests);
+        fetchQuests().then(async () => {
+            const quests = await getQuests();
             setLoading(false);
         });
-    }, [])
+	}, []);
 	return (
 		<View style={styles.container}>
 			{/* Header */}
@@ -34,12 +36,14 @@ export default function Layout() {
 			) : (
 				<View
 					style={{
-                        flex: 1,
-                        justifyContent: "center",
-                        alignItems: "center",
+						flex: 1,
+						justifyContent: "center",
+						alignItems: "center",
 					}}
 				>
-					<Text style={{ color: "white" }}>Estamos carregando, por favor aguarde...</Text>
+					<Text style={{ color: "white" }}>
+						Estamos carregando, por favor aguarde...
+					</Text>
 				</View>
 			)}
 		</View>

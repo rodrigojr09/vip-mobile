@@ -1,6 +1,7 @@
 import { VIPRiscoType } from "@/types/VIPRiscoType";
 import { VIPEpiType } from "@/types/VIPRiscoType";
 import { createContext, ReactNode, useContext, useState } from "react";
+import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 
 const RiscoContext = createContext<VIPRiscoType | undefined>(undefined);

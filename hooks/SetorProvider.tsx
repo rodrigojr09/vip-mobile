@@ -1,6 +1,7 @@
 import { VIPSetorType } from "@/types/VIPSetorType";
 import { VIPFuncaoType } from "@/types/VIPFuncaoType";
 import { createContext, ReactNode, useContext, useState } from "react";
+import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 
 const SetorContext = createContext<VIPSetorType | undefined>(undefined);

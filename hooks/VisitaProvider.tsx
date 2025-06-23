@@ -1,4 +1,5 @@
 import { Question, Resposta, VIPVisitaType } from "@/types/VIPVisitaType";
+import { getQuests } from "@/utils/API/Quests";
 import questions from "@/utils/questions";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
@@ -12,7 +13,10 @@ export default function VisitaProvider({ children }: { children: ReactNode }) {
     const [respostas, setRespostas] = useState<Resposta[]>([]);
     
     useEffect(() => {
-		setPerguntas(questions);
+        (async () => {
+            const questions = await getQuests();
+            setPerguntas(questions || []);
+        })
 	}, []);
 
 	return (
