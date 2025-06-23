@@ -8,10 +8,7 @@ export default function NotFoundScreen() {
 		<>
 			<Stack.Screen options={{ title: "Oops!" }} />
 			<View style={styles.container}>
-				<Text>
-					The route "{router.getId()}"
-					doesn't exist.
-				</Text>
+				<Text>The route "{router.getId()}" doesn't exist.</Text>
 				{router.getState()?.history?.join("\n")}
 				<Link href="/" style={styles.link}>
 					<Text>Go to home screen!</Text>
