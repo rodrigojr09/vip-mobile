@@ -9,7 +9,7 @@ export default function NotFoundScreen() {
 			<Stack.Screen options={{ title: "Oops!" }} />
 			<View style={styles.container}>
 				<Text>
-					The route "{router.getState()?.routeNames.join("\n")}"
+					The route "{router.getId()}"
 					doesn't exist.
 				</Text>
 				{router.getState()?.history?.join("\n")}

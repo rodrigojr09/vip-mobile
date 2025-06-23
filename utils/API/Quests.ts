@@ -1,6 +1,6 @@
 import * as FileSystem from "expo-file-system";
 
-const DEFAULT_QUEST_FILE = FileSystem.documentDirectory + "quests.json";
+const DEFAULT_QUEST_FILE = FileSystem.documentDirectory + "/quests.json";
 
 /**
  * Busca as quests da API e salva localmente no arquivo.
@@ -38,8 +38,8 @@ export async function getQuests(filePath = DEFAULT_QUEST_FILE) {
 			console.warn("⚠️ Arquivo de quests não encontrado.");
 			return null;
 		}
-
         const content = await FileSystem.readAsStringAsync(filePath);
+        console.log(`✅ Quests lidas com sucesso em: ${filePath}`);
 		return JSON.parse(content);
 	} catch (error: any) {
 		console.error("❌ Erro ao ler quests:", error.message || error);

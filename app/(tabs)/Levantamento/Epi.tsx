@@ -16,7 +16,7 @@ import { VIPEpi } from "@/hooks/EmpresaProvider";
 import { useRisco } from "@/hooks/RiscoProvider";
 import getEpis from "@/utils/Epis";
 
-export default function Epi(a: any) {
+export default function Epi() {
 	const params = useLocalSearchParams();
 	const router = useRouter();
 	const risco = useRisco();

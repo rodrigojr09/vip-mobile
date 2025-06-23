@@ -1,7 +1,4 @@
 import { fetchQuests, getQuests } from "@/utils/API/Quests";
-import "react-native-get-random-values";
-import { v4 as uuidv4 } from "uuid";
-import questions from "@/utils/questions";
 import { Stack, usePathname } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -11,7 +8,6 @@ export default function Layout() {
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         fetchQuests().then(async () => {
-            const quests = await getQuests();
             setLoading(false);
         });
 	}, []);
