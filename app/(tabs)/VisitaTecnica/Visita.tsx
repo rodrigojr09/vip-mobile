@@ -2,6 +2,7 @@ import Button from "@/components/Button";
 import Container from "@/components/Container";
 import { useVisita } from "@/hooks/VisitaProvider";
 import { Question, Resposta } from "@/types/VIPVisitaType";
+import { getEmpresas } from "@/utils/API/Empresas";
 import { useRouter } from "expo-router";
 import React, { useState, useEffect, JSX } from "react";
 import {
@@ -12,6 +13,7 @@ import {
 	StyleSheet,
 	TextInput,
 	Alert,
+	FlatList,
 } from "react-native";
 
 const ObservacaoCampo = ({
@@ -57,8 +59,13 @@ export default function Visita() {
 		setAcompanhante,
 		setVisitante,
 		setEmpresa,
+		empresas,
+		clear,
+		data,
+		setPerguntas,
 	} = useVisita();
 	const router = useRouter();
+	const [search, setSearch] = useState("");
 
 	function setStatus(pergunta: string, status: Resposta["value"]) {
 		setRespostas((prev) =>
@@ -99,7 +106,7 @@ export default function Visita() {
 				<Text style={styles.questionText}>{label}</Text>
 
 				<View style={styles.buttonGroup}>
-					{["Sim", "Não", "N/A"].map((key) => {
+					{["Sim", "Não", "NA"].map((key) => {
 						const isSelected = status === key;
 						return (
 							<TouchableOpacity
@@ -125,13 +132,13 @@ export default function Visita() {
 
 				{subquest &&
 					status &&
-					status !== "N/A" &&
+					status !== "NA" &&
 					subquest[status === "Sim" ? "true" : "false"] &&
 					renderQuestion(
 						subquest[status === "Sim" ? "true" : "false"]
 					)}
 
-				{status && (status === "N/A" || !subquest) && (
+				{status && (status === "NA" || !subquest) && (
 					<ObservacaoCampo
 						label={label}
 						status={status}
@@ -147,7 +154,7 @@ export default function Visita() {
 	};
 
 	function handleSave() {
-		if (empresa.trim().length === 0)
+		if (empresa === null)
 			return Alert.alert(
 				"Atenção! O nome da empresa precisa ser preenchido"
 			);
@@ -180,8 +187,27 @@ export default function Visita() {
 							style={styles.input}
 							placeholder="Nome da empresa"
 							placeholderTextColor="#aaa"
-							value={empresa}
-							onChangeText={setEmpresa}
+							value={search}
+							onChangeText={(e) => setSearch(e)}
+						/>
+						<FlatList
+							data={empresas.filter(
+								(e) =>
+									e.razao_social.includes(search) ||
+									e.cnpj.includes(search) ||
+									e.nome_fantasia.includes(search)
+							)}
+							keyExtractor={(item, index) => index.toString()}
+							renderItem={({ item }) => (
+								<TouchableOpacity style={styles.resultItem}>
+									<Text>{item.razao_social}</Text>
+								</TouchableOpacity>
+							)}
+							ListEmptyComponent={
+								<Text style={styles.noResults}>
+									Nenhuma empresa encontrada.
+								</Text>
+							}
 						/>
 					</View>
 					<View style={styles.row}>
@@ -286,5 +312,16 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		minHeight: 60,
 		textAlignVertical: "top",
+	},
+	resultItem: {
+		padding: 10,
+		backgroundColor: "#f0f0f0",
+		marginBottom: 8,
+		borderRadius: 6,
+	},
+	noResults: {
+		marginTop: 10,
+		color: "#888",
+		fontStyle: "italic",
 	},
 });

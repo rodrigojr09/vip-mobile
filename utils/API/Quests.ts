@@ -1,4 +1,5 @@
 import * as FileSystem from "expo-file-system";
+import base_url from "./base_url";
 
 const DEFAULT_QUEST_FILE = FileSystem.documentDirectory + "/quests.json";
 
@@ -8,7 +9,7 @@ const DEFAULT_QUEST_FILE = FileSystem.documentDirectory + "/quests.json";
  */
 export async function fetchQuests(filePath = DEFAULT_QUEST_FILE) {
 	try {
-		const response = await fetch("https://vip-admin-VIP2025.vercel.app/api/quests");
+		const response = await fetch(base_url + "/api/quests");
 
 		if (!response.ok) {
 			throw new Error(`Erro HTTP: ${response.status}`);
@@ -38,8 +39,8 @@ export async function getQuests(filePath = DEFAULT_QUEST_FILE) {
 			console.warn("⚠️ Arquivo de quests não encontrado.");
 			return null;
 		}
-        const content = await FileSystem.readAsStringAsync(filePath);
-        console.log(`✅ Quests lidas com sucesso em: ${filePath}`);
+		const content = await FileSystem.readAsStringAsync(filePath);
+		console.log(`✅ Quests lidas com sucesso em: ${filePath}`);
 		return JSON.parse(content);
 	} catch (error: any) {
 		console.error("❌ Erro ao ler quests:", error.message || error);

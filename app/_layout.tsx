@@ -1,15 +1,18 @@
+import { fetchEmpresas } from "@/utils/API/Empresas";
 import { fetchQuests, getQuests } from "@/utils/API/Quests";
 import { Stack, usePathname } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function Layout() {
-    const pathname = usePathname();
-    const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        fetchQuests().then(async () => {
-            setLoading(false);
-        });
+	const pathname = usePathname();
+	const [loading, setLoading] = useState(true);
+	useEffect(() => {
+		fetchQuests().then(async () => {
+			fetchEmpresas().then(async () => {
+				setLoading(false);
+			});
+		});
 	}, []);
 	return (
 		<View style={styles.container}>

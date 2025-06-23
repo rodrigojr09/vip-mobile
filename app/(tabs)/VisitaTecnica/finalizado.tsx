@@ -9,6 +9,9 @@ import Container from "@/components/Container";
 import { useVisita } from "@/hooks/VisitaProvider";
 import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 import { abrirArquivo } from "@/utils/abrirArquivo";
+import { NovaVisita } from "@/utils/API/Empresas";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
 
 export default function Finalizado() {
 	const router = useRouter();
@@ -23,6 +26,15 @@ export default function Finalizado() {
 			await ScreenOrientation.lockAsync(
 				ScreenOrientation.OrientationLock.PORTRAIT_UP
 			);
+			NovaVisita({
+				id: uuidv4(),
+				data: visita.data,
+				empresaId: visita.empresa?.id || "",
+				acompanhante: visita.acompanhante,
+				perguntas: visita.perguntas,
+				respostas: visita.respostas,
+				visitante: visita.visitante,
+			});
 		})();
 
 		BackHandler.addEventListener("hardwareBackPress", backAction);

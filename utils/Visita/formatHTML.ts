@@ -7,11 +7,11 @@ function getRespostaHtml(
 ): string {
 	const resposta = respostas?.find((a) => a.pergunta == pergunta?.label);
 
-    if (!resposta || !pergunta) return "";
+	if (!resposta || !pergunta) return "";
 
 	let next: Question | undefined;
 
-	if (pergunta.subquest && resposta.value !== "N/A") {
+	if (pergunta.subquest && resposta.value !== "NA") {
 		if (resposta.value === "Sim") {
 			next = pergunta.subquest.true;
 		} else if (resposta.value === "Não") {
@@ -22,16 +22,18 @@ function getRespostaHtml(
 	return `
     
     ${start ? `<div class="card">` : ""}
-      <p class="question">${pergunta?.label}</p>
+      <p class="question">${pergunta?.label} ${
+		resposta.value === "NA" ? "(Não aplicável)" : ""
+	}</p>
       ${
-			resposta.value !== "N/A"
+			resposta.value !== "NA"
 				? `<p class="answer">Resposta: ${resposta.value}</p>`
 				: ""
 		}
       
         ${
 			// Se tem observation ou é N/A, mostra só isso. Senão, tenta renderizar próxima.
-			resposta.observation || resposta.value === "N/A"
+			resposta.observation || resposta.value === "NA"
 				? `<p class="observacoes"><strong>Observações:</strong> ${
 						resposta.observation || "..."
 				  }</p>`
@@ -64,13 +66,6 @@ const assinaturaHtml = `
 `;
 
 export function getHtmlVisita(empresa: VIPVisitaType) {
-	const hoje = new Date();
-	const dia = String(hoje.getDate()).padStart(2, "0");
-	const mes = String(hoje.getMonth() + 1).padStart(2, "0");
-	const ano = hoje.getFullYear();
-
-	const dataFormatada = `${dia}/${mes}/${ano}`;
-
 	return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -230,7 +225,7 @@ export function getHtmlVisita(empresa: VIPVisitaType) {
       <p><strong>Empresa Visitada:</strong> ${empresa.empresa}</p>
       <p><strong>Responsável pela Visita:</strong> ${empresa.visitante}</p>
       <p><strong>
-      <p><strong>Data:</strong> ${dataFormatada}</p>
+      <p><strong>Data:</strong> ${empresa.data}</p>
     </div>
 
     ${empresa.perguntas
@@ -239,8 +234,13 @@ export function getHtmlVisita(empresa: VIPVisitaType) {
 
     ${assinaturaHtml
 		.replaceAll("$responsavel", empresa.acompanhante)
-		.replaceAll("$empresa.nome", empresa.empresa)
-		.replaceAll("$data", dataFormatada)}
+		.replaceAll(
+			"$empresa.nome",
+			empresa.empresa?.razao_social ||
+				empresa.empresa?.nome_fantasia ||
+				""
+		)
+		.replaceAll("$data", empresa.data)}
 
   </div>
 </body>
