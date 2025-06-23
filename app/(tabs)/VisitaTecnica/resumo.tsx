@@ -20,7 +20,7 @@ export default function Rascunho() {
 	}
 
 	const htmlContent = getHtmlVisita(visita);
-	
+
 	return (
 		<View style={styles.container}>
 			<WebView

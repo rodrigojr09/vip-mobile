@@ -3,10 +3,7 @@ import Container from "@/components/Container";
 import Input from "@/components/Input";
 import { useEmpresa } from "@/hooks/EmpresaProvider";
 import { useRouter } from "expo-router";
-import {
-	Alert,
-	StyleSheet,
-} from "react-native";
+import { Alert, StyleSheet } from "react-native";
 
 export default function Levantamento() {
 	const router = useRouter();

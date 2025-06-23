@@ -2,8 +2,6 @@ import Button from "@/components/Button";
 import Container from "@/components/Container";
 import { useVisita } from "@/hooks/VisitaProvider";
 import { Question, Resposta } from "@/types/VIPVisitaType";
-import questions from "@/utils/questions";
-import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 import { useRouter } from "expo-router";
 import React, { useState, useEffect, JSX } from "react";
 import {

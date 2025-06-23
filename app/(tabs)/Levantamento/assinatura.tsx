@@ -40,7 +40,7 @@ const SignatureScreen = () => {
 		lockOrientation();
 	}, []);
 
-    const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+	const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
 	return (
 		<View style={styles.container}>

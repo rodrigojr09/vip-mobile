@@ -28,7 +28,6 @@ export default function Finalizado() {
 		})();
 
 		BackHandler.addEventListener("hardwareBackPress", backAction);
-
 	}, []);
 	async function handleDownload() {
 		try {

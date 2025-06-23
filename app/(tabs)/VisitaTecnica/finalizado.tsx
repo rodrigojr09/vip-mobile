@@ -14,7 +14,7 @@ export default function Finalizado() {
 	const router = useRouter();
 	const query = useSearchParams();
 	const visita = useVisita();
-	
+
 	useEffect(() => {
 		const backAction = () => {
 			return true;
@@ -26,7 +26,6 @@ export default function Finalizado() {
 		})();
 
 		BackHandler.addEventListener("hardwareBackPress", backAction);
-
 	}, []);
 	async function handleDownload() {
 		try {
@@ -39,23 +38,21 @@ export default function Finalizado() {
 			const filePath = `${visita.empresa}.pdf`;
 
 			// Salvar o arquivo
-            const data = await Print.printToFileAsync({
-                html: htmlContent,
-                base64: true,
-                textZoom: 100,
-                margins: {
-                    top: 20,
-                    left: 0,
-                    right: 0,
-                    bottom: 20
-                },
-                useMarkupFormatter: true
-            });
+			const data = await Print.printToFileAsync({
+				html: htmlContent,
+				base64: true,
+				textZoom: 100,
+				margins: {
+					top: 20,
+					left: 0,
+					right: 0,
+					bottom: 20,
+				},
+				useMarkupFormatter: true,
+			});
 
-            
 			// Compartilhar o arquivo salvo
 			abrirArquivo(data.uri);
-
 		} catch (error) {
 			console.error("Erro ao salvar ou compartilhar o arquivo:", error);
 			Alert.alert(

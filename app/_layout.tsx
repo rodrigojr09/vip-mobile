@@ -1,35 +1,55 @@
-import Container from "@/components/Container";
+import { fetchQuests, getQuests } from "@/utils/API/Quests";
 import { Stack, usePathname } from "expo-router";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function Layout() {
 	const pathname = usePathname();
-	console.log(pathname);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        fetchQuests().then(() => {
+            const quests = getQuests();
+            console.log(quests);
+            setLoading(false);
+        });
+    }, [])
 	return (
 		<View style={styles.container}>
 			{/* Header */}
-			{!pathname.endsWith("assinatura")&& (
+			{!pathname.endsWith("assinatura") && (
 				<View style={styles.header}>
 					<Text style={styles.headerText}>Vip Mobile</Text>
 				</View>
 			)}
 
 			{/* Conteúdo da aplicação */}
-			<View style={styles.content}>
-				<Stack
-					screenOptions={{
-						headerShown: false,
+			{!loading ? (
+				<View style={styles.content}>
+					<Stack
+						screenOptions={{
+							headerShown: false,
+						}}
+					/>
+				</View>
+			) : (
+				<View
+					style={{
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
 					}}
-				/>
-			</View>
+				>
+					<Text style={{ color: "white" }}>Estamos carregando, por favor aguarde...</Text>
+				</View>
+			)}
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
 	container: {
-        flex: 1,
-        paddingVertical: 30,
+		flex: 1,
+		paddingVertical: 30,
 		color: "white",
 		backgroundColor: "#0f172a", // Cor slate-900
 	},
@@ -45,7 +65,7 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 	},
 	content: {
-        flex: 1,
+		flex: 1,
 		backgroundColor: "#0f172a", // Mesma cor de fundo para consistência
 	},
 });
