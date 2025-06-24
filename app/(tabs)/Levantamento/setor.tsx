@@ -6,14 +6,24 @@ import RadioButton from "@/components/RadioButton";
 import { useSetor } from "@/hooks/SetorProvider";
 import { useEmpresa } from "@/hooks/EmpresaProvider";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Alert, StyleSheet } from "react-native";
-import { useEffect } from "react";
+import { Alert, StyleSheet, TextInput } from "react-native";
+import { useEffect, useRef } from "react";
 
 export default function Setor() {
 	const router = useRouter();
 	const params = useLocalSearchParams();
 	const empresa = useEmpresa();
 	const setor = useSetor();
+
+	const campos = 12;
+	const refs = useRef<TextInput[]>([]);
+	const focarProximo = (index: number) => {
+		if (index + 1 < campos) {
+			refs.current[index + 1]?.focus();
+		} else {
+			console.log("📨 Enviar formulário!");
+		}
+	};
 
 	useEffect(() => {
 		if (params.setor) {
@@ -109,61 +119,119 @@ export default function Setor() {
 				placeholder="Digite o nome do setor..."
 				value={setor.nome}
 				onChange={setor.setNome}
+				ref={(ref) => {
+					if (ref) refs.current[0] = ref;
+				}}
+				returnKeyType={0 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(0)}
 			/>
 			<Input
 				placeholder="Digite a largura setor..."
 				value={setor.largura}
 				onChange={setor.setLargura}
+				ref={(ref) => {
+					if (ref) refs.current[1] = ref;
+				}}
+				returnKeyType={1 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(1)}
 			/>
 			<Input
 				placeholder="Digite o comprimento do setor..."
 				value={setor.comprimento}
 				onChange={setor.setComprimento}
+				ref={(ref) => {
+					if (ref) refs.current[2] = ref;
+				}}
+				returnKeyType={2 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(2)}
 			/>
 			<Input
 				placeholder="Digite o pé direito do setor..."
 				value={setor.peDireito}
 				onChange={setor.setPeDireito}
+				ref={(ref) => {
+					if (ref) refs.current[3] = ref;
+				}}
+				returnKeyType={3 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(3)}
 			/>
 			<Input
 				placeholder="Digite o piso do setor..."
 				value={setor.piso}
 				onChange={setor.setPiso}
+				ref={(ref) => {
+					if (ref) refs.current[4] = ref;
+				}}
+				returnKeyType={4 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(4)}
 			/>
 			<Input
 				placeholder="Digite a estrutura do setor..."
 				value={setor.estrutura}
 				onChange={setor.setEstrutura}
+				ref={(ref) => {
+					if (ref) refs.current[5] = ref;
+				}}
+				returnKeyType={5 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(5)}
 			/>
 			<Input
 				placeholder="Digite o forro do setor..."
 				value={setor.forro}
 				onChange={setor.setForro}
+				ref={(ref) => {
+					if (ref) refs.current[6] = ref;
+				}}
+				returnKeyType={6 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(6)}
 			/>
 			<Input
 				placeholder="Digite a iluminção natural do setor..."
 				value={setor.iluminacao.natural}
 				onChange={setor.iluminacao.setNatural}
+				ref={(ref) => {
+					if (ref) refs.current[7] = ref;
+				}}
+				returnKeyType={7 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(7)}
 			/>
 			<Input
 				placeholder="Digite a iluminação artificial do setor..."
 				value={setor.iluminacao.artificial}
 				onChange={setor.iluminacao.setArtificial}
+				ref={(ref) => {
+					if (ref) refs.current[8] = ref;
+				}}
+				returnKeyType={8 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(8)}
 			/>
 			<Input
 				placeholder="Digite a ventilação natural do setor..."
 				value={setor.ventilacao.natural}
 				onChange={setor.ventilacao.setNatural}
+				ref={(ref) => {
+					if (ref) refs.current[9] = ref;
+				}}
+				returnKeyType={9 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(9)}
 			/>
 			<Input
 				placeholder="Digite a ventilação artificial do setor..."
 				value={setor.ventilacao.artificial}
 				onChange={setor.ventilacao.setArtificial}
+				ref={(ref) => {
+					if (ref) refs.current[10] = ref;
+				}}
+				returnKeyType={10 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(10)}
 			/>
 			<Input
 				placeholder="Digite as maquinas e equipamentos presente setor"
 				value={setor.me}
 				textarea={true}
+				ref={(ref) => {
+					if (ref) refs.current[11] = ref;
+				}}
 				onChange={setor.setMe}
 			/>
 			<Input

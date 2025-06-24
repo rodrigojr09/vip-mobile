@@ -4,16 +4,27 @@ import Button from "@/components/Button";
 import { useFuncao } from "@/hooks/FuncaoProvider";
 import { useSetor } from "@/hooks/SetorProvider";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Alert, StyleSheet } from "react-native";
+import { Alert, StyleSheet, TextInput } from "react-native";
 import VIPTabela from "@/components/VIPTabela";
 import RiscoForm from "@/components/RiscoForm";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export default function Funcao() {
 	const router = useRouter();
 	const setor = useSetor();
 	const funcao = useFuncao();
 	const params = useLocalSearchParams();
+
+	const campos = 4;
+	const refs = useRef<TextInput[]>([]);
+	const focarProximo = (index: number) => {
+		if (index + 1 < campos) {
+			refs.current[index + 1]?.focus();
+		} else {
+            refs.current[index].blur();
+		}
+	};
+
 	useEffect(() => {
 		if (params.funcao) {
 			const hasFuncao = setor.funcoes.find(
@@ -55,21 +66,41 @@ export default function Funcao() {
 				placeholder="Digite o nome da função"
 				value={funcao.nome}
 				onChange={funcao.setNome}
+				ref={(ref) => {
+					if (ref) refs.current[0] = ref;
+				}}
+				returnKeyType={0 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(0)}
 			/>
 			<Input
 				placeholder="Digite a descrição da função"
 				value={funcao.description}
 				onChange={funcao.setDescription}
+				ref={(ref) => {
+					if (ref) refs.current[1] = ref;
+				}}
+				returnKeyType={1 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(1)}
 			/>
 			<Input
 				placeholder="Digite os funcionarios da função"
 				value={funcao.funcionarios}
 				onChange={funcao.setFuncionarios}
+				ref={(ref) => {
+					if (ref) refs.current[2] = ref;
+				}}
+				returnKeyType={2 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(2)}
 			/>
 			<Input
 				placeholder="Digite o LUX da função"
 				value={funcao.lux}
 				onChange={funcao.setLux}
+				ref={(ref) => {
+					if (ref) refs.current[3] = ref;
+				}}
+				returnKeyType={3 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(3)}
 			/>
 			<VIPTabela
 				headers={["Risco", "Fonte", "Tipo"]}

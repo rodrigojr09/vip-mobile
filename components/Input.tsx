@@ -1,30 +1,51 @@
-import { StyleProp, StyleSheet, TextInput, TextStyle } from "react-native";
-
-export default function Input({
-	placeholder,
-	value,
-	style,
-	onChange,
-	textarea,
-}: {
+import { forwardRef } from "react";
+import {
+	StyleProp,
+	StyleSheet,
+	TextInput,
+	TextInputProps,
+	TextStyle,
+} from "react-native";
+interface InputProps {
 	placeholder: string;
-	style?: StyleProp<TextStyle> | {};
 	value: string;
-	textarea?: boolean;
 	onChange: (value: string) => void;
-}) {
-	return (
-		<TextInput
-			style={{ ...styles.input, ...(style || { color: "#FFF" }) }}
-			placeholder={placeholder}
-			placeholderTextColor="#ccc"
-			value={value}
-			multiline={textarea ? true : false}
-			onChangeText={onChange}
-			textAlignVertical="top"
-		/>
-	);
+	textarea?: boolean;
+	style?: StyleProp<TextStyle>;
+	returnKeyType?: TextInputProps["returnKeyType"];
+	onSubmitEditing?: () => void;
 }
+
+const Input = forwardRef<TextInput, InputProps>(
+	(
+		{
+			placeholder,
+			value,
+			onChange,
+			textarea,
+			style,
+			returnKeyType,
+			onSubmitEditing,
+		},
+		ref
+	) => {
+		return (
+			<TextInput
+				ref={ref}
+				style={[styles.input, style]}
+				placeholder={placeholder}
+				placeholderTextColor="#ccc"
+				value={value}
+				multiline={textarea}
+				onChangeText={onChange}
+				textAlignVertical="top"
+				returnKeyType={returnKeyType}
+				onSubmitEditing={onSubmitEditing}
+				blurOnSubmit={false} // Importante: não fechar o teclado ao apertar Next
+			/>
+		);
+	}
+);
 
 const styles = StyleSheet.create({
 	input: {
@@ -38,3 +59,5 @@ const styles = StyleSheet.create({
 		color: "#FFF",
 	},
 });
+
+export default Input;
