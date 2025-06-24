@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import * as Device from 'expo-device';
+import * as Device from "expo-device";
 import React, { useRef, useEffect } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import * as ScreenOrientation from "expo-screen-orientation";
@@ -15,7 +15,7 @@ const SignatureScreen = () => {
 		}
 		try {
 			router.push({
-				pathname: "/VisitaTecnica/finalizado",
+				pathname: "/Visita/finalizado",
 				params: {
 					assinatura: `<img style="width: 100%; height: 100%;" src="${signature}"/>`,
 				},
@@ -35,10 +35,10 @@ const SignatureScreen = () => {
 				ScreenOrientation.OrientationLock.LANDSCAPE
 			);
 		};
-        lockOrientation();
-    }, []);
-    
-    const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+		lockOrientation();
+	}, []);
+
+	const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
 	return (
 		<View style={styles.container}>
@@ -49,9 +49,9 @@ const SignatureScreen = () => {
 					Alert.alert("Atenção", "Nenhuma assinatura capturada.")
 				}
 				descriptionText={"Assinatura de: "}
-                clearText="Limpar"
+				clearText="Limpar"
 				confirmText="Confirmar"
-                webStyle={`
+				webStyle={`
                     .m-signature-pad {
 							box-shadow: none;
 							border: 2px solid red;
@@ -66,7 +66,7 @@ const SignatureScreen = () => {
 
 const styles = StyleSheet.create({
 	container: {
-        flex: 1,
+		flex: 1,
 		backgroundColor: "#00a44ff",
 	},
 });

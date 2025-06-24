@@ -32,7 +32,7 @@ export default function Rascunho() {
 			<View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
 				<Button
 					onPress={(e) => {
-						router.push("/VisitaTecnica/assinatura");
+						router.push("/Visita/assinatura");
 					}}
 				>
 					Assinar Documento

@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import { useVisita } from "@/hooks/VisitaProvider";
-import { Question, Resposta } from "@/types/VIPVisitaType";
+import { Empresa, Question, Resposta } from "@/types/VIPVisitaType";
 import { getEmpresas } from "@/utils/API/Empresas";
 import { useRouter } from "expo-router";
 import React, { useState, useEffect, JSX } from "react";
@@ -175,70 +175,77 @@ export default function Visita() {
 			).length > 0
 		)
 			return Alert.alert("Atenção! Preencha todas as perguntas.");
-		router.push({ pathname: "/VisitaTecnica/resumo" });
+		router.push({ pathname: "/Visita/resumo" });
+	}
+
+	function filter(empresa: Empresa) {
+		return (
+			empresa.nome_fantasia
+				.toLowerCase()
+				.includes(search.toLowerCase()) ||
+			empresa.razao_social.toLowerCase().includes(search.toLowerCase()) ||
+			empresa.cnpj.toLowerCase().includes(search.toLowerCase())
+		);
 	}
 
 	return (
-		<Container>
-			<ScrollView contentContainerStyle={styles.container}>
-				<View style={styles.headerTable}>
-					<View style={styles.row}>
-						<TextInput
-							style={styles.input}
-							placeholder="Nome da empresa"
-							placeholderTextColor="#aaa"
-							value={search}
-							onChangeText={(e) => setSearch(e)}
-						/>
-						<FlatList
-							data={empresas.filter(
-								(e) =>
-									e.razao_social.includes(search) ||
-									e.cnpj.includes(search) ||
-									e.nome_fantasia.includes(search)
-							)}
-							keyExtractor={(item, index) => index.toString()}
-							renderItem={({ item }) => (
-								<TouchableOpacity style={styles.resultItem}>
-									<Text>{item.razao_social}</Text>
-								</TouchableOpacity>
-							)}
-							ListEmptyComponent={
-								<Text style={styles.noResults}>
-									Nenhuma empresa encontrada.
-								</Text>
-							}
-						/>
-					</View>
-					<View style={styles.row}>
-						<TextInput
-							style={styles.input}
-							placeholder="Nome do Técnico"
-							placeholderTextColor="#aaa"
-							value={visitante}
-							onChangeText={setVisitante}
-						/>
-					</View>
-					<View style={styles.row}>
-						<TextInput
-							style={styles.input}
-							placeholder="Responsável (Cliente)"
-							placeholderTextColor="#aaa"
-							value={acompanhante}
-							onChangeText={setAcompanhante}
-						/>
-					</View>
+		<Container style={styles.formContainer} scroller>
+			<View style={styles.headerTable}>
+				<View style={styles.row}>
+					<TextInput
+						style={styles.input}
+						placeholder="Nome da empresa"
+						placeholderTextColor="#aaa"
+						value={search}
+						onChangeText={(e) => setSearch(e)}
+					/>
 				</View>
-
-				{perguntas.map((p) => renderQuestion(p))}
-
-				<Button onPress={handleSave}>Salvar</Button>
-			</ScrollView>
+				{empresas.filter(filter).length > 0 && (
+					<FlatList
+						style={styles.suggestionsList}
+						data={empresas.filter(filter)}
+						keyExtractor={(item, index) => index.toString()}
+						renderItem={({ item }) => (
+							<TouchableOpacity
+								style={styles.suggestionItem}
+								//onPress={() => handleSelect(item.id)}
+							>
+								<Text style={styles.suggestionText}>
+									{item.razao_social}
+								</Text>
+							</TouchableOpacity>
+						)}
+					/>
+				)}
+				<View style={styles.row}>
+					<TextInput
+						style={styles.input}
+						placeholder="Nome do Técnico"
+						placeholderTextColor="#aaa"
+						value={visitante}
+						onChangeText={setVisitante}
+					/>
+				</View>
+				<View style={styles.row}>
+					<TextInput
+						style={styles.input}
+						placeholder="Responsável (Cliente)"
+						placeholderTextColor="#aaa"
+						value={acompanhante}
+						onChangeText={setAcompanhante}
+					/>
+				</View>
+			</View>
+			<Button onPress={handleSave}>Proximo</Button>
 		</Container>
 	);
 }
 
 const styles = StyleSheet.create({
+	formContainer: {
+		width: "100%",
+		paddingHorizontal: 20,
+	},
 	container: {
 		padding: 16,
 		backgroundColor: "#121212",
@@ -251,7 +258,8 @@ const styles = StyleSheet.create({
 		elevation: 3,
 	},
 	row: {
-		flexDirection: "row",
+		flexDirection: "column",
+		width: "100%",
 		alignItems: "center",
 		marginBottom: 12,
 	},
@@ -260,6 +268,7 @@ const styles = StyleSheet.create({
 		backgroundColor: "#2a2a2a",
 		color: "#fff",
 		padding: 10,
+		width: "100%",
 		borderRadius: 8,
 		fontSize: 16,
 	},
@@ -323,5 +332,23 @@ const styles = StyleSheet.create({
 		marginTop: 10,
 		color: "#888",
 		fontStyle: "italic",
+	},
+	suggestionsList: {
+		marginTop: 5,
+		maxHeight: 200, // Limita o tamanho da lista
+		borderColor: "white",
+		borderRadius: 10,
+		borderWidth: 1,
+	},
+	suggestionItem: {
+		padding: 15,
+		marginVertical: 2,
+		borderRadius: 10,
+		borderColor: "white",
+		borderWidth: 1,
+	},
+	suggestionText: {
+		fontSize: 16,
+		color: "white",
 	},
 });
