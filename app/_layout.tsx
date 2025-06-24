@@ -1,4 +1,5 @@
 import { fetchEmpresas } from "@/utils/API/Empresas";
+import * as Device from "expo-device";
 import { fetchQuests, getQuests } from "@/utils/API/Quests";
 import { Stack, usePathname } from "expo-router";
 import { useEffect, useState } from "react";
@@ -13,9 +14,10 @@ export default function Layout() {
 				setLoading(false);
 			});
 		});
-	}, []);
+    }, []);
+    const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 	return (
-		<View style={styles.container}>
+		<View style={{...styles.container, paddingVertical: isTablet ? 30 : 0}}>
 			{/* Header */}
 			{!pathname.endsWith("assinatura") && (
 				<View style={styles.header}>
@@ -52,7 +54,6 @@ export default function Layout() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		paddingVertical: 30,
 		color: "white",
 		backgroundColor: "#0f172a", // Cor slate-900
 	},

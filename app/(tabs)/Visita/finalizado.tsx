@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import * as Print from "expo-print";
 import * as ScreenOrientation from "expo-screen-orientation";
-import { Alert, BackHandler } from "react-native";
+import { Alert, BackHandler, Linking } from "react-native";
 import Button from "@/components/Button";
 import { useRouter } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
@@ -12,21 +12,24 @@ import { abrirArquivo } from "@/utils/abrirArquivo";
 import { NovaVisita } from "@/utils/API/Empresas";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
+import base_url from "@/utils/API/base_url";
 
 export default function Finalizado() {
 	const router = useRouter();
 	const query = useSearchParams();
 	const visita = useVisita();
+	const [token, setToken] = React.useState("");
 
 	useEffect(() => {
 		const backAction = () => {
 			return true;
 		};
+
 		(async () => {
 			await ScreenOrientation.lockAsync(
 				ScreenOrientation.OrientationLock.PORTRAIT_UP
 			);
-			NovaVisita({
+			const res = await NovaVisita({
 				id: uuidv4(),
 				data: visita.data,
 				empresaId: visita.empresa?.id || "",
@@ -34,7 +37,10 @@ export default function Finalizado() {
 				perguntas: visita.perguntas,
 				respostas: visita.respostas,
 				visitante: visita.visitante,
+				assinatura: query.get("assinatura") as string,
 			});
+			setToken(visita.empresa?.token || "");
+			console.log(res);
 		})();
 
 		BackHandler.addEventListener("hardwareBackPress", backAction);
@@ -84,7 +90,15 @@ export default function Finalizado() {
 			>
 				Ir para o Início
 			</Button>
+
 			<Button onPress={handleDownload}>Baixar Levantamento</Button>
+			<Button
+				onPress={() => {
+					Linking.openURL(`${base_url}/empresas/${token}`);
+				}}
+			>
+				Abrir Link
+			</Button>
 		</Container>
 	);
 }

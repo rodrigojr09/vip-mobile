@@ -222,9 +222,8 @@ export function getHtmlVisita(empresa: VIPVisitaType) {
     <h1>Relatório de Visita Técnica</h1>
 
     <div class="info">
-      <p><strong>Empresa Visitada:</strong> ${empresa.empresa}</p>
+      <p><strong>Empresa Visitada:</strong> ${empresa.empresa?.razao_social}</p>
       <p><strong>Responsável pela Visita:</strong> ${empresa.visitante}</p>
-      <p><strong>
       <p><strong>Data:</strong> ${empresa.data}</p>
     </div>
 
