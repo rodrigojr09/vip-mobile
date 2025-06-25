@@ -1,10 +1,16 @@
 import { ReactNode } from "react";
-import { StyleSheet, View, ScrollView, ViewStyle } from "react-native";
+import {
+	StyleSheet,
+	View,
+	ScrollView,
+	ViewStyle,
+	StyleProp,
+} from "react-native";
 
 interface ContainerProps {
 	children: ReactNode | ReactNode[];
-	style?: ViewStyle; // Tipagem correta para o estilo
-	scroller?: boolean; // Indica se deve usar ScrollView
+	style?: StyleProp<ViewStyle>;
+	scroller?: boolean;
 }
 
 export default function Container({
@@ -13,7 +19,10 @@ export default function Container({
 	scroller,
 }: ContainerProps) {
 	return scroller ? (
-		<ScrollView style={[defaultStyles.Container, style]}>
+		<ScrollView
+			style={[defaultStyles.Container]}
+			contentContainerStyle={[{ flexGrow: 1 }, style]}
+		>
 			{children}
 		</ScrollView>
 	) : (
@@ -24,6 +33,6 @@ export default function Container({
 const defaultStyles = StyleSheet.create({
 	Container: {
 		flex: 1,
-		backgroundColor: "#0f172a", // Cor de fundo padrão
+		backgroundColor: "#0f172a",
 	},
 });

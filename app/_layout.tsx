@@ -14,10 +14,16 @@ export default function Layout() {
 				setLoading(false);
 			});
 		});
-    }, []);
-    const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+	}, []);
+	const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 	return (
-		<View style={{...styles.container, paddingVertical: isTablet ? 30 : 0}}>
+		<View
+			style={{
+				...styles.container,
+				paddingBottom: isTablet ? 40 : 0,
+				paddingTop: isTablet ? 25 : 0,
+			}}
+		>
 			{/* Header */}
 			{!pathname.endsWith("assinatura") && (
 				<View style={styles.header}>

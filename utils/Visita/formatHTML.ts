@@ -1,47 +1,29 @@
 import { Question, Resposta, VIPVisitaType } from "@/types/VIPVisitaType";
 
-function getRespostaHtml(
-	pergunta?: Question,
-	respostas?: Resposta[],
-	start?: boolean
-): string {
-	const resposta = respostas?.find((a) => a.pergunta == pergunta?.label);
+function getRespostaHtml(pergunta?: Question, respostas?: Resposta[]): string {
+	const respostas2 = respostas?.filter((a) =>
+		pergunta?.perguntas.includes(a.pergunta)
+	);
+	if (respostas2?.length === 0 || !pergunta) return "";
 
-	if (!resposta || !pergunta) return "";
-
-	let next: Question | undefined;
-
-	if (pergunta.subquest && resposta.value !== "NA") {
-		if (resposta.value === "Sim") {
-			next = pergunta.subquest.true;
-		} else if (resposta.value === "Não") {
-			next = pergunta.subquest.false;
-		}
-	}
-
-	return `
-    
-    ${start ? `<div class="card">` : ""}
-      <p class="question">${pergunta?.label} ${
-		resposta.value === "NA" ? "(Não aplicável)" : ""
-	}</p>
-      ${
-			resposta.value !== "NA"
-				? `<p class="answer">Resposta: ${resposta.value}</p>`
-				: ""
-		}
-      
-        ${
-			// Se tem observation ou é N/A, mostra só isso. Senão, tenta renderizar próxima.
-			resposta.observation || resposta.value === "NA"
-				? `<p class="observacoes"><strong>Observações:</strong> ${
-						resposta.observation || "..."
-				  }</p>`
-				: next
-				? getRespostaHtml(next, respostas)
-				: ""
-		}
-                ${start ? `</div>` : ""}`;
+	return (
+		`<div class="card"><h3 class="text-center font-bold">${pergunta.label}</h3>` +
+		respostas2
+			?.map((resposta) => {
+				return `
+            
+                <p class="question">${resposta.pergunta}</p>
+                <p class="answer">Resposta: ${resposta.value}</p>
+                ${
+					resposta.observation
+						? `<p class="observacoes">Observação: ${resposta.observation}</p>`
+						: ""
+				}
+            `;
+			})
+			.join("") +
+		`</div>`
+	);
 }
 
 const assinaturaHtml = `
@@ -189,20 +171,17 @@ export function getHtmlVisita(empresa: VIPVisitaType) {
     font-size: 1.15em;
     font-weight: 700;
     margin-top: 15px;
-    margin-bottom: 5px;
   }
 
   .answer {
     color: #555;
     font-weight: normal;
     font-size: 0.95em;
-    margin-bottom: 10px;
   }
 
   .observacoes {
-    margin-top: 15px;
     font-style: italic;
-    color: #666;
+    color: #ff0000;
   }
 
   @media (max-width: 600px) {
@@ -228,7 +207,7 @@ export function getHtmlVisita(empresa: VIPVisitaType) {
     </div>
 
     ${empresa.perguntas
-		.map((pergunta) => getRespostaHtml(pergunta, empresa.respostas, true))
+		.map((pergunta) => getRespostaHtml(pergunta, empresa.respostas))
 		.join("")}
 
     ${assinaturaHtml

@@ -75,7 +75,7 @@ export default function Visita() {
 						</TouchableOpacity>
 					)}
 				</View>
-				{!empresa && empresas.filter(filter).length > 0 && (
+				{!empresa && search.trim() !== "" && empresas.filter(filter).length > 0 && (
 					<FlatList
 						style={styles.suggestionsList}
 						data={empresas.filter(filter)}

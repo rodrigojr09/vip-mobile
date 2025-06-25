@@ -6,10 +6,7 @@ export type Resposta = {
 
 export interface Question {
 	label: string;
-	subquest: {
-		true: Question;
-		false: Question;
-	} | null;
+	perguntas: string[];
 }
 
 export interface VIPVisitaType {
@@ -18,8 +15,8 @@ export interface VIPVisitaType {
 	visitante: string;
 	data: string;
 	acompanhante: string;
-    perguntas: Question[];
-    empresas: Empresa[];
+	perguntas: Question[];
+	empresas: Empresa[];
 	setRespostas: React.Dispatch<React.SetStateAction<Resposta[]>>;
 	setEmpresa: React.Dispatch<React.SetStateAction<Empresa | null>>;
 	setVisitante: React.Dispatch<React.SetStateAction<string>>;
