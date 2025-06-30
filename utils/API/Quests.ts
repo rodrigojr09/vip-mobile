@@ -1,11 +1,12 @@
 import * as FileSystem from "expo-file-system";
+import * as MediaLibrary from "expo-media-library";
 import base_url from "./base_url";
 
 const DEFAULT_QUEST_FILE = FileSystem.documentDirectory + "/quests.json";
 
 /**
- * Busca as quests da API e salva localmente no arquivo.
- * @param filePath Caminho opcional do arquivo para salvar.
+ * Busca as quests da API, salva localmente e exporta para galeria.
+ * @param filePath Caminho do arquivo local opcional
  */
 export async function fetchQuests(filePath = DEFAULT_QUEST_FILE) {
 	try {
@@ -16,11 +17,14 @@ export async function fetchQuests(filePath = DEFAULT_QUEST_FILE) {
 		}
 
 		const quests = await response.json();
-		await FileSystem.writeAsStringAsync(filePath, JSON.stringify(quests));
-		console.log(`✅ Quests salvas com sucesso em: ${filePath}`);
+
+		const jsonContent = JSON.stringify(quests, null, 2);
+
+		await FileSystem.writeAsStringAsync(filePath, jsonContent);
+		console.log(`✅ Quests salvas localmente em: ${filePath}`);
 	} catch (error: any) {
 		console.error(
-			"❌ Falha ao buscar/salvar quests:",
+			"❌ Erro ao buscar/salvar quests:",
 			error.message || error
 		);
 	}
@@ -28,17 +32,11 @@ export async function fetchQuests(filePath = DEFAULT_QUEST_FILE) {
 
 /**
  * Lê as quests armazenadas localmente.
- * @param filePath Caminho opcional do arquivo a ser lido.
- * @returns Lista de quests ou null se não encontrado ou erro.
+ * @param filePath Caminho do arquivo local opcional
+ * @returns Lista de quests ou null
  */
 export async function getQuests(filePath = DEFAULT_QUEST_FILE) {
 	try {
-		const fileInfo = await FileSystem.getInfoAsync(filePath);
-
-		if (!fileInfo.exists) {
-			console.warn("⚠️ Arquivo de quests não encontrado.");
-			return null;
-		}
 		const content = await FileSystem.readAsStringAsync(filePath);
 		console.log(`✅ Quests lidas com sucesso em: ${filePath}`);
 		return JSON.parse(content);

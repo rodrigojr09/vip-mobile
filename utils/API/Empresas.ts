@@ -1,5 +1,7 @@
 import * as FileSystem from "expo-file-system";
+import * as Network from "expo-network";
 import base_url from "./base_url";
+import saveOffline from "../Visita/saveOffline";
 
 const DEFAULT_EMPRESAS_FILE = FileSystem.documentDirectory + "/empresas.json";
 
@@ -66,13 +68,20 @@ export async function getEmpresas(filePath = DEFAULT_EMPRESAS_FILE) {
 	}
 }
 
-export async function NovaVisita(visita: Visita) {
-	const response = await fetch(base_url + "/api/visitas", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(visita),
-	});
-	return response.json();
+export async function NovaVisita(visita: Visita, offline: boolean) {
+	const status = await Network.getNetworkStateAsync();
+	if (!status.isConnected || !status.isInternetReachable) {
+		if (offline) return saveOffline(visita);
+	} else {
+		const response = await fetch(base_url + "/api/visitas", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(visita),
+        });
+        console.log(response)
+		if (response.ok) return true;
+		else if (offline) return saveOffline(visita);
+	}
 }

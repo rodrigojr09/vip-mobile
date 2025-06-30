@@ -1,12 +1,78 @@
 import Button from "@/components/Button";
+import * as FileSystem from "expo-file-system";
 import Container from "@/components/Container";
 import { useRouter } from "expo-router";
-import React from "react";
-import { StyleSheet, View } from "react-native";
+import React, { use, useEffect } from "react";
+import { Alert, StyleSheet, View } from "react-native";
+import { NovaVisita } from "@/utils/API/Empresas";
+import { getNetworkStateAsync, useNetworkState } from "expo-network";
+import { Visita } from "@/types/VIPVisitaType";
 
 export default function App() {
 	const router = useRouter();
+	const { isConnected, isInternetReachable } = useNetworkState();
+	const [visitas, setVisitas] = React.useState<Visita[]>([]);
 
+	async function listarVisitas() {
+		try {
+			const data2 = await FileSystem.readDirectoryAsync(
+				FileSystem.documentDirectory + "offline_visitas"
+			);
+
+			setVisitas(
+				await Promise.all(
+					data2.map(async (file) => {
+						return JSON.parse(
+							await FileSystem.readAsStringAsync(
+								FileSystem.documentDirectory +
+									"offline_visitas/" +
+									file
+							)
+						);
+					})
+				)
+			);
+		} catch (err) {
+			console.log(err);
+		}
+	}
+
+	useEffect(() => {
+		listarVisitas();
+	}, []);
+
+	async function save() {
+		try {
+			const saves = await Promise.all(
+				visitas.map(async (item) => {
+					const file = await FileSystem.readAsStringAsync(
+						FileSystem.documentDirectory +
+							"offline_visitas/" +
+							item.id +
+							".json"
+					);
+					const res = await NovaVisita(JSON.parse(file), false);
+					console.log(res);
+					if (res) {
+						await FileSystem.deleteAsync(
+							FileSystem.documentDirectory +
+								"offline_visitas/" +
+								item.id +
+								".json"
+						);
+						return 1;
+					}
+					return 0;
+				})
+			);
+
+			const saves2 = saves.filter((a) => a === 1).length;
+			listarVisitas();
+			Alert.alert("Salvo o total de " + saves2 + " visita(s).");
+		} catch (err) {
+			console.log(err);
+		}
+	}
 	return (
 		<Container style={styles.container}>
 			<Button onPress={(e) => router.push("/Levantamento")}>
@@ -16,6 +82,12 @@ export default function App() {
 			<Button onPress={(e) => router.push("/Visita")}>
 				Visita Técnica
 			</Button>
+
+			{isConnected && isInternetReachable && visitas.length > 0 && (
+				<Button onPress={(e) => save()}>
+					{`Salvar ${visitas.length} Visita(s)`}
+				</Button>
+			)}
 		</Container>
 	);
 }

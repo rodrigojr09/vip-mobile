@@ -4,10 +4,13 @@ import React, { useRef, useEffect } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import * as ScreenOrientation from "expo-screen-orientation";
 import Signature, { SignatureViewRef } from "react-native-signature-canvas";
+import Button from "@/components/Button";
+import { useVisita } from "@/hooks/VisitaProvider";
 
 const SignatureScreen = () => {
 	const ref = useRef<SignatureViewRef>(null);
 	const router = useRouter();
+	const { acompanhante } = useVisita();
 	const handleSignature = async (signature: string) => {
 		if (!signature) {
 			Alert.alert("Erro", "Nenhuma assinatura foi capturada.");
@@ -48,7 +51,7 @@ const SignatureScreen = () => {
 				onEmpty={() =>
 					Alert.alert("Atenção", "Nenhuma assinatura capturada.")
 				}
-				descriptionText={"Assinatura de: "}
+				descriptionText={"Assinatura de: " + acompanhante}
 				clearText="Limpar"
 				confirmText="Confirmar"
 				webStyle={`
@@ -60,6 +63,9 @@ const SignatureScreen = () => {
 						}
 					`}
 			/>
+			<Button onPress={() => router.back()} secundary>
+				Voltar
+			</Button>
 		</View>
 	);
 };

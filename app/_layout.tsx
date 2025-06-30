@@ -1,21 +1,41 @@
 import { fetchEmpresas } from "@/utils/API/Empresas";
 import * as Device from "expo-device";
-import { fetchQuests, getQuests } from "@/utils/API/Quests";
-import { Stack, usePathname } from "expo-router";
+import { fetchQuests } from "@/utils/API/Quests";
+import { router, Stack, usePathname } from "expo-router";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View,
+	BackHandler,
+} from "react-native";
 
 export default function Layout() {
 	const pathname = usePathname();
 	const [loading, setLoading] = useState(true);
+
 	useEffect(() => {
-		fetchQuests().then(async () => {
-			fetchEmpresas().then(async () => {
-				setLoading(false);
-			});
-		});
+		const carregarDados = async () => {
+			await fetchQuests();
+			await fetchEmpresas();
+			setLoading(false);
+		};
+		carregarDados();
 	}, []);
+
+	// Bloqueia botão físico de voltar
+	useEffect(() => {
+		const backHandler = BackHandler.addEventListener(
+			"hardwareBackPress",
+			() => true // bloqueia
+		);
+
+		return () => backHandler.remove();
+	}, []);
+
 	const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+
 	return (
 		<View
 			style={{
@@ -31,23 +51,23 @@ export default function Layout() {
 				</View>
 			)}
 
-			{/* Conteúdo da aplicação */}
+			{/* Botão de voltar manual */}
+			{pathname !== "/" && !pathname.endsWith("assinatura") && !pathname.endsWith("finalizado") && (
+				<TouchableOpacity
+					style={styles.backButton}
+					onPress={() => router.back()}
+				>
+					<Text style={styles.backButtonText}>Voltar</Text>
+				</TouchableOpacity>
+			)}
+
+			{/* Conteúdo */}
 			{!loading ? (
 				<View style={styles.content}>
-					<Stack
-						screenOptions={{
-							headerShown: false,
-						}}
-					/>
+					<Stack screenOptions={{ headerShown: false }} />
 				</View>
 			) : (
-				<View
-					style={{
-						flex: 1,
-						justifyContent: "center",
-						alignItems: "center",
-					}}
-				>
+				<View style={styles.loadingContainer}>
 					<Text style={{ color: "white" }}>
 						Estamos carregando, por favor aguarde...
 					</Text>
@@ -60,8 +80,7 @@ export default function Layout() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		color: "white",
-		backgroundColor: "#0f172a", // Cor slate-900
+		backgroundColor: "#0f172a", // slate-900
 	},
 	header: {
 		backgroundColor: "green",
@@ -76,6 +95,23 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		flex: 1,
-		backgroundColor: "#0f172a", // Mesma cor de fundo para consistência
+	},
+	loadingContainer: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	backButton: {
+		position: "absolute",
+		top: 35,
+		left: 20,
+		zIndex: 1000,
+		padding: 8,
+		backgroundColor: "red", // slate-800
+		borderRadius: 6,
+	},
+	backButtonText: {
+		color: "white",
+		fontSize: 16,
 	},
 });

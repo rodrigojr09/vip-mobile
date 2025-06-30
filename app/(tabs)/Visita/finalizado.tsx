@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import * as Print from "expo-print";
+import * as FileSystem from "expo-file-system";
+import * as MediaLibrary from "expo-media-library";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { Alert, BackHandler, Linking } from "react-native";
 import Button from "@/components/Button";
@@ -18,7 +19,7 @@ export default function Finalizado() {
 	const router = useRouter();
 	const query = useSearchParams();
 	const visita = useVisita();
-	const [token, setToken] = React.useState("");
+	const [token, setToken] = React.useState<string | null>(null);
 
 	useEffect(() => {
 		const backAction = () => {
@@ -38,41 +39,51 @@ export default function Finalizado() {
 				respostas: visita.respostas,
 				visitante: visita.visitante,
 				assinatura: query.get("assinatura") as string,
-			});
-			setToken(visita.empresa?.token || "");
-			console.log(res);
+			},true);
+            if (res === "offline") {
+                Alert.alert("Salvo offline!")
+				setToken("offline");
+			} else {
+				setToken(visita.empresa?.token || null);
+			}
 		})();
 
 		BackHandler.addEventListener("hardwareBackPress", backAction);
 	}, []);
 	async function handleDownload() {
 		try {
-			// Gerar o HTML com a assinatura
+			// Gera o HTML com assinatura substituída
 			const htmlContent = getHtmlVisita(visita)
 				.replace("$assinatura", `${query.get("assinatura")}`)
 				.replace("not-assinatura", "");
 
-			// Caminho para salvar o arquivo HTML
-			const filePath = `${visita.empresa}.pdf`;
+			// Pasta onde o arquivo será salvo
+			const dir = `${FileSystem.documentDirectory}html`;
 
-			// Salvar o arquivo
-			const data = await Print.printToFileAsync({
-				html: htmlContent,
-				base64: true,
-				textZoom: 100,
-				margins: {
-					top: 20,
-					left: 0,
-					right: 0,
-					bottom: 20,
-				},
-				useMarkupFormatter: true,
-			});
+			// Garante que o diretório existe
+			const dirInfo = await FileSystem.getInfoAsync(dir);
+			if (!dirInfo.exists) {
+				await FileSystem.makeDirectoryAsync(dir, {
+					intermediates: true,
+				});
+			}
 
-			// Compartilhar o arquivo salvo
-			abrirArquivo(data.uri);
-		} catch (error) {
-			console.error("Erro ao salvar ou compartilhar o arquivo:", error);
+			// Gera nome de arquivo limpo
+			const nomeArquivo = `${visita.empresa?.cnpj.replace(
+				/\D/g,
+				""
+			)}-${visita.data.replaceAll("/", "-")}.html`;
+
+			const caminhoCompleto = `${dir}/${nomeArquivo}`;
+
+			await FileSystem.writeAsStringAsync(caminhoCompleto, htmlContent);
+			console.log(`✅ Arquivo salvo localmente em: ${caminhoCompleto}`);
+
+			Alert.alert("Sucesso", "Arquivo salvo com sucesso!");
+			await abrirArquivo(caminhoCompleto);
+
+		} catch (error: any) {
+			console.error("❌ Erro ao salvar o arquivo:", error);
 			Alert.alert(
 				"Erro",
 				"Não foi possível salvar ou compartilhar o arquivo."
@@ -92,13 +103,15 @@ export default function Finalizado() {
 			</Button>
 
 			<Button onPress={handleDownload}>Baixar Levantamento</Button>
-			<Button
-				onPress={() => {
-					Linking.openURL(`${base_url}/empresas/${token}`);
-				}}
-			>
-				Abrir Link
-			</Button>
+			{token && token !== "offline" && (
+				<Button
+					onPress={() => {
+						Linking.openURL(`${base_url}/empresas/${token}`);
+					}}
+				>
+					Abrir Link
+				</Button>
+			)}
 		</Container>
 	);
 }

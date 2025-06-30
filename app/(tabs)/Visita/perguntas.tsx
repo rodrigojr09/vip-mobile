@@ -249,6 +249,18 @@ export default function Sidebar() {
 					})}
 
 					<Button onPress={handleSave}>Salvar</Button>
+					{__DEV__ && (
+						<Button
+							onPress={() => {
+								const todasPerguntas = perguntas.flatMap(
+									(q) => q.perguntas
+                                );
+                                setRespostas(todasPerguntas.map((p) => ({ pergunta: p, value: "Sim" })));
+							}}
+						>
+							Teste
+						</Button>
+					)}
 				</View>
 			</Animated.View>
 		</Container>

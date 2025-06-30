@@ -34,7 +34,7 @@ const assinaturaHtml = `
                 Visita feita no dia $data
             </h1>
             <div class="max-w-[90vw] mb-[20vh] break-words mx-auto">
-                <p>Este inventário de riscos e levantamento de dados foi realizado por profissional técnico em segurança do trabalho da empresa Vip Engenharia de Segurança e Medicina do Trabalho, com meu auxílio.</p>
+                <p>Este inventário de riscos e levantamento de dados foi realizado por profissional técnico em segurança do trabalho da empresa Vip Engenharia de Segurança e Medicina do Trabalho, com o auxílio de $responsavel.</p>
                 <p>Confirmo que fui designado como responsável por informar todos os dados necessários para a elaboração da documentação de Saude e Segurança do Trabalho da empresa "$empresa.nome".</p>
                 <p>Declaro que, após verificar e confirmar a veracidade dos dados apresentados, aposto abaixo minha assinatura legível.</p>
             </div>
@@ -202,7 +202,8 @@ export function getHtmlVisita(empresa: VIPVisitaType) {
 
     <div class="info">
       <p><strong>Empresa Visitada:</strong> ${empresa.empresa?.razao_social}</p>
-      <p><strong>Responsável pela Visita:</strong> ${empresa.visitante}</p>
+      <p><strong>Técnico Responsável pela Visita:</strong> ${empresa.visitante}</p>
+      <p><strong>Responsável pela Empresa:</strong> ${empresa.acompanhante}</p>
       <p><strong>Data:</strong> ${empresa.data}</p>
     </div>
 
