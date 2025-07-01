@@ -16,7 +16,7 @@ import { VIPEpi } from "@/hooks/EmpresaProvider";
 import { useRisco } from "@/hooks/RiscoProvider";
 import getEpis from "@/utils/Epis";
 
-export default function Epi() {
+export default function Equipamentos() {
 	const params = useLocalSearchParams();
 	const router = useRouter();
 	const risco = useRisco();
@@ -53,7 +53,7 @@ export default function Epi() {
 			<View style={{ flexDirection: "row", alignItems: "center" }}>
 				<Input
 					style={{ width: "80%" }}
-					placeholder="Digite um risco..."
+					placeholder="Digite um EPI..."
 					value={query}
 					onChange={handleSearch}
 				/>

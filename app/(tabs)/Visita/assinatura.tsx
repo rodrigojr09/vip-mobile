@@ -63,9 +63,6 @@ const SignatureScreen = () => {
 						}
 					`}
 			/>
-			<Button onPress={() => router.back()} secundary>
-				Voltar
-			</Button>
 		</View>
 	);
 };

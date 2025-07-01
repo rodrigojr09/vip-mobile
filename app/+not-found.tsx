@@ -7,9 +7,11 @@ import {
 } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import Equipamentos from "./(tabs)/Levantamento/equipamentos";
 
 export default function NotFoundScreen() {
 	const pathname = usePathname();
+	if (pathname === "/Levantamento/equipamentos") return <Equipamentos />;
 	return (
 		<>
 			<Stack.Screen options={{ title: "Oops!" }} />
