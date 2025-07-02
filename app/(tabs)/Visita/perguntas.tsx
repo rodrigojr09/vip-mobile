@@ -28,31 +28,24 @@ import {
 
 const ObservacaoCampo = ({
 	label,
-	status,
-	initialValue,
+    status,
+    observation,
 	onChange,
 }: {
 	label: string;
 	status: Resposta["value"];
-	initialValue?: string;
-	onChange: (label: string, status: Resposta["value"], obs: string) => void;
+	observation?: string;
+	onChange: (obs: string) => void;
 }) => {
-	const [text, setText] = useState(initialValue || "");
-
-	useEffect(() => {
-		setText(initialValue || "");
-	}, [initialValue]);
-
 	return (
 		<TextInput
 			style={styles.observationInput}
 			placeholder="Observações (opcional)"
 			placeholderTextColor="#aaa"
 			multiline
-			value={text}
+			value={observation}
 			onChangeText={(value) => {
-				setText(value);
-				onChange(label, status, value);
+				onChange(value);
 			}}
 		/>
 	);
@@ -118,6 +111,8 @@ export default function Sidebar() {
 	}): JSX.Element => {
 		const status = respostas.find((r) => r.pergunta === pergunta)
 			?.value as any;
+		const observation = respostas.find((r) => r.pergunta === pergunta)
+			?.observation as any;
 
 		return (
 			<View key={pergunta} style={styles.questionBlock}>
@@ -155,8 +150,8 @@ export default function Sidebar() {
 					<ObservacaoCampo
 						label={pergunta}
 						status={status}
-						initialValue=""
-						onChange={setObs}
+						observation={observation}
+						onChange={(obs) => setObs(pergunta, status, obs)}
 					/>
 				)}
 			</View>
@@ -254,8 +249,13 @@ export default function Sidebar() {
 							onPress={() => {
 								const todasPerguntas = perguntas.flatMap(
 									(q) => q.perguntas
-                                );
-                                setRespostas(todasPerguntas.map((p) => ({ pergunta: p, value: "Sim" })));
+								);
+								setRespostas(
+									todasPerguntas.map((p) => ({
+										pergunta: p,
+										value: "Sim",
+									}))
+								);
 							}}
 						>
 							Teste
