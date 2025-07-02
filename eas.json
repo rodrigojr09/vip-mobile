@@ -22,8 +22,7 @@
 			"environment": "production",
 			"android": {
 				"buildType": "apk"
-			},
-			"prebuildCommand": "yarn config set registry https://registry.npmjs.org"
+			}
 		}
 	},
 	"submit": {}
