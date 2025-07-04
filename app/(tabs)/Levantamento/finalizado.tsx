@@ -4,7 +4,7 @@ import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { Alert, BackHandler } from "react-native";
 import Button from "@/components/Button";
-import { useEmpresa } from "@/hooks/EmpresaProvider";
+import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useRouter } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
 import { getHtml } from "@/utils/formatHTML";

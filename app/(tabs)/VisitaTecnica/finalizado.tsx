@@ -1,24 +1,23 @@
 import React, { useEffect } from "react";
 import * as FileSystem from "expo-file-system";
-import * as MediaLibrary from "expo-media-library";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { Alert, BackHandler, Linking } from "react-native";
 import Button from "@/components/Button";
 import { useRouter } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
 import Container from "@/components/Container";
-import { useVisita } from "@/hooks/VisitaProvider";
-import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 import { abrirArquivo } from "@/utils/abrirArquivo";
 import { NovaVisita } from "@/utils/API/Empresas";
-import "react-native-get-random-values";
-import { v4 as uuidv4 } from "uuid";
 import base_url from "@/utils/API/base_url";
-
+import { getHtmlVisita } from "@/utils/VisitaTecnica/formatHTML";
+import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import Loading from "@/components/Loading";
+ 
 export default function Finalizado() {
 	const router = useRouter();
 	const query = useSearchParams();
-	const visita = useVisita();
+    const visita = useVisita();
+    const [loading,setLoading] = React.useState(false);
 	const [token, setToken] = React.useState<string | null>(null);
 
 	useEffect(() => {
@@ -30,21 +29,18 @@ export default function Finalizado() {
 			await ScreenOrientation.lockAsync(
 				ScreenOrientation.OrientationLock.PORTRAIT_UP
 			);
-			const res = await NovaVisita({
-				id: uuidv4(),
-				data: visita.data,
-				empresaId: visita.empresa?.id || "",
-				acompanhante: visita.acompanhante,
-				perguntas: visita.perguntas,
-				respostas: visita.respostas,
-				visitante: visita.visitante,
-				assinatura: query.get("assinatura") as string,
-			},true);
-            if (res === "offline") {
-                Alert.alert("Salvo offline!")
+			const res = await NovaVisita(
+				{
+					...visita,
+					assinatura: query.get("assinatura") as string,
+				},
+				true
+			);
+			if (res === "offline") {
+				Alert.alert("Salvo offline!");
 				setToken("offline");
 			} else {
-				setToken(visita.empresa?.token || null);
+				setToken(visita.empresa?.token || "offline");
 			}
 		})();
 
@@ -81,7 +77,6 @@ export default function Finalizado() {
 
 			Alert.alert("Sucesso", "Arquivo salvo com sucesso!");
 			await abrirArquivo(caminhoCompleto);
-
 		} catch (error: any) {
 			console.error("❌ Erro ao salvar o arquivo:", error);
 			Alert.alert(
@@ -91,7 +86,9 @@ export default function Finalizado() {
 		}
 	}
 
-	return (
+    if(loading) return <Loading/>
+
+	if(!loading) return (
 		<Container style={{ padding: 10 }}>
 			<Button
 				onPress={() => {
@@ -106,12 +103,12 @@ export default function Finalizado() {
 			{token && token !== "offline" && (
 				<Button
 					onPress={() => {
-						Linking.openURL(`${base_url}/empresas/${token}`);
+						Linking.openURL(`${base_url}/empresas/${token}/visitas/${visita.id}`);
 					}}
 				>
 					Abrir Link
 				</Button>
-			)}
+            )}
 		</Container>
 	);
 }

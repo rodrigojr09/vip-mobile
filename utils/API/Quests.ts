@@ -1,8 +1,7 @@
 import * as FileSystem from "expo-file-system";
-import * as MediaLibrary from "expo-media-library";
 import base_url from "./base_url";
 
-const DEFAULT_QUEST_FILE = FileSystem.documentDirectory + "/quests.json";
+const DEFAULT_QUEST_FILE = FileSystem.documentDirectory + "quests.json";
 
 /**
  * Busca as quests da API, salva localmente e exporta para galeria.

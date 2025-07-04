@@ -1,7 +1,7 @@
-import { VIPEmpresaType } from "@/types/VIPEmpresaType";
-import { VIPEpiType } from "@/types/VIPRiscoType";
+import { VIPEmpresaType } from "@/types/Levantamento/VIPEmpresaType";
+import { VIPEpiType } from "@/types/Levantamento/VIPRiscoType";
 import { createContext, ReactNode, useContext, useState } from "react";
-import { VIPSetorType } from "@/types/VIPSetorType";
+import { VIPSetorType } from "@/types/Levantamento/VIPSetorType";
 
 const EmpresaContext = createContext<VIPEmpresaType | undefined>(undefined);
 

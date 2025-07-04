@@ -3,15 +3,15 @@ import { StyleSheet, Text, View } from "react-native";
 import { WebView } from "react-native-webview";
 import Button from "@/components/Button";
 import { useRouter } from "expo-router";
-import { useVisita } from "@/hooks/VisitaProvider";
-import { getHtmlVisita } from "@/utils/Visita/formatHTML";
+import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import { getHtmlVisita } from "@/utils/VisitaTecnica/formatHTML";
 
 export default function Rascunho() {
-	const visita = useVisita();
+    const visita = useVisita();
 	const router = useRouter();
 
 	// Certifica-se de que os dados da empresa estão disponíveis antes de gerar o HTML
-	if (!visita) {
+	if (!visita.empresa) {
 		return (
 			<View style={styles.center}>
 				<Text>Carregando dados da empresa...</Text>
@@ -32,7 +32,7 @@ export default function Rascunho() {
 			<View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
 				<Button
 					onPress={(e) => {
-						router.push("/Visita/assinatura");
+						router.push("/VisitaTecnica/assinatura");
 					}}
 				>
 					Assinar Documento
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	center: {
-		flex: 1,
+		flex: 1, 
 		justifyContent: "center",
 		alignItems: "center",
 		backgroundColor: "#f0f0f0",

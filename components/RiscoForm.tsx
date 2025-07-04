@@ -1,6 +1,6 @@
 import RadioButton from "./RadioButton";
 import Button from "./Button";
-import { useFuncao } from "@/hooks/FuncaoProvider";
+import { useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
 import { useRouter } from "expo-router";
 
 export default function RiscoForm({

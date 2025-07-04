@@ -3,7 +3,7 @@ import * as Device from "expo-device";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { View, StyleSheet, Alert } from "react-native";
 import Signature, { SignatureViewRef } from "react-native-signature-canvas";
-import { useEmpresa } from "@/hooks/EmpresaProvider";
+import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useRouter } from "expo-router";
 
 const SignatureScreen = () => {

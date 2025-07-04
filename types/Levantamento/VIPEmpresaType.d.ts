@@ -1,4 +1,4 @@
-import { VIPSetorType } from "@/hooks/SetorProvider";
+import { VIPSetorType } from "@/hooks/Levantamento/SetorProvider";
 
 export interface VIPEmpresaType {
 	responsavel: string;

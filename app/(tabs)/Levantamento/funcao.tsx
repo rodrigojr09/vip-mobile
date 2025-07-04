@@ -1,8 +1,8 @@
 import Container from "@/components/Container";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
-import { useFuncao } from "@/hooks/FuncaoProvider";
-import { useSetor } from "@/hooks/SetorProvider";
+import { useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
+import { useSetor } from "@/hooks/Levantamento/SetorProvider";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Alert, StyleSheet, TextInput } from "react-native";
 import VIPTabela from "@/components/VIPTabela";
@@ -21,7 +21,7 @@ export default function Funcao() {
 		if (index + 1 < campos) {
 			refs.current[index + 1]?.focus();
 		} else {
-            refs.current[index].blur();
+			refs.current[index].blur();
 		}
 	};
 

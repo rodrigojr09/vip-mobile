@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import Input from "@/components/Input";
-import { useEmpresa } from "@/hooks/EmpresaProvider";
+import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useRouter } from "expo-router";
 import { useRef } from "react";
 import { Alert, StyleSheet, TextInput } from "react-native";

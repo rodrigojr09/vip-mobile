@@ -1,8 +1,8 @@
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import VIPTabela from "@/components/VIPTabela";
-import { useEmpresa } from "@/hooks/EmpresaProvider";
-import { VIPFuncaoType } from "@/types/VIPFuncaoType";
+import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
+import { VIPFuncaoType } from "@/types/Levantamento/VIPFuncaoType";
 import { useRouter } from "expo-router";
 import { Text, StyleSheet } from "react-native";
 import React from "react";

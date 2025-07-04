@@ -1,15 +1,13 @@
 import Button from "@/components/Button";
 import Container from "@/components/Container";
-import { useVisita } from "@/hooks/VisitaProvider";
-import { Empresa, Question, Resposta } from "@/types/VIPVisitaType";
-import { getEmpresas } from "@/utils/API/Empresas";
+import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import { useRouter } from "expo-router";
-import React, { useState, useEffect, JSX } from "react";
+import React, { useState } from "react";
 import {
 	View,
 	Text,
 	TouchableOpacity,
-	ScrollView,
 	StyleSheet,
 	TextInput,
 	Alert,
@@ -19,14 +17,17 @@ import {
 export default function Visita() {
 	const {
 		empresa,
-		acompanhante,
-		visitante,
-		setAcompanhante,
-		setVisitante,
 		setEmpresa,
+		responsavel,
+		setResponsavel,
+		tecnico,
 		empresas,
+		setTecnico,
+		clear,
 	} = useVisita();
+
 	const router = useRouter();
+
 	const [search, setSearch] = useState("");
 
 	function handleSave() {
@@ -34,24 +35,22 @@ export default function Visita() {
 			return Alert.alert(
 				"Atenção! O nome da empresa precisa ser preenchido"
 			);
-		if (visitante.trim().length === 0)
+		if (tecnico.trim().length === 0)
 			return Alert.alert(
 				"Atenção! O nome do técnico precisa ser preenchido"
 			);
-		if (acompanhante.trim().length === 0)
+		if (responsavel.trim().length === 0)
 			return Alert.alert(
 				"Atenção! O nome do cliente responsável precisa ser preenchido"
 			);
-		router.push({ pathname: "/Visita/perguntas" });
+		router.push({ pathname: "/VisitaTecnica/perguntas" });
 	}
 
-	function filter(empresa: Empresa) {
+	function filter(item: VIPVisitaType["empresas"][0]) {
 		return (
-			empresa.nome_fantasia
-				.toLowerCase()
-				.includes(search.toLowerCase()) ||
-			empresa.razao_social.toLowerCase().includes(search.toLowerCase()) ||
-			empresa.cnpj.toLowerCase().includes(search.toLowerCase())
+			item.nome_fantasia.toLowerCase().includes(search.toLowerCase()) ||
+			item.razao_social.toLowerCase().includes(search.toLowerCase()) ||
+			item.cnpj.toLowerCase().includes(search.toLowerCase())
 		);
 	}
 
@@ -97,8 +96,8 @@ export default function Visita() {
 						style={styles.input}
 						placeholder="Nome do Técnico"
 						placeholderTextColor="#aaa"
-						value={visitante}
-						onChangeText={setVisitante}
+						value={tecnico}
+						onChangeText={setTecnico}
 					/>
 				</View>
 				<View style={styles.row}>
@@ -106,8 +105,8 @@ export default function Visita() {
 						style={styles.input}
 						placeholder="Responsável (Cliente)"
 						placeholderTextColor="#aaa"
-						value={acompanhante}
-						onChangeText={setAcompanhante}
+						value={responsavel}
+						onChangeText={setResponsavel}
 					/>
 				</View>
 			</View>
@@ -115,7 +114,6 @@ export default function Visita() {
 		</Container>
 	);
 }
-
 
 const styles = StyleSheet.create({
 	formContainer: {
@@ -182,5 +180,15 @@ const styles = StyleSheet.create({
 	clearButtonText: {
 		fontSize: 16,
 		color: "red",
+	},
+	nextButton: {
+		position: "absolute",
+		top: 10,
+		right: 10,
+		zIndex: 1,
+	},
+	nextButtonText: {
+		fontSize: 16,
+		color: "green",
 	},
 });

@@ -1,7 +1,7 @@
 import Container from "@/components/Container";
 import Input from "@/components/Input";
 import Button from "@/components/Button";
-import { useFuncao } from "@/hooks/FuncaoProvider";
+import { useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
 	FlatList,
@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { getRiscos, RiscoDataType } from "@/utils/Riscos";
 import RadioButton from "@/components/RadioButton";
 import VIPTabela from "@/components/VIPTabela";
-import { useRisco } from "@/hooks/RiscoProvider";
+import { useRisco } from "@/hooks/Levantamento/RiscoProvider";
 
 export default function Risco() {
 	const params = useLocalSearchParams();
@@ -52,7 +52,7 @@ export default function Risco() {
 		const results = getRiscos().filter(
 			(item) =>
 				item.tipo === (params.tipo as any) &&
-				normalize(item.risco).includes(normalizedText) 
+				normalize(item.risco).includes(normalizedText)
 		);
 
 		setFilteredData(results as any);

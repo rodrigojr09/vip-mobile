@@ -12,8 +12,8 @@ import {
 	View,
 } from "react-native";
 import { useEffect, useState } from "react";
-import { VIPEpi } from "@/hooks/EmpresaProvider";
-import { useRisco } from "@/hooks/RiscoProvider";
+import { VIPEpi } from "@/hooks/Levantamento/EmpresaProvider";
+import { useRisco } from "@/hooks/Levantamento/RiscoProvider";
 import getEpis from "@/utils/Epis";
 
 export default function Equipamentos() {

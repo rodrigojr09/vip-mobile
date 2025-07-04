@@ -10,6 +10,8 @@ import {
 	View,
 	BackHandler,
 } from "react-native";
+import FileSystem from "expo-file-system";
+import Loading from "@/components/Loading";
 
 export default function Layout() {
 	const pathname = usePathname();
@@ -52,14 +54,16 @@ export default function Layout() {
 			)}
 
 			{/* Botão de voltar manual */}
-			{pathname !== "/" && !pathname.endsWith("assinatura") && !pathname.endsWith("finalizado") && (
-				<TouchableOpacity
-					style={styles.backButton}
-					onPress={() => router.back()}
-				>
-					<Text style={styles.backButtonText}>Voltar</Text>
-				</TouchableOpacity>
-			)}
+			{pathname !== "/" &&
+				!pathname.endsWith("assinatura") &&
+				!pathname.endsWith("finalizado") && (
+					<TouchableOpacity
+						style={styles.backButton}
+						onPress={() => router.back()}
+					>
+						<Text style={styles.backButtonText}>Voltar</Text>
+					</TouchableOpacity>
+				)}
 
 			{/* Conteúdo */}
 			{!loading ? (
@@ -67,11 +71,7 @@ export default function Layout() {
 					<Stack screenOptions={{ headerShown: false }} />
 				</View>
 			) : (
-				<View style={styles.loadingContainer}>
-					<Text style={{ color: "white" }}>
-						Estamos carregando, por favor aguarde...
-					</Text>
-				</View>
+				<Loading />
 			)}
 		</View>
 	);
@@ -95,11 +95,6 @@ const styles = StyleSheet.create({
 	},
 	content: {
 		flex: 1,
-	},
-	loadingContainer: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
 	},
 	backButton: {
 		position: "absolute",

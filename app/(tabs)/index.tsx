@@ -15,6 +15,16 @@ export default function App() {
 
 	async function listarVisitas() {
 		try {
+			if (
+				!(
+					await FileSystem.getInfoAsync(
+						`${FileSystem.documentDirectory}offline_visitas`
+					)
+				).exists
+			)
+				return FileSystem.makeDirectoryAsync(
+					`${FileSystem.documentDirectory}offline_visitas`
+				);
 			const data2 = await FileSystem.readDirectoryAsync(
 				FileSystem.documentDirectory + "offline_visitas"
 			);
@@ -79,7 +89,7 @@ export default function App() {
 				Novo Levantamento
 			</Button>
 
-			<Button onPress={(e) => router.push("/Visita")}>
+			<Button onPress={(e) => router.push("/VisitaTecnica")}>
 				Visita Técnica
 			</Button>
 

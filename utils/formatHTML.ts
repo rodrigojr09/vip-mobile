@@ -1,7 +1,7 @@
-import { VIPEmpresaType } from "@/types/VIPEmpresaType";
-import { VIPFuncaoType } from "@/types/VIPFuncaoType";
-import { VIPRiscoType } from "@/types/VIPRiscoType";
-import { VIPSetorType } from "@/types/VIPSetorType";
+import { VIPEmpresaType } from "@/types/Levantamento/VIPEmpresaType";
+import { VIPFuncaoType } from "@/types/Levantamento/VIPFuncaoType";
+import { VIPRiscoType } from "@/types/Levantamento/VIPRiscoType";
+import { VIPSetorType } from "@/types/Levantamento/VIPSetorType";
 
 const assinaturaHtml = `
     <div class="p-2 h-screen">
