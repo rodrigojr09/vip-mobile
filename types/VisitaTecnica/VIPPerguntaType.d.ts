@@ -1,6 +1,8 @@
 export interface VIPPerguntaType {
 	id: string;
-	pergunta: string;
+    pergunta: string;
+    type?: "sim" | "nao" | "na";
+    subpergunta?: VIPPerguntaType[];
 }
 
 export interface VIPRespostaType {
@@ -8,4 +10,10 @@ export interface VIPRespostaType {
 	pergunta: string;
 	observation?: string;
 	checked: boolean | null;
+	subresposta: {
+		pergunta: string;
+		checked: boolean | null;
+		observation?: string;
+		subresposta: VIPRespostaType["subresposta"];
+	};
 }

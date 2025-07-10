@@ -91,7 +91,11 @@ export default function App() {
 
 			<Button onPress={(e) => router.push("/VisitaTecnica")}>
 				Visita Técnica
-			</Button>
+            </Button>
+            
+            <Button onPress={(e) => router.push("/Visita")}>
+                Visita (Teste)
+            </Button>
 
 			{isConnected && isInternetReachable && visitas.length > 0 && (
 				<Button onPress={(e) => save()}>

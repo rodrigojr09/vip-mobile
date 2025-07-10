@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { createContext, useContext, useEffect, useState } from "react";
 import { getQuests } from "@/utils/API/Quests";
 import { getEmpresas } from "@/utils/API/Empresas";
+import Data from "@/utils/API/Data";
 
 const VisitaContext = createContext<VIPVisitaType | undefined>(undefined);
 
@@ -58,10 +59,7 @@ export default function VisitaProvider({
 
 	useEffect(() => {
 		(async () => {
-			const p = await getQuests();
-			const e = await getEmpresas();
-			setPerguntas(p);
-			setEmpresas(e);
+			Data.getEmpresas().then((empresas) => setEmpresas(empresas));
 		})();
 	}, []);
 
