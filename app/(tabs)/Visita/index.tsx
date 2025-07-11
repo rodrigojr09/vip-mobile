@@ -43,7 +43,7 @@ export default function Visita() {
 			return Alert.alert(
 				"Atenção! O nome do cliente responsável precisa ser preenchido"
 			);
-		router.push({ pathname: "/VisitaTecnica/perguntas" });
+		router.push({ pathname: "/Visita/Perguntas/Administrativo" });
 	}
 
 	function filter(item: VIPVisitaType["empresas"][0]) {

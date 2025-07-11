@@ -1,3 +1,6 @@
+import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
+import { VIPEmpresaType } from "@/types/VisitaTecnica/VIPEmpresaType";
+import { VIPPerguntaType } from "@/types/VisitaTecnica/VIPPerguntaType";
 import * as FileSystem from "expo-file-system";
 
 class Data {
@@ -8,25 +11,35 @@ class Data {
 		offline_perguntas: "offline_perguntas.json",
 	};
 
-    private loading = false;
+	public empresas: VIPEmpresaType[] = [];
+	public perguntas: VIPVisitaType["perguntas"] = {
+		adm: [],
+		setor: [],
+	};
+
+	private loading = true;
 
 	private base_url = __DEV__
 		? "http://192.168.3.29:3000/api/v3"
 		: "https://mobile.vipsst.com.br/api/v3";
-    private base_dir = FileSystem.documentDirectory;
-    
-    public async getData() {
-        const empresas = await this.getEmpresas();
-        const perguntas = await this.getPerguntas();
-        return this.loading = true;
-    }
+	private base_dir = FileSystem.documentDirectory;
 
-	public async getEmpresas() {
+	public async getData() {
+		const empresas = await this.getEmpresas();
+		const perguntas = await this.getPerguntas();
+		if (empresas) this.empresas = empresas;
+		if (perguntas) this.perguntas = perguntas;
+		return (this.loading = false);
+	}
+
+	public async getEmpresas(): Promise<VIPEmpresaType[]> {
 		console.log("🔎 | Buscando empresas...");
 		const response = await fetch(this.base_url + "/empresas");
 		if (!response.ok) {
 			console.error(`❌ | Erro ao buscar empresas: ${response.status}`);
-			return this.getJson(this.paths.offline_empresas);
+			return (this.empresas = await this.getJson(
+				this.paths.offline_empresas
+			));
 		} else {
 			console.log("✅ | Empresas buscadas com sucesso.");
 			const empresas = await response.json();
@@ -34,26 +47,34 @@ class Data {
 				this.paths.offline_empresas,
 				JSON.stringify(empresas)
 			);
-			return empresas;
+			return (this.empresas = empresas);
 		}
-    }
-    
-    public async getPerguntas() {
-        console.log("🔎 | Buscando perguntas...");
-        const response = await fetch(this.base_url + "/perguntas");
-        if (!response.ok) {
-            console.error(`❌ | Erro ao buscar perguntas: ${response.status}`);
-            return this.getJson(this.paths.offline_perguntas);
-        } else {
-            console.log("✅ | Perguntas buscadas com sucesso.");
-            const perguntas = await response.json();
-            this.saveJson(
-                this.paths.offline_perguntas,
-                JSON.stringify(perguntas)
-            );
-            return perguntas;
-        }
-    }
+	}
+
+	public async getPerguntas(): Promise<VIPVisitaType["perguntas"]> {
+		console.log("🔎 | Buscando perguntas...");
+		const response = await fetch(this.base_url + "/perguntas");
+		if (!response.ok) {
+			console.error(`❌ | Erro ao buscar perguntas: ${response.status}`);
+			return (this.perguntas = await this.getJson(
+				this.paths.offline_perguntas
+			));
+		} else {
+			console.log("✅ | Perguntas buscadas com sucesso.");
+			const perguntas = await response.json();
+			this.saveJson(
+				this.paths.offline_perguntas,
+				JSON.stringify({
+					adm: perguntas.questionsAdm,
+					setor: perguntas.questionsSetor,
+				})
+			);
+			return (this.perguntas = {
+				adm: perguntas.questionsAdm,
+				setor: perguntas.questionsSetor,
+			});
+		}
+	}
 
 	private async saveJson(arquivo: string, data: string) {
 		const path = `${this.base_dir}${arquivo}`;
@@ -68,7 +89,7 @@ class Data {
 			const fileInfo = await FileSystem.getInfoAsync(path);
 
 			if (!fileInfo.exists) {
-				console.warn("⚠️ | Arquivo de empresas não encontrado.");
+				console.warn(`⚠️ | Arquivo ${arquivo} não encontrado.`);
 				return null;
 			}
 

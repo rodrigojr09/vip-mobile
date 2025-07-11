@@ -10,20 +10,18 @@ import {
 	View,
 	BackHandler,
 } from "react-native";
-import FileSystem from "expo-file-system";
 import Loading from "@/components/Loading";
+import Data from "@/utils/API/Data";
 
 export default function Layout() {
 	const pathname = usePathname();
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		const carregarDados = async () => {
-			await fetchQuests();
-			await fetchEmpresas();
-			setLoading(false);
-		};
-		carregarDados();
+		(async () => {
+			await Data.getData();
+            setLoading(false);
+		})();
 	}, []);
 
 	// Bloqueia botão físico de voltar

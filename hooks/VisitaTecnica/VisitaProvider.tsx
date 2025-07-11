@@ -1,12 +1,25 @@
 import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
-import { createContext, useContext, useEffect, useState } from "react";
-import { getQuests } from "@/utils/API/Quests";
-import { getEmpresas } from "@/utils/API/Empresas";
+import React, {
+	createContext,
+	useContext,
+	useEffect,
+	useState,
+	useCallback,
+} from "react";
 import Data from "@/utils/API/Data";
 
-const VisitaContext = createContext<VIPVisitaType | undefined>(undefined);
+// Tipagem segura para o contexto
+interface VisitaContextType extends VIPVisitaType {
+	setEmpresa: (empresa: VIPVisitaType["empresa"] | null) => void;
+	setResponsavel: (responsavel: string) => void;
+	setTecnico: (tecnico: string) => void;
+	addResposta: (resposta: VIPVisitaType["respostas"][number]) => void;
+	clear: () => void;
+}
+
+const VisitaContext = createContext<VisitaContextType | undefined>(undefined);
 
 export default function VisitaProvider({
 	children,
@@ -19,48 +32,66 @@ export default function VisitaProvider({
 	const [responsavel, setResponsavel] = useState<string>("");
 	const [tecnico, setTecnico] = useState<string>("");
 	const [respostas, setRespostas] = useState<VIPVisitaType["respostas"]>([]);
-
-	const [perguntas, setPerguntas] = useState<VIPVisitaType["perguntas"]>([]);
+	const [perguntas, setPerguntas] = useState<VIPVisitaType["perguntas"]>({
+		adm: [],
+		setor: [],
+	});
+	const [setores, setSetores] = useState<VIPVisitaType["setores"]>([]);
 	const [empresas, setEmpresas] = useState<VIPVisitaType["empresas"]>([]);
 
-	const data = new Date();
-	const dia = String(data.getDate()).padStart(2, "0");
-	const mes = String(data.getMonth() + 1).padStart(2, "0"); // Janeiro = 0
-	const ano = data.getFullYear();
+	const dataFormatada = new Date().toLocaleDateString("pt-BR");
 
-	const dataFormatada = `${dia}/${mes}/${ano}`;
-
-	function addResposta(resposta: VIPVisitaType["respostas"][number]) {
-		const hasResposta = respostas.find((r) => r.id === resposta.id);
-		if (hasResposta) {
+	// Adiciona ou atualiza uma resposta
+	const addResposta = useCallback(
+		(resposta: VIPVisitaType["respostas"][number]) => {
 			setRespostas((prev) => {
-				if (
-					hasResposta.checked === resposta.checked &&
-					resposta.observation === hasResposta.observation
-				) {
-					return prev.filter((r) => r.id !== resposta.id);
-				} else {
-					return prev.map((r) => {
-						if (r.id === resposta.id) {
-							return {
-								...r,
-								observation: resposta.observation,
-								checked: resposta.checked,
-							};
-						}
-						return r;
-					});
+				const index = prev.findIndex(
+					(r) => r.pergunta === resposta.pergunta
+				);
+
+				if (index !== -1) {
+					const existente = prev[index];
+					// Remove se for igual
+					if (
+						existente.checked === resposta.checked &&
+						existente.observation === resposta.observation
+					) {
+						return prev.filter((_, i) => i !== index);
+					}
+
+					// Atualiza
+					return prev.map((r, i) =>
+						i === index ? { ...r, ...resposta } : r
+					);
 				}
+
+				// Adiciona
+				return [...prev, resposta];
 			});
-		} else {
-			setRespostas((prev) => [...prev, resposta]);
-		}
-	}
+		},
+		[]
+	);
+
+	const clear = () => {
+		setEmpresa(null);
+		setResponsavel("");
+		setTecnico("");
+		setRespostas([]);
+		setSetores([]);
+	};
 
 	useEffect(() => {
-		(async () => {
-			Data.getEmpresas().then((empresas) => setEmpresas(empresas));
-		})();
+		setEmpresas(Data.empresas);
+		setPerguntas(Data.perguntas);
+		console.log(Data.empresas.length, "empresas carregadas");
+		console.log(
+			Data.perguntas.adm.length,
+			"perguntas administrativas carregadas"
+		);
+		console.log(
+			Data.perguntas.setor.length,
+			"perguntas de setor carregadas"
+		);
 	}, []);
 
 	return (
@@ -78,12 +109,25 @@ export default function VisitaProvider({
 				empresas,
 				data: dataFormatada,
 				addResposta,
-				clear: () => {
-					setEmpresa(null);
-					setResponsavel("");
-					setTecnico("");
-					setRespostas([]);
+				setores,
+				removerSetor: (id: string) => {
+					setSetores((prev) => prev.filter((s) => s.id !== id));
 				},
+
+				addSetor(setor) {
+					setSetores((prev) => {
+						const index = prev.findIndex((s) => s.id === setor.id);
+						if (index !== -1) {
+							// Atualiza o setor existente
+							return prev.map((s, i) =>
+								i === index ? setor : s
+							);
+						}
+						// Adiciona novo setor
+						return [...prev, setor];
+					});
+				},
+				clear,
 			}}
 		>
 			{children}
@@ -93,7 +137,8 @@ export default function VisitaProvider({
 
 export function useVisita() {
 	const context = useContext(VisitaContext);
-	if (!context)
+	if (!context) {
 		throw new Error("useVisita must be used within a VisitaProvider");
+	}
 	return context;
 }

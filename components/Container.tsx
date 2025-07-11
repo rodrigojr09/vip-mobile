@@ -33,7 +33,7 @@ export default function Container({
 
 const defaultStyles = StyleSheet.create({
 	Container: {
-        flex: 1,
+		flex: 1,
 		backgroundColor: "#0f172a",
 	},
 });

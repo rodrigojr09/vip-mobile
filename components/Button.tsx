@@ -8,18 +8,22 @@ import {
 export default function Button({
 	onPress,
 	children,
+	disabled = false,
 	secundary,
 }: {
 	onPress: (e: GestureResponderEvent) => void;
 	children: string;
 	secundary?: boolean;
+	disabled?: boolean;
 }) {
 	return (
 		<TouchableOpacity
 			style={{
 				...styles.button,
-				backgroundColor: secundary ? "#0069ad" : "green",
+                backgroundColor: secundary ? "#0069ad" : "green",
+                ...(disabled ? styles.buttonDisabled : {}),
 			}}
+			disabled={disabled}
 			onPress={onPress}
 		>
 			<Text
@@ -44,5 +48,8 @@ const styles = StyleSheet.create({
 	buttonText: {
 		fontSize: 18,
 		textAlign: "center",
-	},
+    },
+    buttonDisabled: {
+        opacity: 0.5,
+    }
 });
