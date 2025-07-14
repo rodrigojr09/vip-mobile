@@ -2,6 +2,7 @@ import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import { VIPEmpresaType } from "@/types/VisitaTecnica/VIPEmpresaType";
 import { VIPPerguntaType } from "@/types/VisitaTecnica/VIPPerguntaType";
 import * as FileSystem from "expo-file-system";
+import saveOffline from "../Visita/saveOffline";
 
 class Data {
 	private paths = {
@@ -99,6 +100,42 @@ class Data {
 		} catch (error: any) {
 			console.error("❌ | Erro ao ler empresas:", error.message || error);
 			return null;
+		}
+	}
+
+	async createVisita(visita: VIPVisitaType, offline: boolean) {
+		console.log(visita);
+		try {
+			const res = await fetch(this.base_url + "/visitas", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(
+					offline
+						? {
+								id: visita.id,
+								empresaId: visita.empresa?.id,
+								responsavel: visita.responsavel,
+								tecnico: visita.tecnico,
+								data: visita.data,
+								horaEntrada: visita.horaEntrada,
+								horaSaida: visita.horaSaida,
+								perguntas: visita.perguntas,
+								respostas: visita.respostas,
+								setores: visita.setores,
+								assinatura: visita.assinatura,
+						  }
+						: visita
+				),
+			});
+			if (res.ok) return true;
+			else if (offline) return saveOffline(visita);
+			else return false;
+		} catch (e) {
+			console.error(e);
+			if (offline) return saveOffline(visita);
+			else return false;
 		}
 	}
 }

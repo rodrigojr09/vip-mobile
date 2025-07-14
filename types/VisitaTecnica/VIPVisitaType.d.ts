@@ -7,7 +7,9 @@ export interface VIPVisitaType {
 	empresa: VIPEmpresaType | null;
 	responsavel: string;
 	tecnico: string;
-	data: string;
+    data: string;
+    horaEntrada: string;
+    horaSaida: string;
 	empresas: VIPEmpresa[];
 	perguntas: { adm: VIPPerguntaType[]; setor: VIPPerguntaType[] };
 	respostas: VIPRespostaType[];

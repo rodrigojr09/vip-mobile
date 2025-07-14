@@ -8,9 +8,11 @@ import {
 export default function Button({
 	onPress,
 	children,
+	styles = {},
 	disabled = false,
 	secundary,
 }: {
+	styles?: any;
 	onPress: (e: GestureResponderEvent) => void;
 	children: string;
 	secundary?: boolean;
@@ -18,19 +20,27 @@ export default function Button({
 }) {
 	return (
 		<TouchableOpacity
-			style={{
-				...styles.button,
-                backgroundColor: secundary ? "#0069ad" : "green",
-                ...(disabled ? styles.buttonDisabled : {}),
-			}}
+			style={[
+				{
+					padding: styles.padding || 18,
+					marginVertical: styles.marginVertical || 10,
+					borderRadius: styles.borderRadius || 10,
+					width: styles.width || "100%",
+					backgroundColor: secundary ? "#0069ad" : "green",
+					opacity: disabled ? 0.5 : 1,
+				},
+			]}
 			disabled={disabled}
 			onPress={onPress}
 		>
 			<Text
-				style={{
-					...styles.buttonText,
-					color: secundary ? "black" : "white",
-				}}
+				style={[
+					{
+						fontSize: 18,
+						textAlign: "center",
+						color: secundary ? "black" : "white",
+					},
+				]}
 			>
 				{children}
 			</Text>
@@ -38,18 +48,4 @@ export default function Button({
 	);
 }
 
-const styles = StyleSheet.create({
-	button: {
-		padding: 18,
-		marginVertical: 10,
-		borderRadius: 10,
-		width: "100%",
-	},
-	buttonText: {
-		fontSize: 18,
-		textAlign: "center",
-    },
-    buttonDisabled: {
-        opacity: 0.5,
-    }
-});
+const stylesDefault = StyleSheet.create({});

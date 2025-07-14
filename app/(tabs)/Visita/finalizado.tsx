@@ -9,29 +9,30 @@ import Container from "@/components/Container";
 import { abrirArquivo } from "@/utils/abrirArquivo";
 import { NovaVisita } from "@/utils/API/Empresas";
 import base_url from "@/utils/API/base_url";
-import { getHtmlVisita } from "@/utils/VisitaTecnica/formatHTML";
+import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 import Loading from "@/components/Loading";
- 
+import Data from "@/utils/API/Data";
+
 export default function Finalizado() {
 	const router = useRouter();
 	const query = useSearchParams();
-    const visita = useVisita();
-    const [loading,setLoading] = React.useState(false);
+	const visita = useVisita();
+	const [loading, setLoading] = React.useState(false);
 	const [token, setToken] = React.useState<string | null>(null);
 
 	useEffect(() => {
-		const backAction = () => {
-			return true;
-		};
-
+		const agora = new Date();
+		const hora = agora.getHours().toString().padStart(2, "0");
+		const minutos = agora.getMinutes().toString().padStart(2, "0");
 		(async () => {
 			await ScreenOrientation.lockAsync(
 				ScreenOrientation.OrientationLock.PORTRAIT_UP
 			);
-			const res = await NovaVisita(
+			const res = await Data.createVisita(
 				{
 					...visita,
+					horaSaida: `${hora}:${minutos}`,
 					assinatura: query.get("assinatura") as string,
 				},
 				true
@@ -43,8 +44,6 @@ export default function Finalizado() {
 				setToken(visita.empresa?.token || "offline");
 			}
 		})();
-
-		BackHandler.addEventListener("hardwareBackPress", backAction);
 	}, []);
 	async function handleDownload() {
 		try {
@@ -86,29 +85,36 @@ export default function Finalizado() {
 		}
 	}
 
-    if(loading) return <Loading/>
+	if (loading) return <Loading />;
 
-	if(!loading) return (
-		<Container style={{ padding: 10 }}>
-			<Button
-				onPress={() => {
-					visita.clear();
-					router.replace("/");
-				}}
-			>
-				Ir para o Início
-			</Button>
-
-			<Button onPress={handleDownload}>Baixar Levantamento</Button>
-			{token && token !== "offline" && (
+	if (!loading)
+		return (
+			<Container style={{ padding: 10 }}>
 				<Button
 					onPress={() => {
-						Linking.openURL(`${base_url}/empresas/${token}/visitas/${visita.id}`);
+						visita.clear();
+						router.replace("/");
 					}}
 				>
-					Abrir Link
+					Ir para o Início
 				</Button>
-            )}
-		</Container>
-	);
+
+				<Button onPress={handleDownload}>Baixar Levantamento</Button>
+				{token && token !== "offline" && (
+					<Button
+						onPress={() => {
+							Linking.openURL(
+								`${base_url}/empresas/${token}/visitas/${visita.id}`
+							);
+						}}
+					>
+						Abrir Link
+					</Button>
+				)}
+			</Container>
+		);
 }
+
+/**
+ prettier-plugin-tailwindcss tailwindcss expo-document-picker expo-media-library expo-print expo-splash-screen expo-web-browser nativewind react-native-fs react-native-gesture-handler
+ */

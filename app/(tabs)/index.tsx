@@ -7,6 +7,7 @@ import { Alert, StyleSheet, View } from "react-native";
 import { NovaVisita } from "@/utils/API/Empresas";
 import { getNetworkStateAsync, useNetworkState } from "expo-network";
 import { Visita } from "@/types/VIPVisitaType";
+import Data from "@/utils/API/Data";
 
 export default function App() {
 	const router = useRouter();
@@ -61,7 +62,10 @@ export default function App() {
 							item.id +
 							".json"
 					);
-					const res = await NovaVisita(JSON.parse(file), false);
+					const res = await Data.createVisita(
+						JSON.parse(file),
+						false
+					);
 					console.log(res);
 					if (res) {
 						await FileSystem.deleteAsync(
@@ -89,13 +93,9 @@ export default function App() {
 				Novo Levantamento
 			</Button>
 
-			<Button onPress={(e) => router.push("/VisitaTecnica")}>
+			<Button onPress={(e) => router.push("/Visita")}>
 				Visita Técnica
-            </Button>
-            
-            <Button onPress={(e) => router.push("/Visita")}>
-                Visita (Teste)
-            </Button>
+			</Button>
 
 			{isConnected && isInternetReachable && visitas.length > 0 && (
 				<Button onPress={(e) => save()}>

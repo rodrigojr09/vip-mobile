@@ -1,7 +1,7 @@
 import * as FileSystem from "expo-file-system";
 import * as Network from "expo-network";
 import base_url from "./base_url";
-import saveOffline from "../VisitaTecnica/saveOffline";
+import saveOffline from "../Visita/saveOffline";
 import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 
 const DEFAULT_EMPRESAS_FILE = FileSystem.documentDirectory + "empresas.json";
@@ -72,8 +72,8 @@ export async function NovaVisita(visita: VIPVisitaType, offline: boolean) {
 				empresa_id: visita.empresa?.id,
 				tecnico: visita.tecnico,
 				responsavel: visita.responsavel,
-                respostas: visita.respostas,
-                assinatura: visita.assinatura
+				respostas: visita.respostas,
+				assinatura: visita.assinatura,
 			}),
 		});
 		console.log(response);

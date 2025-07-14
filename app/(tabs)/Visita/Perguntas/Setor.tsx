@@ -10,21 +10,13 @@ import { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 import "react-native-get-random-values";
-import Animated, {
-	useAnimatedStyle,
-	useSharedValue,
-	withTiming,
-} from "react-native-reanimated";
-
-const { width } = Dimensions.get("window");
-const SIDEBAR_WIDTH = width * 0.75;
+import Sidebar from "@/components/Visita/Sidebar";
 
 export default function PerguntasSetor() {
 	const { addSetor, setores, perguntas, removerSetor } = useVisita();
 	const [respostas, setRespostas] = useState<VIPRespostaType[]>([]);
 	const [nome, setNome] = useState("");
 
-	const sidebarX = useSharedValue(-SIDEBAR_WIDTH);
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
 	const params = useLocalSearchParams();
@@ -40,11 +32,7 @@ export default function PerguntasSetor() {
 	}, [params.id]);
 
 	const toggleSidebar = () => {
-		const isOpen = sidebarX.value === 0;
-		sidebarX.value = withTiming(isOpen ? -SIDEBAR_WIDTH : 0, {
-			duration: 200,
-		});
-		setIsSidebarOpen(!isOpen);
+		setIsSidebarOpen(!isSidebarOpen);
 	};
 
 	const addResposta = useCallback((resposta: VIPRespostaType) => {
@@ -70,10 +58,6 @@ export default function PerguntasSetor() {
 		});
 	}, []);
 
-	const sidebarStyle = useAnimatedStyle(() => ({
-		transform: [{ translateX: sidebarX.value }],
-	}));
-
 	function handleAvancar() {
 		if (!nome.trim()) {
 			alert("Informe o nome do setor antes de continuar.");
@@ -89,100 +73,64 @@ export default function PerguntasSetor() {
 	}
 
 	return (
-		<Container scroller>
+		<>
 			<Pressable onPress={toggleSidebar} style={styles.abrirBotao}>
 				<Text style={styles.botaoTexto}>☰ Abrir Menu</Text>
 			</Pressable>
+			<Container scroller>
+				<View style={styles.formContainer}>
+					<Text style={styles.title}>Perguntas do Setor</Text>
 
-			<View style={styles.formContainer}>
-				<Text style={styles.title}>Perguntas do Setor</Text>
-
-				<View style={styles.inputContainer}>
-					<Input
-						placeholder="Setor Vistoriado"
-						onChange={setNome}
-						value={nome}
-					/>
-				</View>
-
-				{perguntas.setor.map((q) => (
-					<View key={q.id} style={styles.questionBlock}>
-						<QuestionBlock
-							pergunta={q}
-							resposta={respostas.find(
-								(r) => r.pergunta === q.pergunta
-							)}
-							onChange={addResposta}
-							respostas={respostas}
+					<View style={styles.inputContainer}>
+						<Input
+							placeholder="Setor Vistoriado"
+							onChange={setNome}
+							value={nome}
 						/>
 					</View>
-				))}
 
-				<Button
-					disabled={
-						!nome.trim() ||
-						respostas.length !== perguntas.setor.length
-					}
-					onPress={() => handleAvancar()}
-				>
-					Próximo
-				</Button>
-			</View>
-
-			{isSidebarOpen && (
-				<Pressable style={styles.overlay} onPress={toggleSidebar} />
-			)}
-
-			{/* Sidebar */}
-			<Animated.View style={[styles.sidebar, sidebarStyle]}>
-				<Text style={styles.sidebarTitulo}>Setores Registrados</Text>
-				<Pressable onPress={toggleSidebar}>
-					<Text style={styles.fecharTexto}>✕ Fechar</Text>
-				</Pressable>
-				<View style={styles.menuItens}>
-					{setores.map((t) => (
-						<View
-							style={{
-								flexDirection: "row",
-								justifyContent: "space-between",
-                                marginBottom: 12,
-                                padding: 12,
-                                borderRadius: 12,
-                                alignItems: "center",
-                                backgroundColor: "#2a2a2a", 
-							}}
-							key={t.id}
-						>
-							<Pressable
-								onPress={() => {
-									router.push({
-										pathname: "/Visita/Perguntas/Setor",
-										params: { id: t.id },
-									});
-								}}
-							>
-								<Text style={[{ color: "lime" }]}>
-									{t.nome}
-								</Text>
-							</Pressable>
-							<Pressable
-								onPress={() => removerSetor(t.id as string)}
-							>
-								<Text style={[{ color: "red" }]}>
-									Remover
-								</Text>
-							</Pressable>
+					{perguntas.setor.map((q) => (
+						<View key={q.id} style={styles.questionBlock}>
+							<QuestionBlock
+								pergunta={q}
+								resposta={respostas.find(
+									(r) => r.pergunta === q.pergunta
+								)}
+								onChange={addResposta}
+								respostas={respostas}
+							/>
 						</View>
 					))}
 
-					<Button
-						onPress={() => router.push("/Visita/Perguntas/Setor")}
+					<View
+						style={{
+							marginTop: 20,
+							flexDirection: "row",
+							gap: 10,
+							flex: 1,
+							justifyContent: "space-between",
+						}}
 					>
-						Novo Setor
-					</Button>
+						<Button
+							disabled={
+								!nome.trim() ||
+								respostas.length !== perguntas.setor.length
+							}
+							onPress={() => handleAvancar()}
+						>
+							Salvar Setor
+						</Button>
+					</View>
 				</View>
-			</Animated.View>
-		</Container>
+
+				{isSidebarOpen && (
+					<Pressable style={styles.overlay} onPress={toggleSidebar} />
+				)}
+
+				{/* Sidebar */}
+				{isSidebarOpen && <Sidebar toggleSidebar={toggleSidebar} />}
+			</Container>
+		</>
 	);
 }
 
@@ -216,46 +164,14 @@ const styles = StyleSheet.create({
 		elevation: 3,
 	},
 	abrirBotao: {
-		position: "absolute",
-		top: 20,
-		right: 20,
+		position: "fixed",
 		backgroundColor: "#444",
 		padding: 10,
-		borderRadius: 6,
 		zIndex: 9999,
 	},
 	botaoTexto: {
 		color: "#fff",
 		fontSize: 16,
-	},
-	sidebar: {
-		position: "absolute",
-		top: 0,
-		bottom: 0,
-		left: 0,
-		width: SIDEBAR_WIDTH,
-		backgroundColor: "#111",
-		padding: 20,
-		zIndex: 20,
-	},
-	sidebarTitulo: {
-		color: "#fff",
-		fontSize: 22,
-		fontWeight: "bold",
-		marginBottom: 20,
-	},
-	fecharTexto: {
-		color: "#f55",
-		fontSize: 16,
-		marginBottom: 20,
-	},
-	menuItens: {
-		gap: 10,
-	},
-	item: {
-		color: "#ccc",
-		fontSize: 18,
-		marginBottom: 10,
 	},
 	overlay: {
 		position: "absolute",

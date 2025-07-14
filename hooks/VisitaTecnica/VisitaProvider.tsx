@@ -39,7 +39,14 @@ export default function VisitaProvider({
 	const [setores, setSetores] = useState<VIPVisitaType["setores"]>([]);
 	const [empresas, setEmpresas] = useState<VIPVisitaType["empresas"]>([]);
 
-	const dataFormatada = new Date().toLocaleDateString("pt-BR");
+	const agora = new Date();
+	const dia = agora.getDate().toString().padStart(2, "0");
+	const mes = (agora.getMonth() + 1).toString().padStart(2, "0");
+	const ano = agora.getFullYear();
+	const dataFormatada = `${dia}/${mes}/${ano}`;
+	const hora = agora.getHours().toString().padStart(2, "0");
+	const minutos = agora.getMinutes().toString().padStart(2, "0");
+	const horaFormatada = `${hora}:${minutos}`;
 
 	// Adiciona ou atualiza uma resposta
 	const addResposta = useCallback(
@@ -108,6 +115,8 @@ export default function VisitaProvider({
 				perguntas,
 				empresas,
 				data: dataFormatada,
+				horaEntrada: horaFormatada,
+				horaSaida: "",
 				addResposta,
 				setores,
 				removerSetor: (id: string) => {
