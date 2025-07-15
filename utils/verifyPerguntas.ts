@@ -28,8 +28,13 @@ export function verifyPerguntas(
 			(r) => r.pergunta === pergunta.pergunta
 		);
 
-		if (!resposta || resposta.checked == null) {
-			return true; // não respondida e obrigatória
+		if (
+			!resposta ||
+			(resposta.checked == null)
+		) {
+            if (pergunta.type !== "text") return true; // não respondida e obrigatória
+            else if (!resposta || (resposta?.observation && resposta?.observation?.trim() === "")) return true;
+            continue;
 		}
 
 		// Verifica subperguntas, se existirem

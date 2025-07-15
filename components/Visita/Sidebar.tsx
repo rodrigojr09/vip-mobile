@@ -28,6 +28,7 @@ export default function Sidebar({
 				>
 					<Pressable
 						onPress={() => {
+							toggleSidebar();
 							router.push({
 								pathname: "/Visita/Perguntas/Administrativo",
 							});
@@ -61,6 +62,7 @@ export default function Sidebar({
 					>
 						<Pressable
 							onPress={() => {
+								toggleSidebar();
 								router.push({
 									pathname: "/Visita/Perguntas/Setor",
 									params: { id: t.id },
@@ -75,7 +77,12 @@ export default function Sidebar({
 					</View>
 				))}
 
-				<Button onPress={() => router.push("/Visita/Perguntas/Setor")}>
+				<Button
+					onPress={() => {
+						toggleSidebar();
+						router.push("/Visita/Perguntas/Setor");
+					}}
+				>
 					Novo Setor
 				</Button>
 				<Button
@@ -84,6 +91,7 @@ export default function Sidebar({
 							return alert(
 								"Adicione pelo menos um setor antes de finalizar a visita."
 							);
+						toggleSidebar();
 						router.push("/Visita/resumo");
 					}}
 				>

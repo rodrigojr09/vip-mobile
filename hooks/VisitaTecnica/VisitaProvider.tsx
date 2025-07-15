@@ -60,8 +60,8 @@ export default function VisitaProvider({
 					const existente = prev[index];
 					// Remove se for igual
 					if (
-						existente.checked === resposta.checked &&
-						existente.observation === resposta.observation
+						(existente.checked === resposta.checked &&
+						existente.observation === resposta.observation) || (resposta.checked === "Check" && resposta.observation === "")
 					) {
 						return prev.filter((_, i) => i !== index);
 					}

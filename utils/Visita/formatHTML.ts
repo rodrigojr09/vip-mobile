@@ -10,14 +10,38 @@ function getRespostaHtml(
 ): string {
 	const resposta = respostas.find((r) => r.pergunta === pergunta.pergunta);
 	if (!resposta && pergunta.type !== "info") return "";
-	const checks = pergunta.subpergunta?.filter(
-		(s) => s.type === "check" && !s.when
-	);
-	const condicionais = pergunta.subpergunta?.filter(
-		(s) =>
-			s.type !== "check" &&
-			s.when?.toLowerCase() === resposta?.checked?.toLowerCase()
-	);
+	const subperguntas = pergunta.subpergunta;
+
+	const checks = subperguntas
+		? subperguntas.filter((s) => s.type === "check" && !s.when)
+		: [];
+
+	const texts = subperguntas
+		? subperguntas.filter(
+				(s) =>
+					s.type === "text" &&
+					s.when?.toLowerCase() ===
+						resposta?.checked?.toString().toLowerCase()
+		  )
+		: [];
+
+	const infos = subperguntas
+		? subperguntas.filter(
+				(s) =>
+					s.type === "info" &&
+					s.when?.toLowerCase() ===
+						resposta?.checked?.toString().toLowerCase()
+		  )
+		: [];
+
+	const condicionais = subperguntas
+		? subperguntas.filter(
+				(s) =>
+					s.type === "boolean" &&
+					s.when?.toLowerCase() ===
+						resposta?.checked?.toString().toLowerCase()
+		  )
+		: [];
 
 	return `
 			<div class="resposta-bloco">
@@ -25,18 +49,34 @@ function getRespostaHtml(
 				${
 					pergunta.type !== "info"
 						? `<p class="resposta-texto">Resposta: ${
-								resposta?.checked || "Não informado"
+								pergunta.type === "text"
+									? resposta?.observation
+									: resposta?.checked
 						  }</p>`
 						: ""
 				}
 				${
-					resposta?.observation
+					resposta?.observation && resposta.checked !== "Check"
 						? `<p class="resposta-observacao">Observação: ${resposta.observation}</p>`
+						: ""
+				}
+                ${
+					texts && texts.length > 0
+						? texts
+								?.map((sub) => getRespostaHtml(sub, respostas))
+								.join("")
 						: ""
 				}
 				${
 					condicionais && condicionais.length > 0
 						? condicionais
+								?.map((sub) => getRespostaHtml(sub, respostas))
+								.join("")
+						: ""
+				}
+                ${
+					infos && infos.length > 0
+						? infos
 								?.map((sub) => getRespostaHtml(sub, respostas))
 								.join("")
 						: ""
@@ -116,7 +156,6 @@ export function getHtmlVisita(visita: VIPVisitaType) {
 				.container {
 					background: #ffffff;
 					border-radius: 10px;
-					padding: 40px;
 					max-width: 960px;
 					margin: auto;
 					box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
@@ -158,6 +197,7 @@ export function getHtmlVisita(visita: VIPVisitaType) {
 					font-size: 1.1rem;
 					color: #333;
 					margin-bottom: 8px;
+                    margin-top: 1rem;
 				}
 
 				.resposta-texto {
@@ -223,9 +263,9 @@ export function getHtmlVisita(visita: VIPVisitaType) {
 					margin: auto;
 					max-width: 90vw;
 				}
-			</style>
+    	</style>
 		</head>
-		<body>
+		<bod
 			<div class="container">
 				<h1 class="titulo-principal">Relatório de Visita Técnica</h1>
 				<div class="info">

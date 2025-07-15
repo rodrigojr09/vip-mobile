@@ -2,28 +2,28 @@ import { VIPRespostaType } from "@/types/VisitaTecnica/VIPPerguntaType";
 import { StyleSheet, TextInput } from "react-native";
 
 const ObservacaoCampo = ({
-    label,
-    status,
-    obs,
-    onChange,
+	label,
+	status,
+	obs,
+	onChange,
 }: {
-    label: string;
-    status: VIPRespostaType["checked"];
-    obs: string;
-    onChange: (
-        label: string,
-        status: VIPRespostaType["checked"],
-        obs: string
-    ) => void;
+	label: string;
+	status: VIPRespostaType["checked"];
+	obs: string;
+	onChange: (
+		label: string,
+		status: VIPRespostaType["checked"],
+		obs: string
+	) => void;
 }) => (
-    <TextInput
-        style={styles.observationInput}
-        placeholder="Observações (opcional)"
-        placeholderTextColor="#aaa"
-        multiline
-        value={obs}
-        onChangeText={(value) => onChange(label, status, value)}
-    />
+	<TextInput
+		style={styles.observationInput}
+		placeholder={`${status === "Check" ? "Escreva aqui..." : "Observações (opcional)"}`}
+		placeholderTextColor="#aaa"
+		multiline
+		value={obs}
+		onChangeText={(value) => onChange(label, status, value)}
+	/>
 );
 
 const styles = StyleSheet.create({
@@ -36,8 +36,7 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		minHeight: 60,
 		textAlignVertical: "top",
-    },
-    
+	},
 });
 
 export default ObservacaoCampo;

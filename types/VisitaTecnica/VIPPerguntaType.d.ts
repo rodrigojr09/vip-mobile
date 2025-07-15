@@ -1,8 +1,8 @@
 export interface VIPPerguntaType {
 	id: string;
-    pergunta: string;
-    when?: "sim" | "não" | "na";
-	type: "boolean" | "check" | "info";
+	pergunta: string;
+	when?: "sim" | "não" | "na";
+	type: "boolean" | "check" | "info" | "text";
 	subpergunta?: VIPPerguntaType[];
 }
 

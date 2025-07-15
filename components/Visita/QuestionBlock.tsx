@@ -51,15 +51,54 @@ const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
 		const checks = subperguntas.filter(
 			(s) => s.type === "check" && !s.when
 		);
+
+		const texts = subperguntas.filter(
+			(s) =>
+				s.type === "text" &&
+				s.when?.toLowerCase() === status?.toString().toLowerCase()
+		);
+
+		const infos = subperguntas.filter(
+			(s) =>
+				s.type === "info" &&
+				s.when?.toLowerCase() === status?.toString().toLowerCase()
+		);
+
 		const condicionais = subperguntas.filter(
 			(s) =>
-				s.type !== "check" &&
+				s.type === "boolean" &&
 				s.when?.toLowerCase() === status?.toString().toLowerCase()
 		);
 
 		return (
 			<>
+				{texts.map((sub) => (
+					<View key={sub.id} style={{ marginTop: 32 }}>
+						<QuestionBlock
+							pergunta={sub}
+							resposta={respostas.find(
+								(r) => r.pergunta === sub.pergunta
+							)}
+							onChange={onChange}
+							respostas={respostas}
+						/>
+					</View>
+				))}
+
 				{condicionais.map((sub) => (
+					<View key={sub.id} style={{ marginTop: 32 }}>
+						<QuestionBlock
+							pergunta={sub}
+							resposta={respostas.find(
+								(r) => r.pergunta === sub.pergunta
+							)}
+							onChange={onChange}
+							respostas={respostas}
+						/>
+					</View>
+				))}
+
+				{infos.map((sub) => (
 					<View key={sub.id} style={{ marginTop: 32 }}>
 						<QuestionBlock
 							pergunta={sub}
@@ -112,15 +151,16 @@ const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
 				<View style={styles.buttonGroup}>{renderButtons()}</View>
 			)}
 
-			{resposta && (
+			{(resposta || pergunta.type === "text") && (
 				<ObservacaoCampo
 					label={pergunta.pergunta}
-					status={status}
+					status={pergunta.type === "text" ? "Check" : status}
 					obs={obs}
 					onChange={(label, status, obs) =>
 						onChange({
 							pergunta: label,
-							checked: status,
+							checked:
+								pergunta.type === "text" ? "Check" : status,
 							observation: obs,
 						})
 					}
