@@ -3,6 +3,7 @@ import Container from "@/components/Container";
 import Input from "@/components/Input";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
+import Data from "@/utils/API/Data";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -26,11 +27,12 @@ export default function Visita() {
 		clear,
 	} = useVisita();
 
+
 	const router = useRouter();
 
 	const [search, setSearch] = useState("");
 
-	function handleSave() {
+	async function handleSave() {
 		if (empresa === null)
 			return Alert.alert(
 				"Atenção! O nome da empresa precisa ser preenchido"
@@ -43,6 +45,16 @@ export default function Visita() {
 			return Alert.alert(
 				"Atenção! O nome do cliente responsável precisa ser preenchido"
 			);
+
+		// Montar mensagem do evento
+		const msg = `Início da visita - Empresa: ${empresa.razao_social}, Técnico: ${tecnico}, Responsável: ${responsavel}`;
+
+		try {
+			Data.sendEvent(msg);
+		} catch (error) {
+			console.warn("Erro ao adicionar evento:", error);
+		}
+
 		router.push({ pathname: "/Visita/Perguntas/Administrativo" });
 	}
 

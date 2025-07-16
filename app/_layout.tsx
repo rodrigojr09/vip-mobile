@@ -1,7 +1,7 @@
-import { fetchEmpresas } from "@/utils/API/Empresas";
+import * as Location from "expo-location";
 import * as Device from "expo-device";
-import { fetchQuests } from "@/utils/API/Quests";
-import { router, Stack, usePathname } from "expo-router";
+import * as TaskManager from "expo-task-manager";
+import { LOCATION_TASK_NAME } from "@/utils/BackgroundTasks";
 import { useEffect, useState } from "react";
 import {
 	StyleSheet,
@@ -9,28 +9,62 @@ import {
 	TouchableOpacity,
 	View,
 	BackHandler,
+	PermissionsAndroid,
 } from "react-native";
 import Loading from "@/components/Loading";
+import { usePathname, Stack, router } from "expo-router";
 import Data from "@/utils/API/Data";
 
 export default function Layout() {
 	const pathname = usePathname();
 	const [loading, setLoading] = useState(true);
-
 	useEffect(() => {
 		(async () => {
 			await Data.getData();
-            setLoading(false);
+			await startBackgroundLocation();
+			setLoading(false);
 		})();
 	}, []);
 
-	// Bloqueia botão físico de voltar
+	const startBackgroundLocation = async () => {
+		const { status: foregroundStatus } =
+			await Location.requestForegroundPermissionsAsync();
+		const { status: backgroundStatus } =
+			await Location.requestBackgroundPermissionsAsync();
+
+		if (foregroundStatus !== "granted" || backgroundStatus !== "granted") {
+			console.warn("Permissão de localização não concedida.");
+			return;
+		}
+
+		const isTaskDefined = TaskManager.isTaskDefined(LOCATION_TASK_NAME);
+		const hasStarted = await Location.hasStartedLocationUpdatesAsync(
+			LOCATION_TASK_NAME
+		);
+		if (!hasStarted) {
+			await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+				accuracy: Location.Accuracy.Balanced,
+				timeInterval: 60000, // 1 minuto
+				distanceInterval: 1, // ou 50 metros
+				foregroundService: {
+					notificationTitle: "Vip Mobile",
+					notificationBody:
+						"Registrando sua localização em segundo plano",
+				},
+				showsBackgroundLocationIndicator: true,
+			});
+			console.log("Atualizações de localização iniciadas.");
+		}
+		if (isTaskDefined) {
+			console.log("Tarefa de localização definida.");
+		}
+	};
+
 	useEffect(() => {
 		const backHandler = BackHandler.addEventListener(
 			"hardwareBackPress",
-			() => true // bloqueia
+			() => true
 		);
-
 		return () => backHandler.remove();
 	}, []);
 
@@ -44,14 +78,12 @@ export default function Layout() {
 				paddingTop: isTablet ? 25 : 0,
 			}}
 		>
-			{/* Header */}
 			{!pathname.endsWith("assinatura") && (
 				<View style={styles.header}>
 					<Text style={styles.headerText}>Vip Mobile</Text>
 				</View>
 			)}
 
-			{/* Botão de voltar manual */}
 			{pathname !== "/" &&
 				!pathname.endsWith("assinatura") &&
 				!pathname.endsWith("finalizado") && (
@@ -63,7 +95,6 @@ export default function Layout() {
 					</TouchableOpacity>
 				)}
 
-			{/* Conteúdo */}
 			{!loading ? (
 				<View style={styles.content}>
 					<Stack screenOptions={{ headerShown: false }} />
@@ -78,7 +109,7 @@ export default function Layout() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: "#0f172a", // slate-900
+		backgroundColor: "#0f172a",
 	},
 	header: {
 		backgroundColor: "green",
@@ -100,7 +131,7 @@ const styles = StyleSheet.create({
 		left: 20,
 		zIndex: 1000,
 		padding: 8,
-		backgroundColor: "red", // slate-800
+		backgroundColor: "red",
 		borderRadius: 6,
 	},
 	backButtonText: {

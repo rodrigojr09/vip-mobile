@@ -2,49 +2,47 @@ import Button from "@/components/Button";
 import * as FileSystem from "expo-file-system";
 import Container from "@/components/Container";
 import { useRouter } from "expo-router";
-import React, { use, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
-import { NovaVisita } from "@/utils/API/Empresas";
 import { getNetworkStateAsync, useNetworkState } from "expo-network";
-import { Visita } from "@/types/VIPVisitaType";
 import Data from "@/utils/API/Data";
+import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
+
+const VISITAS_DIR = `${FileSystem.documentDirectory}offline_visitas/`;
 
 export default function App() {
 	const router = useRouter();
 	const { isConnected, isInternetReachable } = useNetworkState();
-	const [visitas, setVisitas] = React.useState<Visita[]>([]);
+	const [visitas, setVisitas] = useState<VIPVisitaType[]>([]);
+	const [isSaving, setIsSaving] = useState(false);
 
 	async function listarVisitas() {
 		try {
-			if (
-				!(
-					await FileSystem.getInfoAsync(
-						`${FileSystem.documentDirectory}offline_visitas`
-					)
-				).exists
-			)
-				return FileSystem.makeDirectoryAsync(
-					`${FileSystem.documentDirectory}offline_visitas`
-				);
-			const data2 = await FileSystem.readDirectoryAsync(
-				FileSystem.documentDirectory + "offline_visitas"
+			const dirInfo = await FileSystem.getInfoAsync(VISITAS_DIR);
+			if (!dirInfo.exists) {
+				await FileSystem.makeDirectoryAsync(VISITAS_DIR);
+				return;
+			}
+
+			const files = await FileSystem.readDirectoryAsync(VISITAS_DIR);
+
+			const parsed = await Promise.all(
+				files.map(async (file) => {
+					try {
+						const content = await FileSystem.readAsStringAsync(
+							VISITAS_DIR + file
+						);
+						return JSON.parse(content);
+					} catch (error) {
+						console.warn("Erro ao ler arquivo:", file, error);
+						return null;
+					}
+				})
 			);
 
-			setVisitas(
-				await Promise.all(
-					data2.map(async (file) => {
-						return JSON.parse(
-							await FileSystem.readAsStringAsync(
-								FileSystem.documentDirectory +
-									"offline_visitas/" +
-									file
-							)
-						);
-					})
-				)
-			);
+			setVisitas(parsed.filter(Boolean));
 		} catch (err) {
-			console.log(err);
+			console.error("Erro ao listar visitas offline:", err);
 		}
 	}
 
@@ -53,28 +51,28 @@ export default function App() {
 	}, []);
 
 	async function save() {
+		if (isSaving) return;
+		setIsSaving(true);
+
 		try {
 			const saves = await Promise.all(
 				visitas.map(async (item) => {
-					const file = await FileSystem.readAsStringAsync(
-						FileSystem.documentDirectory +
-							"offline_visitas/" +
-							item.id +
-							".json"
-					);
-					const res = await Data.createVisita(
-						JSON.parse(file),
-						false
-					);
-					console.log(res);
-					if (res) {
-						await FileSystem.deleteAsync(
-							FileSystem.documentDirectory +
-								"offline_visitas/" +
-								item.id +
-								".json"
+					try {
+						const file = await FileSystem.readAsStringAsync(
+							VISITAS_DIR + item.id + ".json"
 						);
-						return 1;
+						const res = await Data.createVisita(
+							JSON.parse(file),
+							false
+						);
+						if (res) {
+							await FileSystem.deleteAsync(
+								VISITAS_DIR + item.id + ".json"
+							);
+							return 1;
+						}
+					} catch (e) {
+						console.error("Erro ao salvar visita:", item.id, e);
 					}
 					return 0;
 				})
@@ -82,26 +80,33 @@ export default function App() {
 
 			const saves2 = saves.filter((a) => a === 1).length;
 			listarVisitas();
-			Alert.alert("Salvo o total de " + saves2 + " visita(s).");
+			Alert.alert("Sucesso", `Salvo o total de ${saves2} visita(s).`);
 		} catch (err) {
-			console.log(err);
+			console.error("Erro ao salvar visitas:", err);
+		} finally {
+			setIsSaving(false);
 		}
 	}
+
 	return (
 		<Container style={styles.container}>
-			<Button onPress={(e) => router.push("/Levantamento")}>
+			<Button onPress={() => router.push("/Levantamento")}>
 				Novo Levantamento
 			</Button>
 
-			<Button onPress={(e) => router.push("/Visita")}>
+			<Button onPress={() => router.push("/Visita")}>
 				Visita Técnica
 			</Button>
 
-			{isConnected && isInternetReachable && visitas.length > 0 && (
-				<Button onPress={(e) => save()}>
-					{`Salvar ${visitas.length} Visita(s)`}
-				</Button>
-			)}
+			{isConnected === true &&
+				isInternetReachable === true &&
+				visitas.length > 0 && (
+					<Button onPress={save} disabled={isSaving}>
+						{isSaving
+							? "Salvando..."
+							: `Salvar ${visitas.length} Visita(s)`}
+					</Button>
+				)}
 		</Container>
 	);
 }
@@ -111,16 +116,5 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: "center",
 		padding: 20,
-	},
-	header: {
-		backgroundColor: "green",
-		padding: 30,
-		alignItems: "center",
-		width: "100%",
-	},
-	headerText: {
-		color: "white",
-		fontSize: 32,
-		fontWeight: "bold",
 	},
 });

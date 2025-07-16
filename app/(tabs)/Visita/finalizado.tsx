@@ -18,6 +18,7 @@ export default function Finalizado() {
 	const router = useRouter();
 	const query = useSearchParams();
 	const visita = useVisita();
+
 	const [loading, setLoading] = React.useState(false);
 	const [token, setToken] = React.useState<string | null>(null);
 
@@ -25,10 +26,27 @@ export default function Finalizado() {
 		const agora = new Date();
 		const hora = agora.getHours().toString().padStart(2, "0");
 		const minutos = agora.getMinutes().toString().padStart(2, "0");
+		const segundos = agora.getSeconds().toString().padStart(2, "0");
+
 		(async () => {
+			// Chamar addEvent para registrar finalização da visita
+			try {
+				const msg = `Finalização da visita - Empresa: ${
+					visita.empresa?.razao_social || "N/D"
+				}, Técnico: ${visita.tecnico || "N/D"}, Responsável: ${
+					visita.responsavel || "N/D"
+				}`;
+
+				Data.sendEvent(msg);
+			} catch (error) {
+				console.warn("Erro ao adicionar evento de finalização:", error);
+			}
+
+			// Bloquear orientação tela e salvar visita
 			await ScreenOrientation.lockAsync(
 				ScreenOrientation.OrientationLock.PORTRAIT_UP
 			);
+
 			const res = await Data.createVisita(
 				{
 					...visita,
@@ -37,6 +55,7 @@ export default function Finalizado() {
 				},
 				true
 			);
+
 			if (res === "offline") {
 				Alert.alert("Salvo offline!");
 				setToken("offline");
@@ -114,7 +133,3 @@ export default function Finalizado() {
 			</Container>
 		);
 }
-
-/**
- prettier-plugin-tailwindcss tailwindcss expo-document-picker expo-media-library expo-print expo-splash-screen expo-web-browser nativewind react-native-fs react-native-gesture-handler
- */

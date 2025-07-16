@@ -5,12 +5,15 @@ import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useRouter } from "expo-router";
 import { useRef } from "react";
 import { Alert, StyleSheet, TextInput } from "react-native";
+import Data from "@/utils/API/Data";
 
 export default function Levantamento() {
 	const router = useRouter();
 	const levantamento = useEmpresa();
+
 	const campos = ["nome", "responsavel"];
 	const refs = useRef<TextInput[]>([]);
+
 	const focarProximo = (index: number) => {
 		if (index + 1 < campos.length) {
 			refs.current[index + 1]?.focus();
@@ -18,10 +21,23 @@ export default function Levantamento() {
 			console.log("📨 Enviar formulário!");
 		}
 	};
-	const handleCreateLevantamento = () => {
+
+	const handleCreateLevantamento = async () => {
 		if (!levantamento.nome.trim() || !levantamento.responsavel.trim()) {
 			Alert.alert("Atenção! preencha todos os campos");
 		} else {
+			// Mensagem personalizada para o evento
+			const mensagem = `Levantamento criado - Empresa: ${levantamento.nome}, Responsável: ${levantamento.responsavel}`;
+
+			try {
+				Data.sendEvent(mensagem);
+			} catch (error) {
+				console.warn(
+					"Erro ao adicionar evento de levantamento:",
+					error
+				);
+			}
+
 			router.push("/Levantamento/resumo");
 		}
 	};

@@ -9,42 +9,42 @@ import { useRouter } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
 import { getHtml } from "@/utils/formatHTML";
 import Container from "@/components/Container";
+import Data from "@/utils/API/Data";
 
 export default function Finalizado() {
 	const router = useRouter();
 	const query = useSearchParams();
 	const empresa = useEmpresa();
-	// Desabilitar o botão de voltar
-	useEffect(() => {
-		const backAction = () => {
-			// Impede que a tela seja fechada com o botão de voltar
 
-			return true; // Retorna true para impedir a ação de voltar
-		};
+	useEffect(() => {
 		(async () => {
 			await ScreenOrientation.lockAsync(
 				ScreenOrientation.OrientationLock.PORTRAIT_UP
 			);
-		})();
 
-		BackHandler.addEventListener("hardwareBackPress", backAction);
+			// Mensagfem do evento
+			const mensagem = `Finalização da visita - Empresa: ${empresa.nome}, Responsável: ${empresa.responsavel}`;
+
+			try {
+				Data.sendEvent(mensagem);
+			} catch (error) {
+				console.warn("Erro ao adicionar evento de finalização:", error);
+			}
+		})();
 	}, []);
+
 	async function handleDownload() {
 		try {
-			// Gerar o HTML com a assinatura
 			const htmlContent = getHtml(empresa)
 				.replace("$assinatura", `${query.get("assinatura")}`)
 				.replace("not-assinatura", "");
 
-			// Caminho para salvar o arquivo HTML
 			const filePath = `${FileSystem.documentDirectory}Levantamento-${empresa.nome}.html`;
 
-			// Salvar o arquivo
 			await FileSystem.writeAsStringAsync(filePath, htmlContent, {
 				encoding: FileSystem.EncodingType.UTF8,
 			});
 
-			// Compartilhar o arquivo salvo
 			await Sharing.shareAsync(filePath);
 
 			console.log(
