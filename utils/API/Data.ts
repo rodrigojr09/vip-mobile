@@ -7,6 +7,7 @@ import "react-native-get-random-values";
 import * as FileSystem from "expo-file-system";
 import saveOffline from "../Visita/saveOffline";
 import { VIPEvento, VIPLocalizacao } from "@/types/VIPEvent";
+import { getAndroidId } from "expo-application";
 
 class Data {
 	private paths = {
@@ -195,6 +196,7 @@ class Data {
 
 		const novoEvento: VIPEvento = {
 			id: uuidv4(),
+			device: getAndroidId(),
 			data,
 			hora,
 			msg: evento,

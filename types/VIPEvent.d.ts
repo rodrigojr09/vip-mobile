@@ -5,6 +5,7 @@ export interface VIPLocalizacao {
 
 export interface VIPEvento {
 	id: string;
+	device: string;
 	data: string;
 	hora: string;
 	msg: string;
