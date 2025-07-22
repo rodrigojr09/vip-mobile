@@ -1,5 +1,6 @@
 import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import * as Location from "expo-location";
+import * as Network from "expo-network";
 import { VIPEmpresaType } from "@/types/VisitaTecnica/VIPEmpresaType";
 import { v4 as uuidv4 } from "uuid";
 import "react-native-get-random-values";
@@ -42,6 +43,11 @@ class Data {
 
 	public async getEmpresas(): Promise<VIPEmpresaType[]> {
 		console.log("🔎 | Buscando empresas...");
+		const network = await Network.getNetworkStateAsync();
+		if (!network.isConnected || !network.isInternetReachable)
+			return (this.empresas = await this.getJson(
+				this.paths.offline_empresas
+			));
 		const response = await fetch(this.base_url + "/empresas");
 		if (!response.ok) {
 			console.error(`❌ | Erro ao buscar empresas: ${response.status}`);
@@ -61,6 +67,11 @@ class Data {
 
 	public async getPerguntas(): Promise<VIPVisitaType["perguntas"]> {
 		console.log("🔎 | Buscando perguntas...");
+		const network = await Network.getNetworkStateAsync();
+		if (!network.isConnected || !network.isInternetReachable)
+			return (this.empresas = await this.getJson(
+				this.paths.offline_empresas
+			));
 		const response = await fetch(this.base_url + "/perguntas");
 		if (!response.ok) {
 			console.error(`❌ | Erro ao buscar perguntas: ${response.status}`);
