@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { useNavigationHistory } from "@/hooks/Navigation";
 import * as Device from "expo-device";
 import React, { useEffect, useRef, useState } from "react";
 import * as ScreenOrientation from "expo-screen-orientation";
@@ -9,7 +9,7 @@ import Button from "@/components/Button";
 
 const SignatureScreen = () => {
 	const ref = useRef<SignatureViewRef>(null);
-	const router = useRouter();
+	const nav = useNavigationHistory();
 	const visita = useVisita();
 	const [hasSigned, setHasSigned] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false); // <-- estado de controle
@@ -36,7 +36,7 @@ const SignatureScreen = () => {
 
 		try {
 			setIsSubmitting(true); // <-- trava o botão
-			router.push({
+			nav.push({
 				pathname: "/Visita/finalizado",
 				params: {
 					assinatura: `<img style="width: 100%; height: 100%;" src="${signature}"/>`,
@@ -75,7 +75,7 @@ const SignatureScreen = () => {
 					}
 				`}
 			/>
-			{__DEV__ && <Button onPress={() => router.back()}>Voltar</Button>}
+			{__DEV__ && <Button onPress={() => nav.back()}>Voltar</Button>}
 		</View>
 	);
 };

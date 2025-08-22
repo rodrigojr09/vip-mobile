@@ -1,8 +1,7 @@
-import { router } from "expo-router";
 import { Pressable, View, Text, StyleSheet } from "react-native";
-import Animated from "react-native-reanimated";
 import Button from "../Button";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import { useNavigationHistory } from "@/hooks/Navigation";
 
 export default function Sidebar({
 	toggleSidebar,
@@ -10,6 +9,7 @@ export default function Sidebar({
 	toggleSidebar: () => void;
 }) {
 	const { setores, removerSetor } = useVisita();
+	const nav = useNavigationHistory();
 
 	return (
 		<View style={[styles.sidebar]}>
@@ -29,7 +29,7 @@ export default function Sidebar({
 					<Pressable
 						onPress={() => {
 							toggleSidebar();
-							router.push({
+							nav.push({
 								pathname: "/Visita/Perguntas/Administrativo",
 							});
 						}}
@@ -63,7 +63,7 @@ export default function Sidebar({
 						<Pressable
 							onPress={() => {
 								toggleSidebar();
-								router.push({
+								nav.push({
 									pathname: "/Visita/Perguntas/Setor",
 									params: { id: t.id },
 								});
@@ -80,7 +80,7 @@ export default function Sidebar({
 				<Button
 					onPress={() => {
 						toggleSidebar();
-						router.push("/Visita/Perguntas/Setor");
+						nav.push("/Visita/Perguntas/Setor");
 					}}
 				>
 					Novo Setor
@@ -92,7 +92,7 @@ export default function Sidebar({
 								"Adicione pelo menos um setor antes de finalizar a visita."
 							);
 						toggleSidebar();
-						router.push("/Visita/resumo");
+						nav.push("/Visita/resumo");
 					}}
 				>
 					Finalizar

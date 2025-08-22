@@ -48,6 +48,9 @@ function getSetorHtml(setores: VIPSetorType[]) {
                         <p>Pé Direito: <span class="font-normal">${
 							setor.peDireito
 						} M</span></p>
+                         <p>Iluminamento(LUX): <span class="font-normal">${
+								setor.lux
+							}</span></p>
                     </div>
                 </div>
                 <div class="font-bold flex h-min border border-black">
@@ -86,28 +89,6 @@ function getSetorHtml(setores: VIPSetorType[]) {
 							"\n",
 							"<br/>"
 						)}</span></p>
-                        <p>
-                            <span class="font-normal">${
-								setor.extintores ? "Existe" : "Não existe"
-							}</span> Extintores no setor.
-                        </p>
-                        <p>
-                            <span class="font-normal">${
-								setor.rotaFuga ? "Existe" : "Não existe"
-							}</span> Rota de fuga no setor.
-                        </p>
-                        <p>
-                            <span class="font-normal">${
-								setor.saidaEmergencia ? "Existe" : "Não existe"
-							}</span> Saida de Emergencia no setor.
-                        </p>
-                        <p>
-                            <span class="font-normal">${
-								setor.sinalizacaoEmergencia
-									? "Existe"
-									: "Não existe"
-							}</span> Iluminção/Sinalização de Emergencia no setor.
-                        </p>
                     </div>
                 </div>
 				${getFuncaoHtml(setor.funcoes).join("")}
@@ -129,68 +110,21 @@ function getFuncaoHtml(funcoes: VIPFuncaoType[]) {
 					<div class="text-center w-full border-b border-black">Funcionarios: <span class="font-normal">${
 						funcao.funcionarios
 					}</span></div>
-					<div class="text-center w-full border-b border-black">LUX: <span class="font-normal">${
-						funcao.lux
-					}</span></div>
-					${getRiscoHtml(funcao["Fisico"].riscos, "Fisico").join("")}
-                    ${getRiscoHtml(funcao["Quimico"].riscos, "Quimico").join(
-						""
-					)}
-                    ${getRiscoHtml(
-						funcao["Biologico"].riscos,
-						"Biologico"
-					).join("")}
-                    ${getRiscoHtml(
-						funcao["Ergonomico"].riscos,
-						"Ergonomico"
-					).join("")}
-                    ${getRiscoHtml(funcao["Acidente"].riscos, "Acidente").join(
-						""
-					)}
+					${getRiscoHtml(funcao.riscos).join("")}
 				</div>`;
 	});
 }
 
 function getRiscoHtml(
 	riscos: VIPRiscoType[],
-	tipo: "Acidente" | "Ergonomico" | "Biologico" | "Quimico" | "Fisico"
 ) {
 	return riscos.map((risco) => {
 		return `<div class="w-full flex border-b border-black">
-						<div class="w-1/3 border-r flex items-center justify-center border-black p-2">${tipo} / ${
+						<div class="w-1/3 border-r flex items-center justify-center border-black p-2">${
 			risco.risco
 		}</div>
 						<div class="w-2/3 p-2">
-							<p>Exposição: <span class="font-normal">${risco.exposicao}</span></p>
-							<p>Fonte Geradora: <span class="font-normal">${risco.fonteGeradora}</span></p>
-							${
-								risco.possuiEpi
-									? `<p>EPIs Existentes: <span class="font-normal">${risco.epis.existentes
-											.map(
-												(a, i) =>
-													`${i + 1}. ${
-														a.nome
-													}(Trocar a cada ${
-														a.periodicidade.tempo
-													} ${a.periodicidade.tipo})`
-											)
-											.join("<br/>")}</span></p>`
-									: "<p>Não possui EPIs.</p>"
-							}
-							${
-								risco.recomendarEpi
-									? `<p>EPIs Recomendados: <span class="font-normal">${risco.epis.recomendados
-											.map(
-												(a, i) =>
-													`${i + 1}. ${
-														a.nome
-													}(Trocar a cada ${
-														a.periodicidade.tempo
-													} ${a.periodicidade.tipo})`
-											)
-											.join("<br/>")}</span></p>`
-									: "<p>Não foram recomendados EPIs.</p>"
-							}
+							<p>Descricão: <span class="font-normal">${risco.fonteGeradora}</span></p>
 						</div>
 					</div>`;
 	});

@@ -2,13 +2,13 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { WebView } from "react-native-webview";
 import Button from "@/components/Button";
-import { useRouter } from "expo-router";
+import { useNavigationHistory } from "@/hooks/Navigation";
 import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 
 export default function Rascunho() {
 	const visita = useVisita();
-	const router = useRouter();
+	const nav = useNavigationHistory();
 
 	// Certifica-se de que os dados da empresa estão disponíveis antes de gerar o HTML
 	if (!visita.empresa) {
@@ -28,12 +28,12 @@ export default function Rascunho() {
 				source={{ html: htmlContent }}
 				style={styles.webview}
 				scrollEnabled={true}
-            />
-            
+			/>
+
 			<View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
 				<Button
 					onPress={(e) => {
-						router.push("/Visita/assinatura");
+						nav.push("/Visita/assinatura");
 					}}
 				>
 					Assinar Documento

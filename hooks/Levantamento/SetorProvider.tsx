@@ -25,14 +25,6 @@ export function SetorProvider({ children }: { children: ReactNode }) {
 	const [mcr, setMcr] = useState<string>("");
 	const [funcoes, setFuncoes] = useState<VIPFuncaoType[]>([]);
 	const [images, setImages] = useState<string[]>([]);
-	const [extintores, setExtintores] = useState<boolean | undefined>();
-	const [saidaEmergencia, setSaidaEmergencia] = useState<
-		boolean | undefined
-	>();
-	const [rotaFuga, setRotaFuga] = useState<boolean | undefined>();
-	const [sinalizacaoEmergencia, setSinalizacaoEmergencia] = useState<
-		boolean | undefined
-	>();
 
 	const clear = () => {
 		setNome("");
@@ -51,10 +43,6 @@ export function SetorProvider({ children }: { children: ReactNode }) {
 		setMcr("");
 		setFuncoes([]);
 		setImages([]);
-		setExtintores(undefined);
-		setSaidaEmergencia(undefined);
-		setRotaFuga(undefined);
-		setSinalizacaoEmergencia(undefined);
 	};
 
 	const load = (setor: VIPSetorType) => {
@@ -74,10 +62,6 @@ export function SetorProvider({ children }: { children: ReactNode }) {
 		setMcr(setor.mcr);
 		setFuncoes(setor.funcoes);
 		setImages(setor.images);
-		setExtintores(setor.extintores);
-		setSaidaEmergencia(setor.saidaEmergencia);
-		setRotaFuga(setor.rotaFuga);
-		setSinalizacaoEmergencia(setor.sinalizacaoEmergencia);
 	};
 
 	return (
@@ -120,14 +104,6 @@ export function SetorProvider({ children }: { children: ReactNode }) {
 				setFuncoes,
 				images,
 				setImages,
-				extintores,
-				setExtintores,
-				saidaEmergencia,
-				setSaidaEmergencia,
-				rotaFuga,
-				setRotaFuga,
-				sinalizacaoEmergencia,
-				setSinalizacaoEmergencia,
 				clear,
 				load,
 			}}

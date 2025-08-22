@@ -4,7 +4,8 @@ import Input from "@/components/Input";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import Data from "@/utils/API/Data";
-import { useRouter } from "expo-router";
+import { events } from "@/utils/API/Event";
+import { useNavigationHistory } from "@/hooks/Navigation";
 import React, { useState } from "react";
 import {
 	View,
@@ -27,8 +28,7 @@ export default function Visita() {
 		clear,
 	} = useVisita();
 
-
-	const router = useRouter();
+	const nav = useNavigationHistory();
 
 	const [search, setSearch] = useState("");
 
@@ -50,12 +50,13 @@ export default function Visita() {
 		const msg = `Início da visita - Empresa: ${empresa.razao_social}, Técnico: ${tecnico}, Responsável: ${responsavel}`;
 
 		try {
-			Data.sendEvent(msg);
+			events.sendEvent(msg);
+			events.startEvent("visita");
 		} catch (error) {
 			console.warn("Erro ao adicionar evento:", error);
 		}
 
-		router.push({ pathname: "/Visita/Perguntas/Administrativo" });
+		nav.push({ pathname: "/Visita/Perguntas/Administrativo" });
 	}
 
 	function filter(item: VIPVisitaType["empresas"][0]) {

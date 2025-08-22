@@ -5,12 +5,13 @@ import VIPTabela from "@/components/VIPTabela";
 import RadioButton from "@/components/RadioButton";
 import { useSetor } from "@/hooks/Levantamento/SetorProvider";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useNavigationHistory } from "@/hooks/Navigation";
+import { useLocalSearchParams } from "expo-router";
 import { Alert, StyleSheet, TextInput } from "react-native";
 import { useEffect, useRef } from "react";
 
 export default function Setor() {
-	const router = useRouter();
+	const nav = useNavigationHistory();
 	const params = useLocalSearchParams();
 	const empresa = useEmpresa();
 	const setor = useSetor();
@@ -18,10 +19,8 @@ export default function Setor() {
 	const campos = 12;
 	const refs = useRef<TextInput[]>([]);
 	const focarProximo = (index: number) => {
-		if (index + 1 < campos) {
+		if (index + 1 <= campos) {
 			refs.current[index + 1]?.focus();
-		} else {
-			console.log("📨 Enviar formulário!");
 		}
 	};
 
@@ -79,14 +78,6 @@ export default function Setor() {
 				"Erro",
 				"Medidas de controle recomendadas inválidas!"
 			);
-		if (setor.extintores === undefined)
-			return Alert.alert("Erro", "Extintores do setor inválidos!");
-		if (setor.rotaFuga === undefined)
-			return Alert.alert("Erro", "Rota de fuga inválida!");
-		if (setor.saidaEmergencia === undefined)
-			return Alert.alert("Erro", "Saída de emergência inválida!");
-		if (setor.sinalizacaoEmergencia === undefined)
-			return Alert.alert("Erro", "Sinalização de emergência inválida!");
 
 		// Confirmação se as funções estão vazias
 		if (setor.funcoes.length === 0) {
@@ -100,7 +91,7 @@ export default function Setor() {
 						onPress: () => {
 							// Adiciona o setor após confirmação
 							empresa.setSetores([...empresa.setores, setor]);
-							router.back();
+							nav.back();
 						},
 					},
 				],
@@ -110,7 +101,7 @@ export default function Setor() {
 
 		// Adiciona o setor diretamente se há funções
 		empresa.setSetores([...empresa.setores, setor]);
-		router.back();
+		nav.back();
 	};
 
 	return (
@@ -125,10 +116,13 @@ export default function Setor() {
 				returnKeyType={0 === campos - 1 ? "done" : "next"}
 				onSubmitEditing={() => focarProximo(0)}
 			/>
+			{
+				//Lux
+			}
 			<Input
-				placeholder="Digite a largura setor..."
-				value={setor.largura}
-				onChange={setor.setLargura}
+				placeholder="Digite o lux do setor..."
+				value={setor.lux}
+				onChange={setor.setLux}
 				ref={(ref) => {
 					if (ref) refs.current[1] = ref;
 				}}
@@ -136,9 +130,9 @@ export default function Setor() {
 				onSubmitEditing={() => focarProximo(1)}
 			/>
 			<Input
-				placeholder="Digite o comprimento do setor..."
-				value={setor.comprimento}
-				onChange={setor.setComprimento}
+				placeholder="Digite a largura setor..."
+				value={setor.largura}
+				onChange={setor.setLargura}
 				ref={(ref) => {
 					if (ref) refs.current[2] = ref;
 				}}
@@ -146,9 +140,9 @@ export default function Setor() {
 				onSubmitEditing={() => focarProximo(2)}
 			/>
 			<Input
-				placeholder="Digite o pé direito do setor..."
-				value={setor.peDireito}
-				onChange={setor.setPeDireito}
+				placeholder="Digite o comprimento do setor..."
+				value={setor.comprimento}
+				onChange={setor.setComprimento}
 				ref={(ref) => {
 					if (ref) refs.current[3] = ref;
 				}}
@@ -156,9 +150,9 @@ export default function Setor() {
 				onSubmitEditing={() => focarProximo(3)}
 			/>
 			<Input
-				placeholder="Digite o piso do setor..."
-				value={setor.piso}
-				onChange={setor.setPiso}
+				placeholder="Digite o pé direito do setor..."
+				value={setor.peDireito}
+				onChange={setor.setPeDireito}
 				ref={(ref) => {
 					if (ref) refs.current[4] = ref;
 				}}
@@ -166,9 +160,9 @@ export default function Setor() {
 				onSubmitEditing={() => focarProximo(4)}
 			/>
 			<Input
-				placeholder="Digite a estrutura do setor..."
-				value={setor.estrutura}
-				onChange={setor.setEstrutura}
+				placeholder="Digite o piso do setor..."
+				value={setor.piso}
+				onChange={setor.setPiso}
 				ref={(ref) => {
 					if (ref) refs.current[5] = ref;
 				}}
@@ -176,9 +170,9 @@ export default function Setor() {
 				onSubmitEditing={() => focarProximo(5)}
 			/>
 			<Input
-				placeholder="Digite o forro do setor..."
-				value={setor.forro}
-				onChange={setor.setForro}
+				placeholder="Digite a estrutura do setor..."
+				value={setor.estrutura}
+				onChange={setor.setEstrutura}
 				ref={(ref) => {
 					if (ref) refs.current[6] = ref;
 				}}
@@ -186,9 +180,9 @@ export default function Setor() {
 				onSubmitEditing={() => focarProximo(6)}
 			/>
 			<Input
-				placeholder="Digite a iluminção natural do setor..."
-				value={setor.iluminacao.natural}
-				onChange={setor.iluminacao.setNatural}
+				placeholder="Digite o forro do setor..."
+				value={setor.forro}
+				onChange={setor.setForro}
 				ref={(ref) => {
 					if (ref) refs.current[7] = ref;
 				}}
@@ -196,9 +190,9 @@ export default function Setor() {
 				onSubmitEditing={() => focarProximo(7)}
 			/>
 			<Input
-				placeholder="Digite a iluminação artificial do setor..."
-				value={setor.iluminacao.artificial}
-				onChange={setor.iluminacao.setArtificial}
+				placeholder="Digite a iluminção natural do setor..."
+				value={setor.iluminacao.natural}
+				onChange={setor.iluminacao.setNatural}
 				ref={(ref) => {
 					if (ref) refs.current[8] = ref;
 				}}
@@ -206,9 +200,9 @@ export default function Setor() {
 				onSubmitEditing={() => focarProximo(8)}
 			/>
 			<Input
-				placeholder="Digite a ventilação natural do setor..."
-				value={setor.ventilacao.natural}
-				onChange={setor.ventilacao.setNatural}
+				placeholder="Digite a iluminação artificial do setor..."
+				value={setor.iluminacao.artificial}
+				onChange={setor.iluminacao.setArtificial}
 				ref={(ref) => {
 					if (ref) refs.current[9] = ref;
 				}}
@@ -216,9 +210,9 @@ export default function Setor() {
 				onSubmitEditing={() => focarProximo(9)}
 			/>
 			<Input
-				placeholder="Digite a ventilação artificial do setor..."
-				value={setor.ventilacao.artificial}
-				onChange={setor.ventilacao.setArtificial}
+				placeholder="Digite a ventilação natural do setor..."
+				value={setor.ventilacao.natural}
+				onChange={setor.ventilacao.setNatural}
 				ref={(ref) => {
 					if (ref) refs.current[10] = ref;
 				}}
@@ -226,11 +220,21 @@ export default function Setor() {
 				onSubmitEditing={() => focarProximo(10)}
 			/>
 			<Input
+				placeholder="Digite a ventilação artificial do setor..."
+				value={setor.ventilacao.artificial}
+				onChange={setor.ventilacao.setArtificial}
+				ref={(ref) => {
+					if (ref) refs.current[11] = ref;
+				}}
+				returnKeyType={11 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(11)}
+			/>
+			<Input
 				placeholder="Digite as maquinas e equipamentos presente setor"
 				value={setor.me}
 				textarea={true}
 				ref={(ref) => {
-					if (ref) refs.current[11] = ref;
+					if (ref) refs.current[12] = ref;
 				}}
 				onChange={setor.setMe}
 			/>
@@ -247,27 +251,6 @@ export default function Setor() {
 				onChange={setor.setMcr}
 			/>
 
-			<RadioButton
-				placeholder="Possui Extintores no setor?"
-				value={setor.extintores}
-				setValue={setor.setExtintores}
-			/>
-			<RadioButton
-				placeholder="Possui Rota de fuga no setor?"
-				value={setor.rotaFuga}
-				setValue={setor.setRotaFuga}
-			/>
-			<RadioButton
-				placeholder="Possui Saída de Emergencia no setor?"
-				value={setor.saidaEmergencia}
-				setValue={setor.setSaidaEmergencia}
-			/>
-			<RadioButton
-				placeholder="Possui iluminação/Sinalização de emergência no setor?"
-				value={setor.sinalizacaoEmergencia}
-				setValue={setor.setSinalizacaoEmergencia}
-			/>
-
 			<VIPTabela
 				headers={["Função", "Descrição", "Riscos"]}
 				valores={setor.funcoes.map((a) => {
@@ -278,21 +261,7 @@ export default function Setor() {
 						// prettier-ignore
 						"Descrição": a.description,
 						// prettier-ignore
-						Riscos: [
-								a.Acidente.existe && "Acidente",
-								a.Quimico.existe && "Quimico",
-								a.Biologico.existe && "Biologico",
-								a.Fisico.existe && "Fisico",
-								a.Ergonomico.existe && "Ergonomico",
-							].filter(Boolean).length === 0 ? "Nenhum risco encontrado." : [
-								a.Acidente.existe && "Acidente",
-								a.Quimico.existe && "Quimico",
-								a.Biologico.existe && "Biologico",
-								a.Fisico.existe && "Fisico",
-								a.Ergonomico.existe && "Ergonomico",
-							]
-								.filter(Boolean)
-								.join(", "),
+						"Riscos": `${a.riscos.length}`,
 					};
 				})}
 				onExcluir={(item) =>
@@ -301,7 +270,7 @@ export default function Setor() {
 					)
 				}
 				goTo={(item) => {
-					router.push({
+					nav.push({
 						pathname: "/Levantamento/funcao",
 						params: {
 							funcao: item.id,
@@ -311,7 +280,7 @@ export default function Setor() {
 			/>
 			<Button
 				onPress={(e) => {
-					router.push("/Levantamento/funcao");
+					nav.push("/Levantamento/funcao");
 				}}
 			>
 				Adicionar Função
@@ -399,26 +368,6 @@ export default function Setor() {
 								"Erro",
 								"Medidas de controle recomendadas inválidas!"
 							);
-						if (setor.extintores === undefined)
-							return Alert.alert(
-								"Erro",
-								"Extintores do setor inválidos!"
-							);
-						if (setor.rotaFuga === undefined)
-							return Alert.alert(
-								"Erro",
-								"Rota de fuga inválida!"
-							);
-						if (setor.saidaEmergencia === undefined)
-							return Alert.alert(
-								"Erro",
-								"Saída de emergência inválida!"
-							);
-						if (setor.sinalizacaoEmergencia === undefined)
-							return Alert.alert(
-								"Erro",
-								"Sinalização de emergência inválida!"
-							);
 
 						// Confirmação se as funções estão vazias
 						if (setor.funcoes.length === 0) {
@@ -438,7 +387,7 @@ export default function Setor() {
 													return setor;
 												})
 											);
-											router.back();
+											nav.back();
 										},
 									},
 								],
@@ -453,7 +402,7 @@ export default function Setor() {
 								return setor;
 							})
 						);
-						router.back();
+						nav.back();
 					}}
 				>
 					Atualizar

@@ -5,14 +5,15 @@ import * as Sharing from "expo-sharing";
 import { Alert, BackHandler } from "react-native";
 import Button from "@/components/Button";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
-import { useRouter } from "expo-router";
+import { useNavigationHistory } from "@/hooks/Navigation";
 import { useSearchParams } from "expo-router/build/hooks";
 import { getHtml } from "@/utils/formatHTML";
 import Container from "@/components/Container";
 import Data from "@/utils/API/Data";
+import { events } from "@/utils/API/Event";
 
 export default function Finalizado() {
-	const router = useRouter();
+	const nav = useNavigationHistory();
 	const query = useSearchParams();
 	const empresa = useEmpresa();
 
@@ -26,7 +27,8 @@ export default function Finalizado() {
 			const mensagem = `Finalização da visita - Empresa: ${empresa.nome}, Responsável: ${empresa.responsavel}`;
 
 			try {
-				Data.sendEvent(mensagem);
+				events.sendEvent(mensagem);
+				events.endEvent();
 			} catch (error) {
 				console.warn("Erro ao adicionar evento de finalização:", error);
 			}
@@ -65,7 +67,7 @@ export default function Finalizado() {
 			<Button
 				onPress={() => {
 					empresa.clear();
-					router.replace("/");
+					nav.replace("/");
 				}}
 			>
 				Ir para o Início

@@ -4,11 +4,11 @@ import { WebView } from "react-native-webview";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { getHtml } from "@/utils/formatHTML";
 import Button from "@/components/Button";
-import { useRouter } from "expo-router";
+import { useNavigationHistory } from "@/hooks/Navigation";
 
 export default function Rascunho() {
 	const empresa = useEmpresa();
-	const router = useRouter();
+	const nav = useNavigationHistory();
 
 	// Certifica-se de que os dados da empresa estão disponíveis antes de gerar o HTML
 	if (!empresa) {
@@ -32,7 +32,7 @@ export default function Rascunho() {
 			<View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
 				<Button
 					onPress={(e) => {
-						router.push("/Levantamento/assinatura");
+						nav.push("/Levantamento/assinatura");
 					}}
 				>
 					Assinar Documento

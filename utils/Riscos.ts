@@ -3,6 +3,22 @@ export interface RiscoDataType {
 	tipo: string;
 	risco: string;
 }
+
+export const riscos = [
+	"Ruído",
+	"Vibração",
+	"Calor",
+	"Rad. Ionizantes",
+	"Rad. Não Ionizantes",
+	"Vibrações",
+	"Frio",
+	"Umidade",
+	"Risco Químico",
+    "Risco Biológico",
+    "Risco de Acidente",
+    "Risco Ergonômico",
+];
+
 export function getRiscos(): RiscoDataType[] {
 	return [
 		{

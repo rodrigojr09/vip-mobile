@@ -2,13 +2,14 @@ import Button from "@/components/Button";
 import Container from "@/components/Container";
 import Input from "@/components/Input";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
-import { useRouter } from "expo-router";
+import { useNavigationHistory } from "@/hooks/Navigation";
 import { useRef } from "react";
 import { Alert, StyleSheet, TextInput } from "react-native";
 import Data from "@/utils/API/Data";
+import { events } from "@/utils/API/Event";
 
 export default function Levantamento() {
-	const router = useRouter();
+	const nav = useNavigationHistory();
 	const levantamento = useEmpresa();
 
 	const campos = ["nome", "responsavel"];
@@ -30,7 +31,8 @@ export default function Levantamento() {
 			const mensagem = `Levantamento criado - Empresa: ${levantamento.nome}, Responsável: ${levantamento.responsavel}`;
 
 			try {
-				Data.sendEvent(mensagem);
+				events.sendEvent(mensagem);
+				events.startEvent("levantamento");
 			} catch (error) {
 				console.warn(
 					"Erro ao adicionar evento de levantamento:",
@@ -38,7 +40,7 @@ export default function Levantamento() {
 				);
 			}
 
-			router.push("/Levantamento/resumo");
+			nav.push("/Levantamento/resumo");
 		}
 	};
 

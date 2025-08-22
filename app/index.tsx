@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 import * as FileSystem from "expo-file-system";
 import Container from "@/components/Container";
-import { useRouter } from "expo-router";
+import { useNavigationHistory } from "@/hooks/Navigation";
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { getNetworkStateAsync, useNetworkState } from "expo-network";
@@ -11,7 +11,7 @@ import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 const VISITAS_DIR = `${FileSystem.documentDirectory}offline_visitas/`;
 
 export default function App() {
-	const router = useRouter();
+	const nav = useNavigationHistory();
 	const { isConnected, isInternetReachable } = useNetworkState();
 	const [visitas, setVisitas] = useState<VIPVisitaType[]>([]);
 	const [isSaving, setIsSaving] = useState(false);
@@ -90,13 +90,11 @@ export default function App() {
 
 	return (
 		<Container style={styles.container}>
-			<Button onPress={() => router.push("/Levantamento")}>
+			<Button onPress={() => nav.push("/Levantamento")}>
 				Novo Levantamento
 			</Button>
 
-			<Button onPress={() => router.push("/Visita")}>
-				Visita Técnica
-			</Button>
+			<Button onPress={() => nav.push("/Visita")}>Visita Técnica</Button>
 
 			{isConnected === true &&
 				isInternetReachable === true &&

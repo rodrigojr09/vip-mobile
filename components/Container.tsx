@@ -5,24 +5,32 @@ import {
 	ScrollView,
 	ViewStyle,
 	StyleProp,
+	ScrollViewProps,
 } from "react-native";
 
 interface ContainerProps {
 	children: ReactNode | ReactNode[];
 	style?: StyleProp<ViewStyle>;
 	scroller?: boolean;
+	avoidKeyboard?: boolean;
+	scrollRef?: React.Ref<ScrollView>; // ⬅️ nova prop
+	contentContainerStyle?: StyleProp<ViewStyle>; // ⬅️ novo
 }
 
 export default function Container({
 	children,
 	style,
 	scroller,
+	scrollRef,
+	contentContainerStyle,
 }: ContainerProps) {
 	return scroller ? (
-        <ScrollView
-            nestedScrollEnabled
+		<ScrollView
+			ref={scrollRef}
+			nestedScrollEnabled
 			style={[defaultStyles.Container]}
-			contentContainerStyle={[{ flexGrow: 1 }, style]}
+			keyboardShouldPersistTaps="handled"
+			contentContainerStyle={[contentContainerStyle, style]} // ⬅️ sem flexGrow:1
 		>
 			{children}
 		</ScrollView>

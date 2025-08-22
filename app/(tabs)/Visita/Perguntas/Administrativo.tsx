@@ -34,7 +34,7 @@ export default function Sidebar() {
 				<Button
 					disabled={block}
 					onPress={async () => {
-						router.push("/Visita/Perguntas/Setor");
+						nav.push("/Visita/Perguntas/Setor");
 					}}
 				>
 					Proximo

@@ -69,7 +69,7 @@ export default function PerguntasSetor() {
 			respostas,
 			perguntas: quests_setor,
 		});
-		router.push("/Visita/Perguntas/Setor");
+		nav.push("/Visita/Perguntas/Setor");
 	}
 
 	return (

@@ -4,19 +4,19 @@ import * as ScreenOrientation from "expo-screen-orientation";
 import { View, StyleSheet, Alert } from "react-native";
 import Signature, { SignatureViewRef } from "react-native-signature-canvas";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
-import { useRouter } from "expo-router";
+import { useNavigationHistory } from "@/hooks/Navigation";
 
 const SignatureScreen = () => {
 	const ref = useRef<SignatureViewRef>(null);
 	const empresa = useEmpresa();
-	const router = useRouter();
+	const nav = useNavigationHistory();
 	const handleSignature = async (signature: string) => {
 		if (!signature) {
 			Alert.alert("Erro", "Nenhuma assinatura foi capturada.");
 			return;
 		}
 		try {
-			router.push({
+			nav.push({
 				pathname: "/Levantamento/finalizado",
 				params: {
 					assinatura: `<img style="width: 100%; height: 100%;" src="${signature}"/>`,

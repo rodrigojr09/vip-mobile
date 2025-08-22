@@ -3,7 +3,7 @@ import * as FileSystem from "expo-file-system";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { Alert, BackHandler, Linking } from "react-native";
 import Button from "@/components/Button";
-import { useRouter } from "expo-router";
+import { useNavigationHistory } from "@/hooks/Navigation";
 import { useSearchParams } from "expo-router/build/hooks";
 import Container from "@/components/Container";
 import { abrirArquivo } from "@/utils/abrirArquivo";
@@ -13,9 +13,10 @@ import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 import Loading from "@/components/Loading";
 import Data from "@/utils/API/Data";
+import { events } from "@/utils/API/Event";
 
 export default function Finalizado() {
-	const router = useRouter();
+	const nav = useNavigationHistory();
 	const query = useSearchParams();
 	const visita = useVisita();
 
@@ -37,7 +38,8 @@ export default function Finalizado() {
 					visita.responsavel || "N/D"
 				}`;
 
-				Data.sendEvent(msg);
+				events.sendEvent(msg);
+				events.endEvent();
 			} catch (error) {
 				console.warn("Erro ao adicionar evento de finalização:", error);
 			}
@@ -112,7 +114,7 @@ export default function Finalizado() {
 				<Button
 					onPress={() => {
 						visita.clear();
-						router.replace("/");
+						nav.replace("/");
 					}}
 				>
 					Ir para o Início

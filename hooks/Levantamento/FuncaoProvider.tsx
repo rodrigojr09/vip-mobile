@@ -10,54 +10,20 @@ export const FuncaoProvider = ({ children }: { children: ReactNode }) => {
 	const [nome, setNome] = useState<string>("");
 	const [description, setDescription] = useState<string>("");
 	const [funcionarios, setFuncionarios] = useState<string>("");
-	const [lux, setLux] = useState<string>("");
-	const [fisicos, setFisicos] = useState<VIPRiscoType[]>([]);
-	const [quimicos, setQuimicos] = useState<VIPRiscoType[]>([]);
-	const [biologicos, setBiologicos] = useState<VIPRiscoType[]>([]);
-	const [ergonomicos, setErgonomicos] = useState<VIPRiscoType[]>([]);
-	const [acidentes, setAcidentes] = useState<VIPRiscoType[]>([]);
-	const [fisicoExiste, setFisicoExiste] = useState<boolean | undefined>();
-	const [quimicoExiste, setQuimicoExiste] = useState<boolean | undefined>();
-	const [biologicoExiste, setBiologicoExiste] = useState<
-		boolean | undefined
-	>();
-	const [ergonomicoExiste, setErgonomicoExiste] = useState<
-		boolean | undefined
-	>();
-	const [acidenteExiste, setAcidenteExiste] = useState<boolean | undefined>();
+	const [riscos, setRiscos] = useState<VIPRiscoType[]>([]);
 
 	const clear = () => {
 		setNome("");
 		setDescription("");
 		setFuncionarios("");
-		setFisicos([]);
-		setQuimicos([]);
-		setBiologicos([]);
-		setErgonomicos([]);
-		setAcidentes([]);
-		setFisicoExiste(undefined);
-		setQuimicoExiste(undefined);
-		setBiologicoExiste(undefined);
-		setErgonomicoExiste(undefined);
-		setAcidenteExiste(undefined);
-		setLux("");
+		setRiscos([]);
 	};
 
 	const load = (funcao: VIPFuncaoType) => {
 		setNome(funcao.nome);
 		setDescription(funcao.description);
 		setFuncionarios(funcao.funcionarios);
-		setLux(funcao.lux);
-		setFisicos(funcao.Fisico.riscos);
-		setQuimicos(funcao.Quimico.riscos);
-		setBiologicos(funcao.Biologico.riscos);
-		setErgonomicos(funcao.Ergonomico.riscos);
-		setAcidentes(funcao.Acidente.riscos);
-		setFisicoExiste(funcao.Fisico.existe);
-		setQuimicoExiste(funcao.Quimico.existe);
-		setBiologicoExiste(funcao.Biologico.existe);
-		setErgonomicoExiste(funcao.Ergonomico.existe);
-		setAcidenteExiste(funcao.Acidente.existe);
+		setRiscos(funcao.riscos);
 	};
 
 	return (
@@ -70,38 +36,8 @@ export const FuncaoProvider = ({ children }: { children: ReactNode }) => {
 				setDescription,
 				funcionarios,
 				setFuncionarios,
-				lux,
-				setLux,
-				Acidente: {
-					existe: acidenteExiste,
-					setExiste: setAcidenteExiste,
-					riscos: acidentes,
-					setRiscos: setAcidentes,
-				},
-				Biologico: {
-					existe: biologicoExiste,
-					setExiste: setBiologicoExiste,
-					riscos: biologicos,
-					setRiscos: setBiologicos,
-				},
-				Ergonomico: {
-					existe: ergonomicoExiste,
-					setExiste: setErgonomicoExiste,
-					riscos: ergonomicos,
-					setRiscos: setErgonomicos,
-				},
-				Fisico: {
-					existe: fisicoExiste,
-					setExiste: setFisicoExiste,
-					riscos: fisicos,
-					setRiscos: setFisicos,
-				},
-				Quimico: {
-					existe: quimicoExiste,
-					setExiste: setQuimicoExiste,
-					riscos: quimicos,
-					setRiscos: setQuimicos,
-				},
+				riscos,
+				setRiscos,
 				clear,
 				load,
 			}}

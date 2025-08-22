@@ -37,15 +37,9 @@ export interface VIPSetorType {
 	funcoes: VIPFuncaoType[];
 	setFuncoes: (value: VIPFuncaoType[]) => void;
 	images: string[];
-	setImages: (value: string[]) => void;
-	extintores: boolean | undefined;
-	setExtintores: (value: boolean) => void;
-	saidaEmergencia: boolean | undefined;
-	setSaidaEmergencia: (value: boolean) => void;
-	rotaFuga: boolean | undefined;
-	setRotaFuga: (value: boolean) => void;
-	sinalizacaoEmergencia: boolean | undefined;
-	setSinalizacaoEmergencia: (value: boolean) => void;
+    setImages: (value: string[]) => void;
+    lux: string;
+    setLux: (value: string) => void;
 	clear: () => void;
 	load: (setor: VIPSetorType) => void;
 }

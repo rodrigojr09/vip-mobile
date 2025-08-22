@@ -3,13 +3,13 @@ import Container from "@/components/Container";
 import VIPTabela from "@/components/VIPTabela";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { VIPFuncaoType } from "@/types/Levantamento/VIPFuncaoType";
-import { useRouter } from "expo-router";
+import { useNavigationHistory } from "@/hooks/Navigation";
 import { Text, StyleSheet } from "react-native";
 import React from "react";
 
 export default function Resumo() {
 	const empresa = useEmpresa();
-	const router = useRouter();
+	const nav = useNavigationHistory();
 	return (
 		<Container style={styles.container} scroller>
 			{/* Título */}
@@ -32,7 +32,7 @@ export default function Resumo() {
 					);
 				}}
 				goTo={(item) => {
-					router.push({
+					nav.push({
 						pathname: "/Levantamento/setor",
 						params: {
 							setor: item.id,
@@ -43,7 +43,7 @@ export default function Resumo() {
 
 			<Button
 				onPress={(e) => {
-					router.push("/Levantamento/setor");
+					nav.push("/Levantamento/setor");
 				}}
 			>
 				Novo Setor
@@ -51,7 +51,7 @@ export default function Resumo() {
 
 			<Button
 				onPress={(e) => {
-					router.push("/Levantamento/rascunho");
+					nav.push("/Levantamento/rascunho");
 				}}
 			>
 				Finalizar Levantamento
