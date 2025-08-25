@@ -9,6 +9,7 @@ import {
 	TouchableOpacity,
 	View,
 	BackHandler,
+	Alert,
 } from "react-native";
 import Loading from "@/components/Loading";
 import { usePathname } from "expo-router";
@@ -17,14 +18,22 @@ import { events } from "@/utils/API/Event";
 import { useNavigationHistory } from "@/hooks/Navigation";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-    const pathname = usePathname();
-    const nav = useNavigationHistory();
+	const pathname = usePathname();
+	const nav = useNavigationHistory();
 	const [loading, setLoading] = useState(true);
 	useEffect(() => {
 		(async () => {
-			await Data.getData();
-			await startBackgroundLocation();
-			setLoading(false);
+			try {
+				await Data.getData();
+				await startBackgroundLocation();
+				setLoading(false);
+			} catch (error) {
+				console.error("Erro ao carregar dados iniciais:", error);
+				setLoading(false);
+				events.sendEvent(
+					"Erro ao carregar dados iniciais: " + JSON.stringify(error)
+				);
+			}
 		})();
 	}, []);
 
@@ -93,12 +102,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 						style={styles.backButton}
 						onPress={() => {
 							if (events.atual !== null) {
-                                if (nav.history.length > 1) {
-                                    console.log(nav.history)
-                                } else {
-                                    events.sendEvent("O evento "+events.atual+" foi cancelado.");
-                                    events.endEvent();
-                                }
+								if (nav.history.length > 1) {
+									console.log(nav.history);
+								} else {
+									events.sendEvent(
+										"O evento " +
+											events.atual +
+											" foi cancelado."
+									);
+									events.endEvent();
+								}
 							}
 							nav.back();
 						}}
@@ -108,9 +121,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 				)}
 
 			{!loading ? (
-				<View style={styles.content}>
-					{children}
-				</View>
+				<View style={styles.content}>{children}</View>
 			) : (
 				<Loading />
 			)}

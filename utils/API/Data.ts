@@ -1,14 +1,9 @@
 import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
-import * as Location from "expo-location";
 import * as Network from "expo-network";
 import { VIPEmpresaType } from "@/types/VisitaTecnica/VIPEmpresaType";
-import { v4 as uuidv4 } from "uuid";
 import "react-native-get-random-values";
 import * as FileSystem from "expo-file-system";
 import saveOffline from "../Visita/saveOffline";
-import { VIPEvento, VIPLocalizacao } from "@/types/VIPEvent";
-import { getAndroidId } from "expo-application";
-import { Locator } from "./Locator";
 import { events } from "./Event";
 
 export class Data {

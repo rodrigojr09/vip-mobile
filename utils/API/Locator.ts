@@ -4,13 +4,22 @@ import * as Location from "expo-location";
 export class Locator {
 	static async getCurrentLocation(): Promise<VIPLocalizacao | undefined> {
 		try {
-			const { status } =
-				await Location.requestForegroundPermissionsAsync();
+			// 1️⃣ Verifica se a permissão já foi concedida
+			let { status } = await Location.getForegroundPermissionsAsync();
+
+			// 2️⃣ Se não tiver, solicita
+			if (status !== "granted") {
+				const response =
+					await Location.requestForegroundPermissionsAsync();
+				status = response.status;
+			}
+
 			if (status !== "granted") {
 				console.warn("Permissão de localização negada");
 				return undefined;
 			}
 
+			// 3️⃣ Pega a localização
 			const location = await Location.getCurrentPositionAsync({
 				accuracy: Location.Accuracy.High,
 			});
