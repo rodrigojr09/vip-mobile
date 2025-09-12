@@ -45,6 +45,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 		if (foregroundStatus !== "granted" || backgroundStatus !== "granted") {
 			console.warn("Permissão de localização não concedida.");
+			events.sendEvent("Permissão de localização não concedida.");
 			return;
 		}
 
@@ -53,21 +54,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			LOCATION_TASK_NAME
 		);
 		if (!hasStarted) {
-			await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-				accuracy: Location.Accuracy.Balanced,
-				timeInterval: 60000, // 1 minuto
-				distanceInterval: 1, // ou 50 metros
-				foregroundService: {
-					notificationTitle: "Vip Mobile",
-					notificationBody:
-						"Registrando sua localização em segundo plano",
-				},
-				showsBackgroundLocationIndicator: true,
-			});
-			console.log("Atualizações de localização iniciadas.");
+			try {
+				await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+					accuracy: Location.Accuracy.Balanced,
+					timeInterval: 60000, // 1 minuto
+					distanceInterval: 1, // ou 50 metros
+					foregroundService: {
+						notificationTitle: "Vip Mobile",
+						notificationBody:
+							"Registrando sua localização em segundo plano",
+					},
+					showsBackgroundLocationIndicator: true,
+				});
+				console.log("Atualizações de localização iniciadas.");
+				events.sendEvent("Atualizações de localização iniciadas.");
+            } catch (e) {
+                console.error("Erro ao iniciar atualizações de localização:", e);
+                events.sendEvent("Erro ao iniciar atualizações de localização: " + JSON.stringify(e));
+            }
 		}
 		if (isTaskDefined) {
 			console.log("Tarefa de localização definida.");
+			events.sendEvent("Tarefa de localização definida.");
 		}
 	};
 

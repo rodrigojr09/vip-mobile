@@ -15,7 +15,12 @@
 				"backgroundColor": "#000000"
 			},
 			"package": "mobile.vipsst.com.br",
-			"permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
+			"permissions": [
+				"ACCESS_FINE_LOCATION",
+				"ACCESS_COARSE_LOCATION",
+				"FOREGROUND_SERVICE",
+				"ACCESS_BACKGROUND_LOCATION"
+			]
 		},
 		"plugins": [
 			"expo-router",
