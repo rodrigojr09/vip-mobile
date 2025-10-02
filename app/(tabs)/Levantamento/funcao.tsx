@@ -1,21 +1,21 @@
-import Container from "@/components/Container";
-import Input from "@/components/Input";
-import Button from "@/components/Button";
-import { useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
-import { useSetor } from "@/hooks/Levantamento/SetorProvider";
-import { useNavigationHistory } from "@/hooks/Navigation";
 import { useLocalSearchParams } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import {
 	Alert,
 	Keyboard,
 	KeyboardAvoidingView,
 	Platform,
-	ScrollView,
+	type ScrollView,
 	StyleSheet,
-	TextInput,
+	type TextInput,
 } from "react-native";
+import Button from "@/components/Button";
+import Container from "@/components/Container";
+import Input from "@/components/Input";
 import RiscoForm from "@/components/RiscoForm";
-import { useEffect, useRef, useState } from "react";
+import { useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
+import { useSetor } from "@/hooks/Levantamento/SetorProvider";
+import { useNavigationHistory } from "@/hooks/Navigation";
 
 export default function Funcao() {
 	const nav = useNavigationHistory();
@@ -36,14 +36,14 @@ export default function Funcao() {
 	useEffect(() => {
 		if (params.funcao) {
 			const hasFuncao = setor.funcoes.find(
-				(a) => a.id === (params.funcao as string)
+				(a) => a.id === (params.funcao as string),
 			);
 			if (hasFuncao) funcao.load(hasFuncao);
 		}
 		return () => {
 			funcao.clear();
 		};
-	}, []);
+	}, [params.funcao, setor.funcoes, funcao.load, funcao.clear]);
 	const handleCreateFuncao = () => {
 		if (!funcao.nome.trim()) return Alert.alert("Digite o nome da função");
 		if (!funcao.description.trim())
@@ -140,19 +140,16 @@ export default function Funcao() {
 							if (!funcao.nome.trim())
 								return Alert.alert("Digite o nome da função");
 							if (!funcao.description.trim())
-								return Alert.alert(
-									"Digite a descrição da função"
-								);
+								return Alert.alert("Digite a descrição da função");
 							if (!funcao.funcionarios.trim())
-								return Alert.alert(
-									"Digite o nome dos funcionarios da função"
-								);
+								return Alert.alert("Digite o nome dos funcionarios da função");
 							//Se tudo tiver ok
 							setor.setFuncoes(
 								setor.funcoes.map((a) => {
 									if (a.id !== params.funcao) return a;
+									console.log(a);
 									return funcao;
-								})
+								}),
 							);
 							nav.back();
 						}}

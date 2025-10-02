@@ -1,11 +1,10 @@
+import { StyleSheet, Text } from "react-native";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import VIPTabela from "@/components/VIPTabela";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
-import { VIPFuncaoType } from "@/types/Levantamento/VIPFuncaoType";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import { Text, StyleSheet } from "react-native";
-import React from "react";
+import type { VIPFuncaoType } from "@/types/Levantamento/VIPFuncaoType";
 
 export default function Resumo() {
 	const empresa = useEmpresa();

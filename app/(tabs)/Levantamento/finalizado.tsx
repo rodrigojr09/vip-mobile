@@ -1,16 +1,15 @@
-import React, { useEffect } from "react";
-import * as ScreenOrientation from "expo-screen-orientation";
 import * as FileSystem from "expo-file-system";
+import { useSearchParams } from "expo-router/build/hooks";
+import * as ScreenOrientation from "expo-screen-orientation";
 import * as Sharing from "expo-sharing";
-import { Alert, BackHandler } from "react-native";
+import { useEffect } from "react";
+import { Alert } from "react-native";
 import Button from "@/components/Button";
+import Container from "@/components/Container";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import { useSearchParams } from "expo-router/build/hooks";
-import { getHtml } from "@/utils/formatHTML";
-import Container from "@/components/Container";
-import Data from "@/utils/API/Data";
 import { events } from "@/utils/API/Event";
+import { getHtml } from "@/utils/formatHTML";
 
 export default function Finalizado() {
 	const nav = useNavigationHistory();
@@ -20,7 +19,7 @@ export default function Finalizado() {
 	useEffect(() => {
 		(async () => {
 			await ScreenOrientation.lockAsync(
-				ScreenOrientation.OrientationLock.PORTRAIT_UP
+				ScreenOrientation.OrientationLock.PORTRAIT_UP,
 			);
 
 			// Mensagfem do evento
@@ -33,7 +32,7 @@ export default function Finalizado() {
 				console.warn("Erro ao adicionar evento de finalização:", error);
 			}
 		})();
-	}, []);
+	}, [empresa.nome, empresa.responsavel]);
 
 	async function handleDownload() {
 		try {
@@ -49,16 +48,10 @@ export default function Finalizado() {
 
 			await Sharing.shareAsync(filePath);
 
-			console.log(
-				"Arquivo gerado e compartilhado com sucesso:",
-				filePath
-			);
+			console.log("Arquivo gerado e compartilhado com sucesso:", filePath);
 		} catch (error) {
 			console.error("Erro ao salvar ou compartilhar o arquivo:", error);
-			Alert.alert(
-				"Erro",
-				"Não foi possível salvar ou compartilhar o arquivo."
-			);
+			Alert.alert("Erro", "Não foi possível salvar ou compartilhar o arquivo.");
 		}
 	}
 

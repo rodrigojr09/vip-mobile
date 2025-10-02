@@ -1,10 +1,9 @@
-import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { WebView } from "react-native-webview";
-import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
-import { getHtml } from "@/utils/formatHTML";
 import Button from "@/components/Button";
+import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
+import { getHtml } from "@/utils/formatHTML";
 
 export default function Rascunho() {
 	const empresa = useEmpresa();

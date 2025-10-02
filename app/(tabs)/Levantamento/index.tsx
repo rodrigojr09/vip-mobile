@@ -1,11 +1,10 @@
+import { useRef } from "react";
+import { Alert, StyleSheet, type TextInput } from "react-native";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import Input from "@/components/Input";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import { useRef } from "react";
-import { Alert, StyleSheet, TextInput } from "react-native";
-import Data from "@/utils/API/Data";
 import { events } from "@/utils/API/Event";
 
 export default function Levantamento() {

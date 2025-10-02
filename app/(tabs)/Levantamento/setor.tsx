@@ -1,14 +1,13 @@
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useRef } from "react";
+import { Alert, StyleSheet, type TextInput } from "react-native";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import Input from "@/components/Input";
 import VIPTabela from "@/components/VIPTabela";
-import RadioButton from "@/components/RadioButton";
-import { useSetor } from "@/hooks/Levantamento/SetorProvider";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
+import { useSetor } from "@/hooks/Levantamento/SetorProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import { useLocalSearchParams } from "expo-router";
-import { Alert, StyleSheet, TextInput } from "react-native";
-import { useEffect, useRef } from "react";
 
 export default function Setor() {
 	const nav = useNavigationHistory();
@@ -25,16 +24,16 @@ export default function Setor() {
 	};
 
 	useEffect(() => {
-		if (params.setor) {
+		if (params.setor && setor.nome === "") {
 			const hasSetor = empresa.setores.find(
-				(a) => a.id === (params.setor as string)
+				(a) => a.id === (params.setor as string),
 			);
 			if (hasSetor) setor.load(hasSetor);
 		}
 		return () => {
 			setor.clear();
 		};
-	}, []);
+	}, [empresa.setores, setor.nome, params.setor, setor.load, setor.clear]);
 
 	const handleCreateSetor = () => {
 		// Validações individuais para os campos
@@ -55,29 +54,17 @@ export default function Setor() {
 		if (!setor.iluminacao.natural.trim())
 			return Alert.alert("Erro", "Iluminação natural do setor inválida!");
 		if (!setor.iluminacao.artificial.trim())
-			return Alert.alert(
-				"Erro",
-				"Iluminação artificial do setor inválida!"
-			);
+			return Alert.alert("Erro", "Iluminação artificial do setor inválida!");
 		if (!setor.ventilacao.natural.trim())
 			return Alert.alert("Erro", "Ventilação natural do setor inválida!");
 		if (!setor.ventilacao.artificial.trim())
-			return Alert.alert(
-				"Erro",
-				"Ventilação artificial do setor inválida!"
-			);
+			return Alert.alert("Erro", "Ventilação artificial do setor inválida!");
 		if (!setor.me.trim())
 			return Alert.alert("Erro", "Máquinas e equipamentos inválidos!");
 		if (!setor.mce.trim())
-			return Alert.alert(
-				"Erro",
-				"Medidas de controle existentes inválidas!"
-			);
+			return Alert.alert("Erro", "Medidas de controle existentes inválidas!");
 		if (!setor.mcr.trim())
-			return Alert.alert(
-				"Erro",
-				"Medidas de controle recomendadas inválidas!"
-			);
+			return Alert.alert("Erro", "Medidas de controle recomendadas inválidas!");
 
 		// Confirmação se as funções estão vazias
 		if (setor.funcoes.length === 0) {
@@ -95,7 +82,7 @@ export default function Setor() {
 						},
 					},
 				],
-				{ cancelable: false }
+				{ cancelable: false },
 			);
 		}
 
@@ -257,17 +244,15 @@ export default function Setor() {
 					return {
 						id: a.id,
 						// prettier-ignore
-						"Função": a.nome,
+						Função: a.nome,
 						// prettier-ignore
-						"Descrição": a.description,
+						Descrição: a.description,
 						// prettier-ignore
-						"Riscos": `${a.riscos.length}`,
+						Riscos: `${a.riscos.length}`,
 					};
 				})}
 				onExcluir={(item) =>
-					setor.setFuncoes(
-						setor.funcoes.filter((a) => a.id !== item.id)
-					)
+					setor.setFuncoes(setor.funcoes.filter((a) => a.id !== item.id))
 				}
 				goTo={(item) => {
 					nav.push({
@@ -299,74 +284,50 @@ export default function Setor() {
 					onPress={(e) => {
 						// Validações individuais para os campos
 						if (!setor.nome.trim())
-							return Alert.alert(
-								"Erro",
-								"Nome do setor inválido!"
-							);
+							return Alert.alert("Erro", "Nome do setor inválido!");
 						if (!setor.largura.trim())
-							return Alert.alert(
-								"Erro",
-								"Largura do setor inválida!"
-							);
+							return Alert.alert("Erro", "Largura do setor inválida!");
 						if (!setor.comprimento.trim())
-							return Alert.alert(
-								"Erro",
-								"Comprimento do setor inválido!"
-							);
+							return Alert.alert("Erro", "Comprimento do setor inválido!");
 						if (!setor.peDireito.trim())
-							return Alert.alert(
-								"Erro",
-								"Pé direito do setor inválido!"
-							);
+							return Alert.alert("Erro", "Pé direito do setor inválido!");
 						if (!setor.piso.trim())
-							return Alert.alert(
-								"Erro",
-								"Piso do setor inválido!"
-							);
+							return Alert.alert("Erro", "Piso do setor inválido!");
 						if (!setor.estrutura.trim())
-							return Alert.alert(
-								"Erro",
-								"Estrutura do setor inválida!"
-							);
+							return Alert.alert("Erro", "Estrutura do setor inválida!");
 						if (!setor.forro.trim())
-							return Alert.alert(
-								"Erro",
-								"Forro do setor inválido!"
-							);
+							return Alert.alert("Erro", "Forro do setor inválido!");
 						if (!setor.iluminacao.natural.trim())
 							return Alert.alert(
 								"Erro",
-								"Iluminação natural do setor inválida!"
+								"Iluminação natural do setor inválida!",
 							);
 						if (!setor.iluminacao.artificial.trim())
 							return Alert.alert(
 								"Erro",
-								"Iluminação artificial do setor inválida!"
+								"Iluminação artificial do setor inválida!",
 							);
 						if (!setor.ventilacao.natural.trim())
 							return Alert.alert(
 								"Erro",
-								"Ventilação natural do setor inválida!"
+								"Ventilação natural do setor inválida!",
 							);
 						if (!setor.ventilacao.artificial.trim())
 							return Alert.alert(
 								"Erro",
-								"Ventilação artificial do setor inválida!"
+								"Ventilação artificial do setor inválida!",
 							);
 						if (!setor.me.trim())
-							return Alert.alert(
-								"Erro",
-								"Máquinas e equipamentos inválidos!"
-							);
+							return Alert.alert("Erro", "Máquinas e equipamentos inválidos!");
 						if (!setor.mce.trim())
 							return Alert.alert(
 								"Erro",
-								"Medidas de controle existentes inválidas!"
+								"Medidas de controle existentes inválidas!",
 							);
 						if (!setor.mcr.trim())
 							return Alert.alert(
 								"Erro",
-								"Medidas de controle recomendadas inválidas!"
+								"Medidas de controle recomendadas inválidas!",
 							);
 
 						// Confirmação se as funções estão vazias
@@ -382,16 +343,15 @@ export default function Setor() {
 											// Adiciona o setor após confirmação
 											empresa.setSetores(
 												empresa.setores.map((a) => {
-													if (a.id !== params.setor)
-														return a;
+													if (a.id !== params.setor) return a;
 													return setor;
-												})
+												}),
 											);
 											nav.back();
 										},
 									},
 								],
-								{ cancelable: false }
+								{ cancelable: false },
 							);
 						}
 
@@ -400,7 +360,7 @@ export default function Setor() {
 							empresa.setores.map((a) => {
 								if (a.id !== params.setor) return a;
 								return setor;
-							})
+							}),
 						);
 						nav.back();
 					}}
