@@ -1,21 +1,20 @@
-import * as Location from "expo-location";
 import * as Device from "expo-device";
+import * as Location from "expo-location";
+import { usePathname } from "expo-router";
 import * as TaskManager from "expo-task-manager";
-import { LOCATION_TASK_NAME } from "@/utils/BackgroundTasks";
 import { useEffect, useState } from "react";
 import {
+	BackHandler,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
-	BackHandler,
-	Alert,
 } from "react-native";
 import Loading from "@/components/Loading";
-import { usePathname } from "expo-router";
+import { useNavigationHistory } from "@/hooks/Navigation";
 import Data from "@/utils/API/Data";
 import { events } from "@/utils/API/Event";
-import { useNavigationHistory } from "@/hooks/Navigation";
+import { LOCATION_TASK_NAME } from "@/utils/BackgroundTasks";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const pathname = usePathname();
@@ -31,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 				console.error("Erro ao carregar dados iniciais:", error);
 				setLoading(false);
 				events.sendEvent(
-					"Erro ao carregar dados iniciais: " + JSON.stringify(error)
+					`Erro ao carregar dados iniciais: ${JSON.stringify(error)}`,
 				);
 			}
 		})();
@@ -50,9 +49,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		}
 
 		const isTaskDefined = TaskManager.isTaskDefined(LOCATION_TASK_NAME);
-		const hasStarted = await Location.hasStartedLocationUpdatesAsync(
-			LOCATION_TASK_NAME
-		);
+		const hasStarted =
+			await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
 		if (!hasStarted) {
 			try {
 				await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
@@ -61,17 +59,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 					distanceInterval: 1, // ou 50 metros
 					foregroundService: {
 						notificationTitle: "Vip Mobile",
-						notificationBody:
-							"Registrando sua localização em segundo plano",
+						notificationBody: "Registrando sua localização em segundo plano",
 					},
 					showsBackgroundLocationIndicator: true,
 				});
 				console.log("Atualizações de localização iniciadas.");
 				events.sendEvent("Atualizações de localização iniciadas.");
-            } catch (e) {
-                console.error("Erro ao iniciar atualizações de localização:", e);
-                events.sendEvent("Erro ao iniciar atualizações de localização: " + JSON.stringify(e));
-            }
+			} catch (e) {
+				console.error("Erro ao iniciar atualizações de localização:", e);
+				events.sendEvent(
+					`Erro ao iniciar atualizações de localização: ${JSON.stringify(e)}`,
+				);
+			}
 		}
 		if (isTaskDefined) {
 			console.log("Tarefa de localização definida.");
@@ -82,7 +81,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
 		const backHandler = BackHandler.addEventListener(
 			"hardwareBackPress",
-			() => true
+			() => true,
 		);
 		return () => backHandler.remove();
 	}, []);
@@ -113,11 +112,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 								if (nav.history.length > 1) {
 									console.log(nav.history);
 								} else {
-									events.sendEvent(
-										"O evento " +
-											events.atual +
-											" foi cancelado."
-									);
+									events.sendEvent(`O evento ${events.atual} foi cancelado.`);
 									events.endEvent();
 								}
 							}
@@ -128,11 +123,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 					</TouchableOpacity>
 				)}
 
-			{!loading ? (
-				<View style={styles.content}>{children}</View>
-			) : (
-				<Loading />
-			)}
+			{!loading ? <View style={styles.content}>{children}</View> : <Loading />}
 		</View>
 	);
 }

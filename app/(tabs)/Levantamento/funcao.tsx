@@ -43,7 +43,7 @@ export default function Funcao() {
 		return () => {
 			funcao.clear();
 		};
-	}, [params.funcao, setor.funcoes, funcao.load, funcao.clear]);
+	}, []);
 	const handleCreateFuncao = () => {
 		if (!funcao.nome.trim()) return Alert.alert("Digite o nome da função");
 		if (!funcao.description.trim())
@@ -127,7 +127,7 @@ export default function Funcao() {
 
 				{!params.funcao && (
 					<Button
-						onPress={(e) => {
+						onPress={() => {
 							handleCreateFuncao();
 						}}
 					>
@@ -136,7 +136,7 @@ export default function Funcao() {
 				)}
 				{params.funcao && (
 					<Button
-						onPress={(e) => {
+						onPress={() => {
 							if (!funcao.nome.trim())
 								return Alert.alert("Digite o nome da função");
 							if (!funcao.description.trim())

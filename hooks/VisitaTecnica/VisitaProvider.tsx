@@ -1,14 +1,14 @@
-import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
-import "react-native-get-random-values";
-import { v4 as uuidv4 } from "uuid";
-import React, {
+import {
 	createContext,
+	useCallback,
 	useContext,
 	useEffect,
 	useState,
-	useCallback,
 } from "react";
+import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import Data from "@/utils/API/Data";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
 
 // Tipagem segura para o contexto
 interface VisitaContextType extends VIPVisitaType {
@@ -26,9 +26,7 @@ export default function VisitaProvider({
 }: {
 	children: React.ReactNode;
 }) {
-	const [empresa, setEmpresa] = useState<VIPVisitaType["empresa"] | null>(
-		null
-	);
+	const [empresa, setEmpresa] = useState<VIPVisitaType["empresa"] | null>(null);
 	const [responsavel, setResponsavel] = useState<string>("");
 	const [tecnico, setTecnico] = useState<string>("");
 	const [respostas, setRespostas] = useState<VIPVisitaType["respostas"]>([]);
@@ -52,31 +50,28 @@ export default function VisitaProvider({
 	const addResposta = useCallback(
 		(resposta: VIPVisitaType["respostas"][number]) => {
 			setRespostas((prev) => {
-				const index = prev.findIndex(
-					(r) => r.pergunta === resposta.pergunta
-				);
+				const index = prev.findIndex((r) => r.pergunta === resposta.pergunta);
 
 				if (index !== -1) {
 					const existente = prev[index];
 					// Remove se for igual
 					if (
 						(existente.checked === resposta.checked &&
-						existente.observation === resposta.observation) || (resposta.checked === "Check" && resposta.observation === "")
+							existente.observation === resposta.observation) ||
+						(resposta.checked === "Check" && resposta.observation === "")
 					) {
 						return prev.filter((_, i) => i !== index);
 					}
 
 					// Atualiza
-					return prev.map((r, i) =>
-						i === index ? { ...r, ...resposta } : r
-					);
+					return prev.map((r, i) => (i === index ? { ...r, ...resposta } : r));
 				}
 
 				// Adiciona
 				return [...prev, resposta];
 			});
 		},
-		[]
+		[],
 	);
 
 	const clear = () => {
@@ -93,12 +88,9 @@ export default function VisitaProvider({
 		console.log(Data.empresas.length, "empresas carregadas");
 		console.log(
 			Data.perguntas.adm.length,
-			"perguntas administrativas carregadas"
+			"perguntas administrativas carregadas",
 		);
-		console.log(
-			Data.perguntas.setor.length,
-			"perguntas de setor carregadas"
-		);
+		console.log(Data.perguntas.setor.length, "perguntas de setor carregadas");
 	}, []);
 
 	return (
@@ -128,9 +120,7 @@ export default function VisitaProvider({
 						const index = prev.findIndex((s) => s.id === setor.id);
 						if (index !== -1) {
 							// Atualiza o setor existente
-							return prev.map((s, i) =>
-								i === index ? setor : s
-							);
+							return prev.map((s, i) => (i === index ? setor : s));
 						}
 						// Adiciona novo setor
 						return [...prev, setor];

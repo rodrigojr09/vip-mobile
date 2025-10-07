@@ -1,20 +1,19 @@
+import { useState } from "react";
+import {
+	Alert,
+	FlatList,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View,
+} from "react-native";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import Input from "@/components/Input";
-import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
-import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
-import Data from "@/utils/API/Data";
-import { events } from "@/utils/API/Event";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import React, { useState } from "react";
-import {
-	View,
-	Text,
-	TouchableOpacity,
-	StyleSheet,
-	Alert,
-	FlatList,
-} from "react-native";
+import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
+import { events } from "@/utils/API/Event";
 
 export default function Visita() {
 	const {
@@ -25,7 +24,6 @@ export default function Visita() {
 		tecnico,
 		empresas,
 		setTecnico,
-		clear,
 	} = useVisita();
 
 	const nav = useNavigationHistory();
@@ -34,16 +32,12 @@ export default function Visita() {
 
 	async function handleSave() {
 		if (empresa === null)
-			return Alert.alert(
-				"Atenção! O nome da empresa precisa ser preenchido"
-			);
+			return Alert.alert("Atenção! O nome da empresa precisa ser preenchido");
 		if (tecnico.trim().length === 0)
-			return Alert.alert(
-				"Atenção! O nome do técnico precisa ser preenchido"
-			);
+			return Alert.alert("Atenção! O nome do técnico precisa ser preenchido");
 		if (responsavel.trim().length === 0)
 			return Alert.alert(
-				"Atenção! O nome do cliente responsável precisa ser preenchido"
+				"Atenção! O nome do cliente responsável precisa ser preenchido",
 			);
 
 		// Montar mensagem do evento
@@ -98,9 +92,7 @@ export default function Visita() {
 									style={styles.suggestionItem}
 									onPress={() => setEmpresa(item)}
 								>
-									<Text style={styles.suggestionText}>
-										{item.razao_social}
-									</Text>
+									<Text style={styles.suggestionText}>{item.razao_social}</Text>
 								</TouchableOpacity>
 							)}
 						/>

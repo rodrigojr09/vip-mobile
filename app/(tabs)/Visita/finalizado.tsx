@@ -1,33 +1,31 @@
-import React, { useEffect } from "react";
 import * as FileSystem from "expo-file-system";
-import * as ScreenOrientation from "expo-screen-orientation";
-import { Alert, BackHandler, Linking } from "react-native";
-import Button from "@/components/Button";
-import { useNavigationHistory } from "@/hooks/Navigation";
 import { useSearchParams } from "expo-router/build/hooks";
+import * as ScreenOrientation from "expo-screen-orientation";
+import { useEffect, useState } from "react";
+import { Alert, Linking } from "react-native";
+import Button from "@/components/Button";
 import Container from "@/components/Container";
-import { abrirArquivo } from "@/utils/abrirArquivo";
-import { NovaVisita } from "@/utils/API/Empresas";
-import base_url from "@/utils/API/base_url";
-import { getHtmlVisita } from "@/utils/Visita/formatHTML";
-import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 import Loading from "@/components/Loading";
+import { useNavigationHistory } from "@/hooks/Navigation";
+import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import base_url from "@/utils/API/base_url";
 import Data from "@/utils/API/Data";
 import { events } from "@/utils/API/Event";
+import { abrirArquivo } from "@/utils/abrirArquivo";
+import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 
 export default function Finalizado() {
 	const nav = useNavigationHistory();
 	const query = useSearchParams();
 	const visita = useVisita();
 
-	const [loading, setLoading] = React.useState(false);
-	const [token, setToken] = React.useState<string | null>(null);
+	const [loading] = useState(false);
+	const [token, setToken] = useState<string | null>(null);
 
 	useEffect(() => {
 		const agora = new Date();
 		const hora = agora.getHours().toString().padStart(2, "0");
 		const minutos = agora.getMinutes().toString().padStart(2, "0");
-		const segundos = agora.getSeconds().toString().padStart(2, "0");
 
 		(async () => {
 			// Chamar addEvent para registrar finalização da visita
@@ -46,7 +44,7 @@ export default function Finalizado() {
 
 			// Bloquear orientação tela e salvar visita
 			await ScreenOrientation.lockAsync(
-				ScreenOrientation.OrientationLock.PORTRAIT_UP
+				ScreenOrientation.OrientationLock.PORTRAIT_UP,
 			);
 
 			const res = await Data.createVisita(
@@ -55,7 +53,7 @@ export default function Finalizado() {
 					horaSaida: `${hora}:${minutos}`,
 					assinatura: query.get("assinatura") as string,
 				},
-				true
+				true,
 			);
 
 			if (res === "offline") {
@@ -87,7 +85,7 @@ export default function Finalizado() {
 			// Gera nome de arquivo limpo
 			const nomeArquivo = `${visita.empresa?.cnpj.replace(
 				/\D/g,
-				""
+				"",
 			)}-${visita.data.replaceAll("/", "-")}.html`;
 
 			const caminhoCompleto = `${dir}/${nomeArquivo}`;
@@ -99,10 +97,7 @@ export default function Finalizado() {
 			await abrirArquivo(caminhoCompleto);
 		} catch (error: any) {
 			console.error("❌ Erro ao salvar o arquivo:", error);
-			Alert.alert(
-				"Erro",
-				"Não foi possível salvar ou compartilhar o arquivo."
-			);
+			Alert.alert("Erro", "Não foi possível salvar ou compartilhar o arquivo.");
 		}
 	}
 
@@ -125,7 +120,7 @@ export default function Finalizado() {
 					<Button
 						onPress={() => {
 							Linking.openURL(
-								`${base_url}/empresas/${token}/visitas/${visita.id}`
+								`${base_url}/empresas/${token}/visitas/${visita.id}`,
 							);
 						}}
 					>

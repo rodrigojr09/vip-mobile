@@ -1,11 +1,13 @@
-import { useNavigationHistory } from "@/hooks/Navigation";
 import * as Device from "expo-device";
-import React, { useEffect, useRef, useState } from "react";
 import * as ScreenOrientation from "expo-screen-orientation";
+import { useEffect, useRef, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
-import Signature, { SignatureViewRef } from "react-native-signature-canvas";
-import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import Signature, {
+	type SignatureViewRef,
+} from "react-native-signature-canvas";
 import Button from "@/components/Button";
+import { useNavigationHistory } from "@/hooks/Navigation";
+import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 
 const SignatureScreen = () => {
 	const ref = useRef<SignatureViewRef>(null);
@@ -17,7 +19,7 @@ const SignatureScreen = () => {
 	useEffect(() => {
 		const lockOrientation = async () => {
 			await ScreenOrientation.lockAsync(
-				ScreenOrientation.OrientationLock.LANDSCAPE
+				ScreenOrientation.OrientationLock.LANDSCAPE,
 			);
 		};
 		lockOrientation();
@@ -44,10 +46,7 @@ const SignatureScreen = () => {
 			});
 		} catch (error) {
 			console.error("Erro ao salvar ou compartilhar o arquivo:", error);
-			Alert.alert(
-				"Erro",
-				"Não foi possível salvar ou compartilhar o arquivo."
-			);
+			Alert.alert("Erro", "Não foi possível salvar ou compartilhar o arquivo.");
 			setIsSubmitting(false); // <-- libera novamente em caso de erro
 		}
 	};
@@ -59,11 +58,9 @@ const SignatureScreen = () => {
 			<Signature
 				ref={ref}
 				onOK={handleSignature}
-				onEmpty={() =>
-					Alert.alert("Atenção", "Nenhuma assinatura capturada.")
-				}
+				onEmpty={() => Alert.alert("Atenção", "Nenhuma assinatura capturada.")}
 				onBegin={() => setHasSigned(true)}
-				descriptionText={"Assinatura de: " + visita.responsavel}
+				descriptionText={`Assinatura de: ${visita.responsavel}`}
 				clearText="Limpar"
 				confirmText="Confirmar"
 				webStyle={`

@@ -50,7 +50,7 @@ const SignatureScreen = () => {
 				onEmpty={() =>
 					Alert.alert("Atenção", "Nenhuma assinatura capturada.")
 				}
-				descriptionText={"Assinatura de: " + empresa.responsavel}
+				descriptionText={`Assinatura de: ${empresa.responsavel}`}
 				clearText="Limpar"
 				confirmText="Confirmar"
 				webStyle={`

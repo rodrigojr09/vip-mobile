@@ -1,10 +1,9 @@
-import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { WebView } from "react-native-webview";
 import Button from "@/components/Button";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 
 export default function Rascunho() {
 	const visita = useVisita();
@@ -32,7 +31,7 @@ export default function Rascunho() {
 
 			<View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
 				<Button
-					onPress={(e) => {
+					onPress={() => {
 						nav.push("/Visita/assinatura");
 					}}
 				>

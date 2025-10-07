@@ -1,5 +1,5 @@
-import VisitaProvider from "@/hooks/VisitaTecnica/VisitaProvider";
 import { Stack } from "expo-router";
+import VisitaProvider from "@/hooks/VisitaTecnica/VisitaProvider";
 
 export default function Layout() {
 	return (

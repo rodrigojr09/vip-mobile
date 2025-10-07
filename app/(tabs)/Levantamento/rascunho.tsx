@@ -30,7 +30,7 @@ export default function Rascunho() {
 			/>
 			<View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
 				<Button
-					onPress={(e) => {
+					onPress={() => {
 						nav.push("/Levantamento/assinatura");
 					}}
 				>

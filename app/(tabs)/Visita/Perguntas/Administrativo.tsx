@@ -1,20 +1,19 @@
+import React, { useEffect } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
-import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
-import React, { useEffect } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
-import { quests_adm } from "@/utils/quests";
-import { router } from "expo-router";
 import QuestionBlock from "@/components/Visita/QuestionBlock";
-import { VIPPerguntaType } from "@/types/VisitaTecnica/VIPPerguntaType";
+import { useNavigationHistory } from "@/hooks/Navigation";
+import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 import { verifyPerguntas } from "@/utils/verifyPerguntas";
 
 export default function Sidebar() {
 	const { respostas, addResposta, perguntas } = useVisita();
 	const [block, setBlock] = React.useState(false);
+	const nav = useNavigationHistory();
 	useEffect(() => {
 		setBlock(verifyPerguntas(perguntas.adm, respostas));
-	}, [respostas]);
+	}, [respostas, perguntas.adm]);
 	return (
 		<Container scroller>
 			<View style={styles.formContainer}>
@@ -23,9 +22,7 @@ export default function Sidebar() {
 					<View key={q.id} style={styles.questionBlock}>
 						<QuestionBlock
 							pergunta={q}
-							resposta={respostas.find(
-								(r) => r.pergunta === q.pergunta
-							)}
+							resposta={respostas.find((r) => r.pergunta === q.pergunta)}
 							onChange={addResposta}
 							respostas={respostas}
 						/>

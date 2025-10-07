@@ -33,7 +33,7 @@ export default function Setor() {
 		return () => {
 			setor.clear();
 		};
-	}, [empresa.setores, setor.nome, params.setor, setor.load, setor.clear]);
+	}, []);
 
 	const handleCreateSetor = () => {
 		// Validações individuais para os campos
@@ -264,7 +264,7 @@ export default function Setor() {
 				}}
 			/>
 			<Button
-				onPress={(e) => {
+				onPress={() => {
 					nav.push("/Levantamento/funcao");
 				}}
 			>
@@ -272,7 +272,7 @@ export default function Setor() {
 			</Button>
 			{!params.setor && (
 				<Button
-					onPress={(e) => {
+					onPress={() => {
 						handleCreateSetor();
 					}}
 				>
@@ -281,7 +281,7 @@ export default function Setor() {
 			)}
 			{params.setor && (
 				<Button
-					onPress={(e) => {
+					onPress={() => {
 						// Validações individuais para os campos
 						if (!setor.nome.trim())
 							return Alert.alert("Erro", "Nome do setor inválido!");

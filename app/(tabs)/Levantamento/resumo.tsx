@@ -41,7 +41,7 @@ export default function Resumo() {
 			/>
 
 			<Button
-				onPress={(e) => {
+				onPress={() => {
 					nav.push("/Levantamento/setor");
 				}}
 			>
@@ -49,7 +49,7 @@ export default function Resumo() {
 			</Button>
 
 			<Button
-				onPress={(e) => {
+				onPress={() => {
 					nav.push("/Levantamento/rascunho");
 				}}
 			>

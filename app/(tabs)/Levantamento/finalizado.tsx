@@ -32,7 +32,7 @@ export default function Finalizado() {
 				console.warn("Erro ao adicionar evento de finalização:", error);
 			}
 		})();
-	}, [empresa.nome, empresa.responsavel]);
+	}, []);
 
 	async function handleDownload() {
 		try {

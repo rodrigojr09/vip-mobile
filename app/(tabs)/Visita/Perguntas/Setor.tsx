@@ -1,21 +1,24 @@
+import { useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { v4 as uuidv4 } from "uuid";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import Input from "@/components/Input";
 import QuestionBlock from "@/components/Visita/QuestionBlock";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
-import { VIPRespostaType } from "@/types/VisitaTecnica/VIPPerguntaType";
+import type { VIPRespostaType } from "@/types/VisitaTecnica/VIPPerguntaType";
 import { quests_setor } from "@/utils/quests";
-import { router, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native";
-import { v4 as uuidv4 } from "uuid";
 import "react-native-get-random-values";
 import Sidebar from "@/components/Visita/Sidebar";
+import { useNavigationHistory } from "@/hooks/Navigation";
 
 export default function PerguntasSetor() {
-	const { addSetor, setores, perguntas, removerSetor } = useVisita();
+	const { addSetor, setores, perguntas } = useVisita();
 	const [respostas, setRespostas] = useState<VIPRespostaType[]>([]);
 	const [nome, setNome] = useState("");
+
+	const nav = useNavigationHistory();
 
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -29,7 +32,7 @@ export default function PerguntasSetor() {
 				setRespostas(setor.respostas || []);
 			}
 		}
-	}, [params.id]);
+	}, []);
 
 	const toggleSidebar = () => {
 		setIsSidebarOpen(!isSidebarOpen);
@@ -37,9 +40,7 @@ export default function PerguntasSetor() {
 
 	const addResposta = useCallback((resposta: VIPRespostaType) => {
 		setRespostas((prev) => {
-			const index = prev.findIndex(
-				(r) => r.pergunta === resposta.pergunta
-			);
+			const index = prev.findIndex((r) => r.pergunta === resposta.pergunta);
 
 			if (index !== -1) {
 				const existente = prev[index];
@@ -49,9 +50,7 @@ export default function PerguntasSetor() {
 				) {
 					return prev.filter((_, i) => i !== index);
 				}
-				return prev.map((r, i) =>
-					i === index ? { ...r, ...resposta } : r
-				);
+				return prev.map((r, i) => (i === index ? { ...r, ...resposta } : r));
 			}
 
 			return [...prev, resposta];
@@ -93,9 +92,7 @@ export default function PerguntasSetor() {
 						<View key={q.id} style={styles.questionBlock}>
 							<QuestionBlock
 								pergunta={q}
-								resposta={respostas.find(
-									(r) => r.pergunta === q.pergunta
-								)}
+								resposta={respostas.find((r) => r.pergunta === q.pergunta)}
 								onChange={addResposta}
 								respostas={respostas}
 							/>
@@ -113,8 +110,7 @@ export default function PerguntasSetor() {
 					>
 						<Button
 							disabled={
-								!nome.trim() ||
-								respostas.length !== perguntas.setor.length
+								!nome.trim() || respostas.length !== perguntas.setor.length
 							}
 							onPress={() => handleAvancar()}
 						>

@@ -24,7 +24,7 @@ export class Data {
 	private loading = true;
 
 	static base_url = __DEV__
-		? "http://192.168.3.19:3000/api/v3"
+		? "http://192.168.3.40:3000/api/v3"
 		: "https://mobile.vipsst.com.br/api/v3";
 	static base_dir = FileSystem.documentDirectory;
 

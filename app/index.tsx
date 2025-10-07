@@ -1,12 +1,12 @@
-import Button from "@/components/Button";
 import * as FileSystem from "expo-file-system";
+import { useNetworkState } from "expo-network";
+import { useEffect, useState } from "react";
+import { Alert, StyleSheet } from "react-native";
+import Button from "@/components/Button";
 import Container from "@/components/Container";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import React, { useEffect, useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
-import { getNetworkStateAsync, useNetworkState } from "expo-network";
+import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import Data from "@/utils/API/Data";
-import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 
 const VISITAS_DIR = `${FileSystem.documentDirectory}offline_visitas/`;
 
@@ -15,6 +15,10 @@ export default function App() {
 	const { isConnected, isInternetReachable } = useNetworkState();
 	const [visitas, setVisitas] = useState<VIPVisitaType[]>([]);
 	const [isSaving, setIsSaving] = useState(false);
+
+	useEffect(() => {
+		listarVisitas();
+	}, []);
 
 	async function listarVisitas() {
 		try {
@@ -30,14 +34,14 @@ export default function App() {
 				files.map(async (file) => {
 					try {
 						const content = await FileSystem.readAsStringAsync(
-							VISITAS_DIR + file
+							VISITAS_DIR + file,
 						);
 						return JSON.parse(content);
 					} catch (error) {
 						console.warn("Erro ao ler arquivo:", file, error);
 						return null;
 					}
-				})
+				}),
 			);
 
 			setVisitas(parsed.filter(Boolean));
@@ -45,10 +49,6 @@ export default function App() {
 			console.error("Erro ao listar visitas offline:", err);
 		}
 	}
-
-	useEffect(() => {
-		listarVisitas();
-	}, []);
 
 	async function save() {
 		if (isSaving) return;
@@ -59,23 +59,18 @@ export default function App() {
 				visitas.map(async (item) => {
 					try {
 						const file = await FileSystem.readAsStringAsync(
-							VISITAS_DIR + item.id + ".json"
+							`${VISITAS_DIR + item.id}.json`,
 						);
-						const res = await Data.createVisita(
-							JSON.parse(file),
-							false
-						);
+						const res = await Data.createVisita(JSON.parse(file), false);
 						if (res) {
-							await FileSystem.deleteAsync(
-								VISITAS_DIR + item.id + ".json"
-							);
+							await FileSystem.deleteAsync(`${VISITAS_DIR + item.id}.json`);
 							return 1;
 						}
 					} catch (e) {
 						console.error("Erro ao salvar visita:", item.id, e);
 					}
 					return 0;
-				})
+				}),
 			);
 
 			const saves2 = saves.filter((a) => a === 1).length;
@@ -100,9 +95,7 @@ export default function App() {
 				isInternetReachable === true &&
 				visitas.length > 0 && (
 					<Button onPress={save} disabled={isSaving}>
-						{isSaving
-							? "Salvando..."
-							: `Salvar ${visitas.length} Visita(s)`}
+						{isSaving ? "Salvando..." : `Salvar ${visitas.length} Visita(s)`}
 					</Button>
 				)}
 		</Container>
