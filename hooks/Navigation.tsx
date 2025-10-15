@@ -1,7 +1,7 @@
-// NavigationProvider.tsx
-import React, { createContext, useContext, useState } from "react";
-import { Href, RelativePathString, useRouter } from "expo-router";
-import { NavigationOptions } from "expo-router/build/global-state/routing";
+import { type Href, useRouter } from "expo-router";
+import type { NavigationOptions } from "expo-router/build/global-state/routing";
+import type React from "react";
+import { createContext, useContext, useState } from "react";
 
 // Contexto para navegação
 interface NavigationContextType {

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
-import TableComponent from "./tabela";
+import { useState } from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
 import Resultado from "./resultado";
+import TableComponent from "./tabela";
 
 export default function Medicao() {
   const [mediaIBUTG, setMediaIBUTG] = useState("");

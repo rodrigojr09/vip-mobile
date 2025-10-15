@@ -1,8 +1,8 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { useSearchParams } from "expo-router/build/hooks";
 import * as ScreenOrientation from "expo-screen-orientation";
 import * as Sharing from "expo-sharing";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
@@ -10,48 +10,66 @@ import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { events } from "@/utils/API/Event";
 import { getHtml } from "@/utils/formatHTML";
+import { storage } from "@/utils/Storage";
 
 export default function Finalizado() {
 	const nav = useNavigationHistory();
 	const query = useSearchParams();
 	const empresa = useEmpresa();
+	const [fileUri, setFileUri] = useState<string | null>(null);
 
 	useEffect(() => {
 		(async () => {
-			await ScreenOrientation.lockAsync(
-				ScreenOrientation.OrientationLock.PORTRAIT_UP,
-			);
-
-			// Mensagfem do evento
-			const mensagem = `Finalização da visita - Empresa: ${empresa.nome}, Responsável: ${empresa.responsavel}`;
-
 			try {
+				await ScreenOrientation.lockAsync(
+					ScreenOrientation.OrientationLock.PORTRAIT_UP,
+				);
+				console.log("📱 Orientação travada para retrato.");
+
+				const mensagem = `Finalização da visita - Empresa: ${empresa.nome}, Responsável: ${empresa.responsavel}`;
 				events.sendEvent(mensagem);
 				events.endEvent();
+				console.log("✅ Evento de finalização registrado.");
+
+				// Gera conteúdo HTML
+				const htmlContent = getHtml(empresa)
+					.replace("$assinatura", `${query.get("assinatura")}`)
+					.replace("not-assinatura", "");
+
+				// Caminho interno
+				const fileName = `Levantamento-${empresa.nome}.html`;
+				const filePath = `${FileSystem.documentDirectory}${fileName}`;
+
+				// Salva o arquivo internamente
+				await FileSystem.writeAsStringAsync(filePath, htmlContent, {
+					encoding: FileSystem.EncodingType.UTF8,
+				});
+
+				setFileUri(filePath);
+                console.log(empresa);
+				storage.saveLevantamento({
+					empresa: {
+						...empresa,
+                        assinatura: query.get("assinatura") || "",
+					},
+				});
+				console.log("✅ Arquivo salvo internamente em:", filePath);
 			} catch (error) {
-				console.warn("Erro ao adicionar evento de finalização:", error);
+				console.error("❌ Erro ao gerar e salvar levantamento:", error);
+				Alert.alert(
+					"Erro ao salvar",
+					"Não foi possível salvar o levantamento. Tente novamente.",
+				);
 			}
 		})();
 	}, []);
 
-	async function handleDownload() {
-		try {
-			const htmlContent = getHtml(empresa)
-				.replace("$assinatura", `${query.get("assinatura")}`)
-				.replace("not-assinatura", "");
-
-			const filePath = `${FileSystem.documentDirectory}Levantamento-${empresa.nome}.html`;
-
-			await FileSystem.writeAsStringAsync(filePath, htmlContent, {
-				encoding: FileSystem.EncodingType.UTF8,
-			});
-
-			await Sharing.shareAsync(filePath);
-
-			console.log("Arquivo gerado e compartilhado com sucesso:", filePath);
-		} catch (error) {
-			console.error("Erro ao salvar ou compartilhar o arquivo:", error);
-			Alert.alert("Erro", "Não foi possível salvar ou compartilhar o arquivo.");
+	async function shareFile() {
+		if (!fileUri) {
+			Alert.alert("Nenhum arquivo", "Nenhum levantamento foi salvo ainda.");
+			return;
+		} else {
+			Sharing.shareAsync(fileUri);
 		}
 	}
 
@@ -65,7 +83,21 @@ export default function Finalizado() {
 			>
 				Ir para o Início
 			</Button>
-			<Button onPress={handleDownload}>Baixar Levantamento</Button>
+
+			<Button
+				onPress={() => {
+					if (fileUri) {
+						shareFile();
+					} else {
+						Alert.alert(
+							"Nenhum Arquivo",
+							"Nenhum levantamento foi salvo ainda.",
+						);
+					}
+				}}
+			>
+				Compartilhar Arquivo
+			</Button>
 		</Container>
 	);
 }

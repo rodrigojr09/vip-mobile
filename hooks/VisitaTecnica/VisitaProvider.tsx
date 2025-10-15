@@ -6,9 +6,9 @@ import {
 	useState,
 } from "react";
 import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
-import Data from "@/utils/API/Data";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
+import { storage } from "@/utils/Storage";
 
 // Tipagem segura para o contexto
 interface VisitaContextType extends VIPVisitaType {
@@ -83,14 +83,8 @@ export default function VisitaProvider({
 	};
 
 	useEffect(() => {
-		setEmpresas(Data.empresas);
-		setPerguntas(Data.perguntas);
-		console.log(Data.empresas.length, "empresas carregadas");
-		console.log(
-			Data.perguntas.adm.length,
-			"perguntas administrativas carregadas",
-		);
-		console.log(Data.perguntas.setor.length, "perguntas de setor carregadas");
+		setEmpresas(storage.empresas);
+		setPerguntas(storage.perguntas);
 	}, []);
 
 	return (

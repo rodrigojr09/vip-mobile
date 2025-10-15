@@ -1,16 +1,11 @@
-import * as FileSystem from "expo-file-system";
-import { Data } from "./Data";
-import { VIPEvento } from "@/types/VIPEvent";
 import { getAndroidId } from "expo-application";
-import { Locator } from "./Locator";
 import { v4 as uuidv4 } from "uuid";
+import type { VIPEvento } from "@/types/VIPEvent";
+import { getCurrentLocation } from "./Locator";
 import "react-native-get-random-values";
+import Storage, { storage } from "../Storage";
 
 class Event {
-	private offlineEventosFile = "offline_eventos.json";
-	private offlinePath =
-		FileSystem.documentDirectory + this.offlineEventosFile;
-
 	public atual: null | string = null;
 
 	constructor() {
@@ -20,27 +15,27 @@ class Event {
 	private formatDateTime() {
 		const agora = new Date();
 		const data = `${String(agora.getDate()).padStart(2, "0")}/${String(
-			agora.getMonth() + 1
+			agora.getMonth() + 1,
 		).padStart(2, "0")}/${agora.getFullYear()}`;
 		const hora = `${String(agora.getHours()).padStart(2, "0")}:${String(
-			agora.getMinutes()
+			agora.getMinutes(),
 		).padStart(2, "0")}:${String(agora.getSeconds()).padStart(2, "0")}`;
 		return { data, hora };
-    }
-    
-    public startEvent(eventName: string) {
-        this.atual = eventName;
-        console.log(`🔄 Evento iniciado: ${eventName}`);
-    }
+	}
 
-    public endEvent() {
-        if (!this.atual) {
-            console.warn("Nenhum evento ativo para encerrar.");
-            return;
-        }
-        console.log(`✅ Evento encerrado: ${this.atual}`);
-        this.atual = null;
-    }
+	public startEvent(eventName: string) {
+		this.atual = eventName;
+		console.log(`🔄 Evento iniciado: ${eventName}`);
+	}
+
+	public endEvent() {
+		if (!this.atual) {
+			console.warn("Nenhum evento ativo para encerrar.");
+			return;
+		}
+		console.log(`✅ Evento encerrado: ${this.atual}`);
+		this.atual = null;
+	}
 
 	public async sendEvent(evento: string) {
 		const { data, hora } = this.formatDateTime();
@@ -51,11 +46,11 @@ class Event {
 			data,
 			hora,
 			msg: evento,
-			localizacao: await Locator.getCurrentLocation(),
+			localizacao: await getCurrentLocation(),
 		};
 
 		try {
-			const res = await fetch(`${Data.base_url}/eventos/send`, {
+			const res = await fetch(`${Storage.base_url}/eventos/send`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(novoEvento),
@@ -64,36 +59,16 @@ class Event {
 			if (!res.ok) throw new Error("Falha ao enviar para API");
 
 			return true;
-		} catch (error) {
+		} catch {
 			console.warn("⚠️ Evento salvo offline:", novoEvento.msg);
-			await this.saveOfflineEvento(novoEvento);
+			await storage.addEvento(novoEvento);
 			return false;
 		}
 	}
 
 	public async saveOfflineEvento(evento: VIPEvento) {
-		let eventosSalvos: VIPEvento[] = [];
-
 		try {
-			const fileInfo = await FileSystem.getInfoAsync(this.offlinePath);
-			if (fileInfo.exists) {
-				const content = await FileSystem.readAsStringAsync(
-					this.offlinePath
-				);
-				eventosSalvos = JSON.parse(content) || [];
-			}
-		} catch (error) {
-			console.warn("Não foi possível ler eventos offline:", error);
-		}
-
-		eventosSalvos.push(evento);
-
-		try {
-			await FileSystem.writeAsStringAsync(
-				this.offlinePath,
-				JSON.stringify(eventosSalvos),
-				{ encoding: FileSystem.EncodingType.UTF8 }
-			);
+			await storage.addEvento(evento);
 			console.log("📦 Evento salvo offline:", evento.msg);
 		} catch (error) {
 			console.error("Erro ao salvar evento offline:", error);
@@ -102,12 +77,7 @@ class Event {
 
 	public async syncOfflineEventos() {
 		try {
-			const fileInfo = await FileSystem.getInfoAsync(this.offlinePath);
-			if (!fileInfo.exists) return;
-
-			const content = await FileSystem.readAsStringAsync(
-				this.offlinePath
-			);
+			const content = (await storage.getEventos()) || "[]";
 			const eventos: VIPEvento[] = JSON.parse(content);
 
 			if (!eventos.length) return;
@@ -115,7 +85,7 @@ class Event {
 			const enviado = await this.setEventos(eventos);
 
 			if (enviado) {
-				await FileSystem.deleteAsync(this.offlinePath);
+				await storage.clearEventos();
 				console.log("✅ Eventos offline sincronizados com sucesso.");
 			} else {
 				console.warn("⚠️ Falha ao sincronizar eventos offline.");
@@ -127,7 +97,7 @@ class Event {
 
 	private async setEventos(eventos: VIPEvento[]) {
 		try {
-			const res = await fetch(`${Data.base_url}/eventos/set`, {
+			const res = await fetch(`${Storage.base_url}/eventos/set`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(eventos),
@@ -141,15 +111,7 @@ class Event {
 
 	public async getOfflineEventos(): Promise<VIPEvento[]> {
 		try {
-			const fileInfo = await FileSystem.getInfoAsync(this.offlinePath);
-			if (!fileInfo.exists) {
-				console.warn("Arquivo de eventos offline não encontrado.");
-				return [];
-			}
-
-			const content = await FileSystem.readAsStringAsync(
-				this.offlinePath
-			);
+			const content = (await storage.getEventos()) || "[]";
 			return JSON.parse(content);
 		} catch (error) {
 			console.error("Erro ao ler eventos offline:", error);

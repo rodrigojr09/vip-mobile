@@ -1,4 +1,4 @@
-import {
+import type {
 	VIPPerguntaType,
 	VIPRespostaType,
 } from "@/types/VisitaTecnica/VIPPerguntaType";
@@ -7,7 +7,7 @@ type CheckedType = VIPRespostaType["checked"];
 export function verifyPerguntas(
 	perguntas: VIPPerguntaType[],
 	respostas: VIPRespostaType[],
-	statusPai?: CheckedType
+	statusPai?: CheckedType,
 ): boolean {
 	for (const pergunta of perguntas) {
 		// Verifica se a pergunta deve ser exibida com base no `when`
@@ -24,17 +24,17 @@ export function verifyPerguntas(
 		}
 
 		// Verifica se a pergunta está respondida
-		const resposta = respostas.find(
-			(r) => r.pergunta === pergunta.pergunta
-		);
+		const resposta = respostas.find((r) => r.pergunta === pergunta.pergunta);
 
-		if (
-			!resposta ||
-			(resposta.checked == null)
-		) {
-            if (pergunta.type !== "text") return true; // não respondida e obrigatória
-            else if (!resposta || (resposta?.observation && resposta?.observation?.trim() === "")) return true;
-            continue;
+		if (!resposta || resposta.checked == null) {
+			if (pergunta.type !== "text")
+				return true; // não respondida e obrigatória
+			else if (
+				!resposta ||
+				(resposta?.observation && resposta?.observation?.trim() === "")
+			)
+				return true;
+			continue;
 		}
 
 		// Verifica subperguntas, se existirem
@@ -42,7 +42,7 @@ export function verifyPerguntas(
 			const naoRespondidas = verifyPerguntas(
 				pergunta.subpergunta,
 				respostas,
-				resposta.checked
+				resposta.checked,
 			);
 			if (naoRespondidas) return true;
 		}

@@ -15,7 +15,7 @@ const SignatureScreen = () => {
 	const visita = useVisita();
 	const [hasSigned, setHasSigned] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false); // <-- estado de controle
-
+ 
 	useEffect(() => {
 		const lockOrientation = async () => {
 			await ScreenOrientation.lockAsync(

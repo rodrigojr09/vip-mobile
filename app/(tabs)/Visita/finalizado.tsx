@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { useSearchParams } from "expo-router/build/hooks";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useEffect, useState } from "react";

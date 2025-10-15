@@ -1,11 +1,9 @@
-import {
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import type {
 	VIPPerguntaType,
 	VIPRespostaType,
 } from "@/types/VisitaTecnica/VIPPerguntaType";
-import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import ObservacaoCampo from "./ObservacaoCampo";
-import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
-import { useEffect } from "react";
 
 interface Props {
 	pergunta: VIPPerguntaType;
@@ -26,8 +24,8 @@ const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
 				key === "Sim"
 					? styles.choiceButtonSelectedGreen
 					: key === "Não"
-					? styles.choiceButtonSelectedRed
-					: styles.choiceButtonSelectedGray;
+						? styles.choiceButtonSelectedRed
+						: styles.choiceButtonSelectedGray;
 
 			return (
 				<TouchableOpacity
@@ -48,26 +46,24 @@ const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
 	const renderSubperguntas = () => {
 		if (!subperguntas) return null;
 
-		const checks = subperguntas.filter(
-			(s) => s.type === "check" && !s.when
-		);
+		const checks = subperguntas.filter((s) => s.type === "check" && !s.when);
 
 		const texts = subperguntas.filter(
 			(s) =>
 				s.type === "text" &&
-				s.when?.toLowerCase() === status?.toString().toLowerCase()
+				s.when?.toLowerCase() === status?.toString().toLowerCase(),
 		);
 
 		const infos = subperguntas.filter(
 			(s) =>
 				s.type === "info" &&
-				s.when?.toLowerCase() === status?.toString().toLowerCase()
+				s.when?.toLowerCase() === status?.toString().toLowerCase(),
 		);
 
 		const condicionais = subperguntas.filter(
 			(s) =>
 				s.type === "boolean" &&
-				s.when?.toLowerCase() === status?.toString().toLowerCase()
+				s.when?.toLowerCase() === status?.toString().toLowerCase(),
 		);
 
 		return (
@@ -76,9 +72,7 @@ const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
 					<View key={sub.id} style={{ marginTop: 32 }}>
 						<QuestionBlock
 							pergunta={sub}
-							resposta={respostas.find(
-								(r) => r.pergunta === sub.pergunta
-							)}
+							resposta={respostas.find((r) => r.pergunta === sub.pergunta)}
 							onChange={onChange}
 							respostas={respostas}
 						/>
@@ -89,9 +83,7 @@ const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
 					<View key={sub.id} style={{ marginTop: 32 }}>
 						<QuestionBlock
 							pergunta={sub}
-							resposta={respostas.find(
-								(r) => r.pergunta === sub.pergunta
-							)}
+							resposta={respostas.find((r) => r.pergunta === sub.pergunta)}
 							onChange={onChange}
 							respostas={respostas}
 						/>
@@ -102,9 +94,7 @@ const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
 					<View key={sub.id} style={{ marginTop: 32 }}>
 						<QuestionBlock
 							pergunta={sub}
-							resposta={respostas.find(
-								(r) => r.pergunta === sub.pergunta
-							)}
+							resposta={respostas.find((r) => r.pergunta === sub.pergunta)}
 							onChange={onChange}
 							respostas={respostas}
 						/>
@@ -115,7 +105,7 @@ const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
 					<View style={styles.checkGrid}>
 						{checks.map((sub) => {
 							const isSelected = respostas.find(
-								(r) => r.pergunta === sub.pergunta
+								(r) => r.pergunta === sub.pergunta,
 							);
 							return (
 								<TouchableOpacity
@@ -159,8 +149,7 @@ const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
 					onChange={(label, status, obs) =>
 						onChange({
 							pergunta: label,
-							checked:
-								pergunta.type === "text" ? "Check" : status,
+							checked: pergunta.type === "text" ? "Check" : status,
 							observation: obs,
 						})
 					}

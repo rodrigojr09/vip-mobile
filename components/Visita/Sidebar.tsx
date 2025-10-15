@@ -1,7 +1,7 @@
-import { Pressable, View, Text, StyleSheet } from "react-native";
-import Button from "../Button";
-import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useNavigationHistory } from "@/hooks/Navigation";
+import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import Button from "../Button";
 
 export default function Sidebar({
 	toggleSidebar,

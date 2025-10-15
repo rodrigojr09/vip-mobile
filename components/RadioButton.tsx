@@ -1,4 +1,4 @@
-import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function RadioButton({
 	placeholder,

@@ -1,12 +1,12 @@
-import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
+import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 
-const base_dir = FileSystem.documentDirectory + "offline_visitas/";
+const base_dir = `${FileSystem.documentDirectory}offline_visitas/`;
 
 export default async function saveOffline(visita: VIPVisitaType) {
 	try {
 		// Define o caminho interno
-		const filePath = base_dir + visita.id + ".json";
+		const filePath = `${base_dir + visita.id}.json`;
 
 		const jsonData = JSON.stringify({
 			id: visita.id,

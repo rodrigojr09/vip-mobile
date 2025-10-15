@@ -1,8 +1,9 @@
-import * as FileSystem from "expo-file-system";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as FileSystem from "expo-file-system/legacy";
 import * as Network from "expo-network";
+import { DIRECTORY_KEY } from "@/components/Layout";
 import type { VIPEmpresaType } from "@/types/VisitaTecnica/VIPEmpresaType";
 import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
-import "react-native-get-random-values";
 import saveOffline from "../Visita/saveOffline";
 import { events } from "./Event";
 
@@ -16,22 +17,19 @@ export class Data {
 	};
 
 	public empresas: VIPEmpresaType[] = [];
-	public perguntas: VIPVisitaType["perguntas"] = {
-		adm: [],
-		setor: [],
-	};
-
+	public perguntas: VIPVisitaType["perguntas"] = { adm: [], setor: [] };
 	private loading = true;
+	private safDirUri: string | null = null; // <- guarda pasta pública escolhida
 
 	static base_url = __DEV__
-		? "http://192.168.3.40:3000/api/v3"
+		? "http://192.168.3.29:3000/api/v3"
 		: "https://mobile.vipsst.com.br/api/v3";
 	static base_dir = FileSystem.documentDirectory;
 
-	public async getData() {
+	async getData() {
 		const empresas = await this.getEmpresas();
 		const perguntas = await this.getPerguntas();
-		await events.syncOfflineEventos(); // sincroniza eventos offline
+		await events.syncOfflineEventos();
 
 		if (empresas) this.empresas = empresas;
 		if (perguntas) this.perguntas = perguntas;
@@ -40,7 +38,7 @@ export class Data {
 		return this.loading;
 	}
 
-	public async getEmpresas(): Promise<VIPEmpresaType[]> {
+	async getEmpresas(): Promise<VIPEmpresaType[]> {
 		console.log("🔎 | Buscando empresas...");
 		const network = await Network.getNetworkStateAsync();
 		if (!network.isConnected || !network.isInternetReachable) {
@@ -59,7 +57,7 @@ export class Data {
 		return this.empresas;
 	}
 
-	public async getPerguntas(): Promise<VIPVisitaType["perguntas"]> {
+	async getPerguntas(): Promise<VIPVisitaType["perguntas"]> {
 		console.log("🔎 | Buscando perguntas...");
 		const network = await Network.getNetworkStateAsync();
 		if (!network.isConnected || !network.isInternetReachable) {
@@ -88,15 +86,40 @@ export class Data {
 		}
 	}
 
+	/** 🔄 Método atualizado: salva JSON em pasta pública (SAF) */
 	private async saveJson(arquivo: string, data: string) {
-		const path = `${Data.base_dir}${arquivo}`;
-		console.log(`📝 | Salvando dados em: ${path}`);
+		try {
+			if (!this.safDirUri) {
+				const dir = await AsyncStorage.getItem(DIRECTORY_KEY);
+				this.safDirUri = dir;
+			}
+
+			// Agora cria o arquivo
+			const created = await (
+				FileSystem as any
+			).StorageAccessFramework.createFileAsync(
+				this.safDirUri,
+				arquivo,
+				"application/json",
+			);
+
+			await FileSystem.writeAsStringAsync(created, data);
+			console.log(`✅ Arquivo salvo publicamente em: ${created}`);
+		} catch (error) {
+			console.error("❌ Erro ao salvar publicamente:", error);
+			await this.saveInternal(arquivo, data);
+		}
+	}
+
+	/** Fallback: salva internamente se SAF falhar */
+	private async saveInternal(arquivo: string, data: string) {
+		const path = `${FileSystem.documentDirectory}${arquivo}`;
 		await FileSystem.writeAsStringAsync(path, data);
-		console.log(`✅ | Arquivo salvo localmente em: ${path}`);
+		console.log(`💾 (Interno) Arquivo salvo em: ${path}`);
 	}
 
 	private async getJson(arquivo: string) {
-		const path = `${Data.base_dir}${arquivo}`;
+		const path = `${FileSystem.documentDirectory}${arquivo}`;
 		try {
 			const fileInfo = await FileSystem.getInfoAsync(path);
 			if (!fileInfo.exists) {
@@ -117,9 +140,7 @@ export class Data {
 		try {
 			const res = await fetch(`${Data.base_url}/visitas`, {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(
 					offline
 						? {
@@ -147,8 +168,44 @@ export class Data {
 			else return false;
 		}
 	}
+
+	/** 🔄 Adaptado: salva levantamento em pasta pública */
+	public async saveLevantamento(save: any) {
+		try {
+			if (!save.empresa || !save.empresa.id) {
+				console.error(
+					"❌ Erro: empresa ou ID da empresa ausente no levantamento.",
+				);
+				return null;
+			}
+			if (!this.safDirUri) {
+				console.log("tec2 "+DIRECTORY_KEY);
+				const dir = await AsyncStorage.getItem(DIRECTORY_KEY);
+				console.log("tec2 "+dir);
+				this.safDirUri = dir;
+			}
+			console.log("SAF Directory URI:", this.safDirUri);
+			console.log("Saving levantamento for empresa ID:", save.empresa.id);
+			const fileUri = await (
+				FileSystem as any
+			).StorageAccessFramework.createFileAsync(
+				this.safDirUri,
+				`levantamento-${save.empresa.id}.json`,
+				"application/json",
+			);
+
+			await FileSystem.writeAsStringAsync(
+				fileUri,
+				JSON.stringify(save, null, 2),
+			);
+			console.log(`✅ Levantamento salvo publicamente em: ${fileUri}`);
+			return fileUri;
+		} catch (error) {
+			console.error("❌ Erro ao salvar levantamento:", error);
+			return null;
+		}
+	}
 }
 
 const data = new Data();
-
 export default data;

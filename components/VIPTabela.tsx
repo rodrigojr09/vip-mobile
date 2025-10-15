@@ -1,10 +1,10 @@
 import React from "react";
 import {
-	View,
+	FlatList,
+	StyleSheet,
 	Text,
 	TouchableOpacity,
-	StyleSheet,
-	FlatList,
+	View,
 } from "react-native";
 
 interface TabelaProps {
@@ -24,33 +24,29 @@ const VIPTabela: React.FC<TabelaProps> = ({
 		<View style={styles.container}>
 			{/* Cabeçalho da tabela */}
 			<View style={[styles.row, styles.headerRow]}>
-				{headers.map((header, index) => (
-					<View key={index} style={[styles.cell, styles.headerCell]}>
+				{headers.map((header) => (
+					<View key={header} style={[styles.cell, styles.headerCell]}>
 						<Text style={styles.headerText}>{header}</Text>
 					</View>
 				))}
-				<View style={[styles.cell, styles.headerCell]}>
-					<Text style={styles.headerText}></Text>
-				</View>
+				{onExcluir && (
+					<View style={[styles.cell, styles.headerCell]}>
+						<Text style={styles.headerText}></Text>
+					</View>
+				)}
 			</View>
 
 			{/* Linhas da tabela */}
 			<FlatList
 				data={valores}
-				keyExtractor={(item, index) => index.toString()}
+				keyExtractor={(_item, index) => index.toString()}
 				renderItem={({ item }) => (
 					<View style={styles.row}>
 						{headers.map((header) => (
 							<View key={header} style={styles.cell}>
-								{
-									<TouchableOpacity
-										onPress={() => goTo && goTo(item)}
-									>
-										<Text style={styles.bodyText}>
-											{item[header]}
-										</Text>
-									</TouchableOpacity>
-								}
+								<TouchableOpacity onPress={() => goTo?.(item)}>
+									<Text style={styles.bodyText}>{item[header]}</Text>
+								</TouchableOpacity>
 							</View>
 						))}
 						{onExcluir && (
@@ -59,9 +55,7 @@ const VIPTabela: React.FC<TabelaProps> = ({
 									style={styles.excluirButton}
 									onPress={() => onExcluir(item)}
 								>
-									<Text style={styles.excluirText}>
-										Excluir
-									</Text>
+									<Text style={styles.excluirText}>Excluir</Text>
 								</TouchableOpacity>
 							</View>
 						)}
@@ -69,11 +63,10 @@ const VIPTabela: React.FC<TabelaProps> = ({
 				)}
 				ListEmptyComponent={
 					<View style={styles.emptyRow}>
-						<Text style={styles.emptyText}>
-							Nenhuma informação disponível
-						</Text>
+						<Text style={styles.emptyText}>Nenhuma informação disponível</Text>
 					</View>
 				}
+				scrollEnabled={false} // 👈 desativa o scroll interno
 			/>
 		</View>
 	);
@@ -81,21 +74,21 @@ const VIPTabela: React.FC<TabelaProps> = ({
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: "#0d1117", // Fundo escuro
+		backgroundColor: "#0d1117",
 		borderRadius: 8,
 		padding: 10,
-		overflow: "hidden",
+		marginBottom: 16,
 	},
 	row: {
 		flexDirection: "row",
 		alignItems: "center",
-		justifyContent: "space-between", // Garante espaçamento uniforme
+		justifyContent: "space-between",
 		borderBottomWidth: 1,
-		borderColor: "#343a40", // Cor da borda
+		borderColor: "#343a40",
 		paddingVertical: 12,
 	},
 	headerRow: {
-		backgroundColor: "#212529", // Fundo do cabeçalho
+		backgroundColor: "#212529",
 	},
 	cell: {
 		flex: 1,
@@ -103,8 +96,6 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 	},
 	headerCell: {
-		alignItems: "center",
-		justifyContent: "center",
 		paddingHorizontal: 8,
 	},
 	headerText: {
@@ -115,11 +106,11 @@ const styles = StyleSheet.create({
 	},
 	bodyText: {
 		fontSize: 14,
-		color: "#c9d1d9", // Texto mais claro
-		textAlign: "center", // Centraliza o texto nas células
+		color: "#c9d1d9",
+		textAlign: "center",
 	},
 	excluirButton: {
-		backgroundColor: "#e63946", // Vermelho
+		backgroundColor: "#e63946",
 		paddingHorizontal: 12,
 		paddingVertical: 6,
 		borderRadius: 4,

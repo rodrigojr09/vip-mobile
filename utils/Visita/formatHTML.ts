@@ -1,12 +1,12 @@
-import {
+import type {
 	VIPPerguntaType,
 	VIPRespostaType,
 } from "@/types/VisitaTecnica/VIPPerguntaType";
-import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
+import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 
 function getRespostaHtml(
 	pergunta: VIPPerguntaType,
-	respostas: VIPRespostaType[]
+	respostas: VIPRespostaType[],
 ): string {
 	const resposta = respostas.find((r) => r.pergunta === pergunta.pergunta);
 	if (!resposta && pergunta.type !== "info") return "";
@@ -20,27 +20,24 @@ function getRespostaHtml(
 		? subperguntas.filter(
 				(s) =>
 					s.type === "text" &&
-					s.when?.toLowerCase() ===
-						resposta?.checked?.toString().toLowerCase()
-		  )
+					s.when?.toLowerCase() === resposta?.checked?.toString().toLowerCase(),
+			)
 		: [];
 
 	const infos = subperguntas
 		? subperguntas.filter(
 				(s) =>
 					s.type === "info" &&
-					s.when?.toLowerCase() ===
-						resposta?.checked?.toString().toLowerCase()
-		  )
+					s.when?.toLowerCase() === resposta?.checked?.toString().toLowerCase(),
+			)
 		: [];
 
 	const condicionais = subperguntas
 		? subperguntas.filter(
 				(s) =>
 					s.type === "boolean" &&
-					s.when?.toLowerCase() ===
-						resposta?.checked?.toString().toLowerCase()
-		  )
+					s.when?.toLowerCase() === resposta?.checked?.toString().toLowerCase(),
+			)
 		: [];
 
 	return `
@@ -52,7 +49,7 @@ function getRespostaHtml(
 								pergunta.type === "text"
 									? resposta?.observation
 									: resposta?.checked
-						  }</p>`
+							}</p>`
 						: ""
 				}
 				${
@@ -61,12 +58,12 @@ function getRespostaHtml(
 						: ""
 				}
                 ${
-					texts && texts.length > 0
-						? texts
-								?.map((sub) => getRespostaHtml(sub, respostas))
-								.join("")
-						: ""
-				}
+									texts && texts.length > 0
+										? texts
+												?.map((sub) => getRespostaHtml(sub, respostas))
+												.join("")
+										: ""
+								}
 				${
 					condicionais && condicionais.length > 0
 						? condicionais
@@ -75,28 +72,27 @@ function getRespostaHtml(
 						: ""
 				}
                 ${
-					infos && infos.length > 0
-						? infos
-								?.map((sub) => getRespostaHtml(sub, respostas))
-								.join("")
-						: ""
-				}
+									infos && infos.length > 0
+										? infos
+												?.map((sub) => getRespostaHtml(sub, respostas))
+												.join("")
+										: ""
+								}
                 ${
-					checks && checks.length > 0
-						? checks
-								?.filter(
-									(s) =>
-										respostas.find(
-											(a) => a.pergunta === s.pergunta
-										)?.checked === "Check"
-								)
-								.map(
-									(sub) =>
-										`<p class="resposta-check">- ${sub.pergunta}</p>`
-								)
-								.join("")
-						: ""
-				}
+									checks && checks.length > 0
+										? checks
+												?.filter(
+													(s) =>
+														respostas.find((a) => a.pergunta === s.pergunta)
+															?.checked === "Check",
+												)
+												.map(
+													(sub) =>
+														`<p class="resposta-check">- ${sub.pergunta}</p>`,
+												)
+												.join("")
+										: ""
+								}
 			</div>
 	`;
 }
@@ -287,8 +283,8 @@ export function getHtmlVisita(visita: VIPVisitaType) {
 						(pergunta) =>
 							`<div class="card">${getRespostaHtml(
 								pergunta,
-								visita.respostas
-							)}</div>`
+								visita.respostas,
+							)}</div>`,
 					)
 					.join("")}
 
@@ -298,25 +294,22 @@ export function getHtmlVisita(visita: VIPVisitaType) {
                             <div class="card-setor">
                                 <h2 class="titulo-setor">${setor.nome}</h2>
                                 ${setor.perguntas
-									.map(
-										(pergunta) =>
-											`<div class="card">${getRespostaHtml(
-												pergunta,
-												setor.respostas
-											)}</div>`
-									)
-									.join("")}
+																	.map(
+																		(pergunta) =>
+																			`<div class="card">${getRespostaHtml(
+																				pergunta,
+																				setor.respostas,
+																			)}</div>`,
+																	)
+																	.join("")}
                             </div>
-					`
+					`,
 					)
 					.join("")}
 
 				${assinaturaHtml
 					.replaceAll("$responsavel", visita.responsavel)
-					.replaceAll(
-						"$empresa_nome",
-						visita.empresa?.razao_social || ""
-					)
+					.replaceAll("$empresa_nome", visita.empresa?.razao_social || "")
 					.replaceAll("$data", visita.data)}
 			</div>
 		</body>

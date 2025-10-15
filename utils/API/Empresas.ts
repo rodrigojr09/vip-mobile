@@ -1,13 +1,13 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import * as Network from "expo-network";
-import base_url from "./base_url";
+import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import saveOffline from "../Visita/saveOffline";
-import { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
+import { Data } from "./Data";
 
-const DEFAULT_EMPRESAS_FILE = FileSystem.documentDirectory + "empresas.json";
+const DEFAULT_EMPRESAS_FILE = `${FileSystem.documentDirectory}/empresas.json`;
 
 export async function Empresas() {
-	const response = await fetch(base_url + "/api/empresas");
+	const response = await fetch(`${Data.base_url}/api/empresas`);
 	const empresas = await response.json();
 	return empresas;
 }
@@ -18,7 +18,7 @@ export async function Empresas() {
  */
 export async function fetchEmpresas(filePath = DEFAULT_EMPRESAS_FILE) {
 	try {
-		const response = await fetch(base_url + "/api/empresas");
+		const response = await fetch(`${Data.base_url}/api/empresas`);
 
 		if (!response.ok) {
 			throw new Error(`Erro HTTP: ${response.status}`);
@@ -30,7 +30,7 @@ export async function fetchEmpresas(filePath = DEFAULT_EMPRESAS_FILE) {
 	} catch (error: any) {
 		console.error(
 			"❌ Falha ao buscar/salvar empresas:",
-			error.message || error
+			error.message || error,
 		);
 	}
 }
@@ -61,7 +61,7 @@ export async function getEmpresas(filePath = DEFAULT_EMPRESAS_FILE) {
 export async function NovaVisita(visita: VIPVisitaType, offline: boolean) {
 	const status = await Network.getNetworkStateAsync();
 	if (status.isConnected && status.isInternetReachable) {
-		const response = await fetch(base_url + "/api/visitas", {
+		const response = await fetch(`${Data.base_url}/api/visitas`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

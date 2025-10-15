@@ -1,8 +1,8 @@
 import "react-native-get-random-values";
+import { createContext, type ReactNode, useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { VIPFuncaoType } from "@/types/Levantamento/VIPFuncaoType";
-import { VIPRiscoType } from "@/types/Levantamento/VIPRiscoType";
-import { createContext, ReactNode, useContext, useState } from "react";
+import type { VIPFuncaoType } from "@/types/Levantamento/VIPFuncaoType";
+import type { VIPRiscoType } from "@/types/Levantamento/VIPRiscoType";
 
 const FuncaoContext = createContext<VIPFuncaoType | undefined>(undefined);
 

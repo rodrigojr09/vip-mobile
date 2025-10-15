@@ -1,16 +1,16 @@
-import RadioButton from "./RadioButton";
-import { useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
 import {
-	Text,
-	View,
-	StyleSheet,
 	ScrollView,
+	StyleSheet,
 	Switch,
+	Text,
 	TextInput,
+	View,
 } from "react-native";
-import { getRiscos, riscos } from "@/utils/Riscos";
 import { v4 as uuidv4 } from "uuid";
+import { useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
+import { riscos } from "@/utils/Riscos";
 import "react-native-get-random-values";
+import Input from "./Input";
 
 export default function RiscoForm() {
 	const funcao = useFuncao();
@@ -33,79 +33,64 @@ export default function RiscoForm() {
 	};
 
 	return (
-		<>
-			<ScrollView style={{ marginTop: 20 }}>
-				<Text style={styles.title}>Tabela de Riscos</Text>
+		<ScrollView nestedScrollEnabled={true} style={{ marginTop: 20 }}>
+			<Text style={styles.title}>Tabela de Riscos</Text>
 
-				{/* Cabeçalho */}
-				<View style={[styles.row, styles.headerRow]}>
-					<Text style={[styles.cell, styles.headerCell, styles.col1]}>
-						Selecionar
-					</Text>
-					<Text style={[styles.cell, styles.headerCell, styles.col2]}>
-						Risco
-					</Text>
-					<Text style={[styles.cell, styles.headerCell, styles.col3]}>
-						Descrição do Risco
-					</Text>
-				</View>
+			{/* Cabeçalho */}
+			<View style={[styles.row, styles.headerRow]}>
+				<Text style={[styles.cell, styles.headerCell, styles.col1]}>
+					Selecionar
+				</Text>
+				<Text style={[styles.cell, styles.headerCell, styles.col2]}>Risco</Text>
+				<Text style={[styles.cell, styles.headerCell, styles.col3]}>
+					Descrição do Risco
+				</Text>
+			</View>
 
-				{/* Linhas */}
-				{riscosPadrao.map((item) => {
-					const checked = isChecked(item);
-					const userRisco = funcao.riscos.find(
-						(r) => r.risco === item
-					);
+			{/* Linhas */}
+			{riscosPadrao.map((item) => {
+				const checked = isChecked(item);
+				const userRisco = funcao.riscos.find((r) => r.risco === item);
 
-					return (
-						<View key={item} style={styles.row}>
-							<View style={[styles.cell, styles.col1]}>
-								<Switch
-									value={checked}
-									onValueChange={() => toggleRisco(item)}
-								/>
-							</View>
-							<View
-								style={[
-									styles.cell,
-									styles.col2,
-									{ backgroundColor: "#1f2937" },
-								]}
-							>
-								<Text
-									style={{
-										color: "#fff",
-									}}
-								>
-									{item}
-								</Text>
-							</View>
-
-							<View style={[styles.cell, styles.col3]}>
-								<TextInput
-									value={userRisco?.fonteGeradora || ""}
-									placeholder="Descrição do Risco"
-									editable={checked}
-									onChangeText={(text) => {
-										if (!checked) return;
-										const updated = [...funcao.riscos];
-										const index = updated.findIndex(
-											(r) => r.risco === item
-										);
-										if (index >= 0) {
-											updated[index].fonteGeradora = text;
-											funcao.setRiscos(updated);
-										}
-									}}
-									placeholderTextColor={"#ccc"}
-									style={{ color: "#fff" }}
-								/>
-							</View>
+				return (
+					<View key={item} style={styles.row}>
+						<View style={[styles.cell, styles.col1]}>
+							<Switch value={checked} onValueChange={() => toggleRisco(item)} />
 						</View>
-					);
-				})}
-			</ScrollView>
-		</>
+						<View
+							style={[styles.cell, styles.col2, { backgroundColor: "#1f2937" }]}
+						>
+							<Text
+								style={{
+									color: "#fff",
+								}}
+							>
+								{item}
+							</Text>
+						</View>
+
+						<View style={[ styles.col3]}>
+							<Input
+								value={userRisco?.fonteGeradora || ""}
+								placeholder="Descrição do Risco"
+								editable={checked}
+								onChange={(text) => {
+									if (!checked) return;
+									const updated = [...funcao.riscos];
+									const index = updated.findIndex((r) => r.risco === item);
+									if (index >= 0) {
+										updated[index].fonteGeradora = text;
+										funcao.setRiscos(updated);
+									}
+								}}
+                                textarea
+								style={{ color: "#fff", marginVertical: 0, borderRadius: 0 }}
+							/>
+						</View>
+					</View>
+				);
+			})}
+		</ScrollView>
 	);
 }
 const styles = StyleSheet.create({
@@ -142,5 +127,11 @@ const styles = StyleSheet.create({
 	},
 	col1: { flex: 1, alignItems: "center" }, // Selecionar
 	col2: { flex: 3 }, // Risco
-	col3: { flex: 3 }, // Descrição do Risco
+	col3: {
+		flex: 3,
+		borderWidth: 1,
+		borderColor: "#22c55e",
+		color: "#fff",
+		justifyContent: "center",
+	}, // Descrição do Risco
 });

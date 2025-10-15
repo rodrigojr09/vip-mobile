@@ -2877,4 +2877,5 @@ export function getRiscos(): RiscoDataType[] {
 			tipo: "Biologico",
 		},
 	];
+    
 }

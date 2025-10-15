@@ -6,6 +6,8 @@ import Input from "@/components/Input";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { events } from "@/utils/API/Event";
+import { v4 as uuidv4 } from "uuid";
+import "react-native-get-random-values";
 
 export default function Levantamento() {
 	const nav = useNavigationHistory();
@@ -27,16 +29,15 @@ export default function Levantamento() {
 			Alert.alert("Atenção! preencha todos os campos");
 		} else {
 			// Mensagem personalizada para o evento
+
 			const mensagem = `Levantamento criado - Empresa: ${levantamento.nome}, Responsável: ${levantamento.responsavel}`;
 
 			try {
+				levantamento.setId(uuidv4());
 				events.sendEvent(mensagem);
 				events.startEvent("levantamento");
 			} catch (error) {
-				console.warn(
-					"Erro ao adicionar evento de levantamento:",
-					error
-				);
+				console.warn("Erro ao adicionar evento de levantamento:", error);
 			}
 
 			nav.push("/Levantamento/resumo");

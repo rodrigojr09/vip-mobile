@@ -1,11 +1,13 @@
-import { VIPEmpresaType } from "@/types/Levantamento/VIPEmpresaType";
-import { VIPEpiType } from "@/types/Levantamento/VIPRiscoType";
-import { createContext, ReactNode, useContext, useState } from "react";
-import { VIPSetorType } from "@/types/Levantamento/VIPSetorType";
+import { createContext, type ReactNode, use, useContext, useState } from "react";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
+import type { VIPEmpresaType } from "@/types/Levantamento/VIPEmpresaType";
+import type { VIPSetorType } from "@/types/Levantamento/VIPSetorType";
 
 const EmpresaContext = createContext<VIPEmpresaType | undefined>(undefined);
 
 export const EmpresaProvider = ({ children }: { children: ReactNode }) => {
+    const [id, setId] = useState<string>("");
 	const [nome, setNome] = useState<string>("");
 	const [responsavel, setResponsavel] = useState<string>("");
 	const [setores, setSetores] = useState<VIPSetorType[]>([]);
@@ -18,6 +20,8 @@ export const EmpresaProvider = ({ children }: { children: ReactNode }) => {
 	return (
 		<EmpresaContext.Provider
 			value={{
+				id,
+                setId,
 				nome,
 				setNome,
 				responsavel,
@@ -26,6 +30,7 @@ export const EmpresaProvider = ({ children }: { children: ReactNode }) => {
 				setSetores,
 				data: dataFormatada,
 				clear: () => {
+                    setId("");
 					setNome("");
 					setResponsavel("");
 					setSetores([]);
@@ -44,31 +49,4 @@ export function useEmpresa() {
 	}
 
 	return context;
-}
-
-export function VIPEpi(): VIPEpiType {
-	const [nome, setNome] = useState<string>("");
-	const [periodicidadeTempo, setPeriodicidadeTempo] = useState<string>("");
-	const [periodicidadeTipo, setPeriodicidadeTipo] = useState<
-		"Mês" | "Mêses" | "Dia" | "Dias"
-	>("Dias");
-
-	function clear() {
-		setNome("");
-		setPeriodicidadeTempo("");
-		setPeriodicidadeTipo("Dias");
-	}
-
-	return {
-		nome,
-		setNome,
-		periodicidade: {
-			tempo: periodicidadeTempo,
-			tipo: periodicidadeTipo,
-			setTempo: setPeriodicidadeTempo,
-			setTipo: setPeriodicidadeTipo,
-		},
-		risco: "",
-		clear,
-	};
 }

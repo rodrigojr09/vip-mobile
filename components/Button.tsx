@@ -1,6 +1,5 @@
 import {
-	GestureResponderEvent,
-	StyleSheet,
+	type GestureResponderEvent,
 	Text,
 	TouchableOpacity,
 } from "react-native";
@@ -47,5 +46,3 @@ export default function Button({
 		</TouchableOpacity>
 	);
 }
-
-const stylesDefault = StyleSheet.create({});

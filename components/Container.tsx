@@ -1,11 +1,10 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import {
+	ScrollView,
+	type StyleProp,
 	StyleSheet,
 	View,
-	ScrollView,
-	ViewStyle,
-	StyleProp,
-	ScrollViewProps,
+	type ViewStyle,
 } from "react-native";
 
 interface ContainerProps {
@@ -27,7 +26,6 @@ export default function Container({
 	return scroller ? (
 		<ScrollView
 			ref={scrollRef}
-			nestedScrollEnabled
 			style={[defaultStyles.Container]}
 			keyboardShouldPersistTaps="handled"
 			contentContainerStyle={[contentContainerStyle, style]} // ⬅️ sem flexGrow:1

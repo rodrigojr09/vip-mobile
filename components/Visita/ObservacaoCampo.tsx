@@ -1,5 +1,5 @@
-import { VIPRespostaType } from "@/types/VisitaTecnica/VIPPerguntaType";
 import { StyleSheet, TextInput } from "react-native";
+import type { VIPRespostaType } from "@/types/VisitaTecnica/VIPPerguntaType";
 
 const ObservacaoCampo = ({
 	label,

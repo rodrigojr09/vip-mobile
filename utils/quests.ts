@@ -1,4 +1,4 @@
-import { VIPPerguntaType } from "@/types/VisitaTecnica/VIPPerguntaType";
+import type { VIPPerguntaType } from "@/types/VisitaTecnica/VIPPerguntaType";
 
 export const quests_adm: VIPPerguntaType[] = [
 	{
@@ -16,22 +16,19 @@ export const quests_adm: VIPPerguntaType[] = [
 						id: "q1-1-1",
 						when: "sim",
 						type: "boolean",
-						pergunta:
-							"Os admitidos participaram da integração de segurança?",
+						pergunta: "Os admitidos participaram da integração de segurança?",
 						subpergunta: [
 							{
 								id: "q1-1-1-1",
 								when: "sim",
 								type: "boolean",
-								pergunta:
-									"Foram entregue todos os EPIs aos admitidos?",
+								pergunta: "Foram entregue todos os EPIs aos admitidos?",
 								subpergunta: [
 									{
 										id: "q1-1-1-1-1",
 										when: "sim",
 										type: "boolean",
-										pergunta:
-											"Os admitidos preencheram a ficha de EPIs?",
+										pergunta: "Os admitidos preencheram a ficha de EPIs?",
 										subpergunta: [
 											{
 												id: "q1-1-1-1-1-1",
@@ -104,8 +101,7 @@ export const quests_adm: VIPPerguntaType[] = [
 	{
 		id: "q4",
 		type: "boolean",
-		pergunta:
-			"As fichas de EPIs estão preenchidas corretamente e atualizadas?",
+		pergunta: "As fichas de EPIs estão preenchidas corretamente e atualizadas?",
 		subpergunta: [
 			{
 				id: "q4-1",
@@ -122,8 +118,8 @@ export const quests_adm: VIPPerguntaType[] = [
 		],
 	},
 	{
-        id: "q5",
-        type: "boolean",
+		id: "q5",
+		type: "boolean",
 		pergunta: "Os colaboradores estão com os treinamentos atualizados?",
 		subpergunta: [
 			{
@@ -141,8 +137,7 @@ export const quests_adm: VIPPerguntaType[] = [
 					{
 						id: "q5-1",
 						type: "check",
-						pergunta:
-							"NR 6 - Equipamentos de Proteção Individual (EPI)",
+						pergunta: "NR 6 - Equipamentos de Proteção Individual (EPI)",
 					},
 					{
 						id: "q5-2",
@@ -214,49 +209,51 @@ export const quests_adm: VIPPerguntaType[] = [
 ];
 
 export const quests_setor: VIPPerguntaType[] = [
-    {
-        id: "q1",
-        type: "boolean",
-        pergunta: "Os ambientes estão organizados e livres de obstruções?",
-    },
-    {
-        id: "q2",
-        type: "boolean",
-        pergunta: "As áreas de circulação estão devidamente sinalizadas?",
-    },
-    {
-        id: "q3",
-        type: "boolean",
-        pergunta: "Existe controle de acesso a áreas restritas?",
-    },
-    {
-        id: "q4",
-        type: "boolean",
-        pergunta: "As instalações elétricas estão em bom estado e sinalizadas?",
-    },
-    {
-        id: "q5",
-        type: "boolean",
-        pergunta: "Há proteção contra contato direto (tomadas, disjuntores, fios, etc.)?",
-    },
-    {
-        id: "q6",
-        type: "boolean",
-        pergunta: "Os quadros elétricos estão identificados e de fácil acesso?",
-    },
-    {
-        id: "q7",
-        type: "boolean",
-        pergunta: "As máquinas possuem proteção mecânica (grades, sensores, etc.)?",
-    },
-    {
-        id: "q8",
-        type: "boolean",
-        pergunta: "Há sinalização de segurança nas áreas de operação de maquinas?",
-    },
-    {
-        id: "q9",
-        type: "boolean",
-        pergunta: "Os colaboradores estão utilizando os EPIs corretamente no setor?",
-    }
-]
+	{
+		id: "q1",
+		type: "boolean",
+		pergunta: "Os ambientes estão organizados e livres de obstruções?",
+	},
+	{
+		id: "q2",
+		type: "boolean",
+		pergunta: "As áreas de circulação estão devidamente sinalizadas?",
+	},
+	{
+		id: "q3",
+		type: "boolean",
+		pergunta: "Existe controle de acesso a áreas restritas?",
+	},
+	{
+		id: "q4",
+		type: "boolean",
+		pergunta: "As instalações elétricas estão em bom estado e sinalizadas?",
+	},
+	{
+		id: "q5",
+		type: "boolean",
+		pergunta:
+			"Há proteção contra contato direto (tomadas, disjuntores, fios, etc.)?",
+	},
+	{
+		id: "q6",
+		type: "boolean",
+		pergunta: "Os quadros elétricos estão identificados e de fácil acesso?",
+	},
+	{
+		id: "q7",
+		type: "boolean",
+		pergunta: "As máquinas possuem proteção mecânica (grades, sensores, etc.)?",
+	},
+	{
+		id: "q8",
+		type: "boolean",
+		pergunta: "Há sinalização de segurança nas áreas de operação de maquinas?",
+	},
+	{
+		id: "q9",
+		type: "boolean",
+		pergunta:
+			"Os colaboradores estão utilizando os EPIs corretamente no setor?",
+	},
+];

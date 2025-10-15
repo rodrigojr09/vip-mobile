@@ -1,7 +1,7 @@
-import * as FileSystem from "expo-file-system";
-import base_url from "./base_url";
+import * as FileSystem from "expo-file-system/legacy";
+import { Data } from "./Data";
 
-const DEFAULT_QUEST_FILE = FileSystem.documentDirectory + "quests.json";
+const DEFAULT_QUEST_FILE = `${FileSystem.documentDirectory}/quests.json`;
 
 /**
  * Busca as quests da API, salva localmente e exporta para galeria.
@@ -9,7 +9,7 @@ const DEFAULT_QUEST_FILE = FileSystem.documentDirectory + "quests.json";
  */
 export async function fetchQuests(filePath = DEFAULT_QUEST_FILE) {
 	try {
-		const response = await fetch(base_url + "/api/quests");
+		const response = await fetch(`${Data.base_url}/api/quests`);
 
 		if (!response.ok) {
 			throw new Error(`Erro HTTP: ${response.status}`);
@@ -22,10 +22,7 @@ export async function fetchQuests(filePath = DEFAULT_QUEST_FILE) {
 		await FileSystem.writeAsStringAsync(filePath, jsonContent);
 		console.log(`✅ Quests salvas localmente em: ${filePath}`);
 	} catch (error: any) {
-		console.error(
-			"❌ Erro ao buscar/salvar quests:",
-			error.message || error
-		);
+		console.error("❌ Erro ao buscar/salvar quests:", error.message || error);
 	}
 }
 

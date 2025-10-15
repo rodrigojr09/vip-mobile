@@ -1,7 +1,7 @@
-import { VIPEmpresaType } from "@/types/Levantamento/VIPEmpresaType";
-import { VIPFuncaoType } from "@/types/Levantamento/VIPFuncaoType";
-import { VIPRiscoType } from "@/types/Levantamento/VIPRiscoType";
-import { VIPSetorType } from "@/types/Levantamento/VIPSetorType";
+import type { VIPEmpresaType } from "@/types/Levantamento/VIPEmpresaType";
+import type { VIPFuncaoType } from "@/types/Levantamento/VIPFuncaoType";
+import type { VIPRiscoType } from "@/types/Levantamento/VIPRiscoType";
+import type { VIPSetorType } from "@/types/Levantamento/VIPSetorType";
 
 const assinaturaHtml = `
     <div class="p-2 h-screen">
@@ -36,59 +36,59 @@ function getSetorHtml(setores: VIPSetorType[]) {
                     <div class="w-[20%] border-r flex items-center justify-center border-black p-2">Medições:</div>
                     <div class="w-[80%] p-2">
                         <p>Comprimento: <span class="font-normal">${
-							setor.comprimento
-						} M</span></p>
+													setor.comprimento
+												} M</span></p>
                         <p>Largura: <span class="font-normal">${
-							setor.largura
-						} M</span></p>
+													setor.largura
+												} M</span></p>
                         <p>Área: <span class="font-normal">${
-							Number(setor.comprimento.replace(",", ".")) *
-							Number(setor.largura.replace(",", "."))
-						} M²</span></p>
+													Number(setor.comprimento.replace(",", ".")) *
+													Number(setor.largura.replace(",", "."))
+												} M²</span></p>
                         <p>Pé Direito: <span class="font-normal">${
-							setor.peDireito
-						} M</span></p>
+													setor.peDireito
+												} M</span></p>
                          <p>Iluminamento(LUX): <span class="font-normal">${
-								setor.lux
-							}</span></p>
+														setor.lux
+													}</span></p>
                     </div>
                 </div>
                 <div class="font-bold flex h-min border border-black">
                     <div class="w-[20%] border-r flex items-center justify-center border-black p-2">Ambiente:</div>
                     <div class="w-[80%] p-2">
                         <p>Piso: <span class="font-normal">${
-							setor.piso
-						}</span></p>
+													setor.piso
+												}</span></p>
                         <p>Estrutura: <span class="font-normal">${
-							setor.estrutura
-						}</span></p>
+													setor.estrutura
+												}</span></p>
                         <p>Forro: <span class="font-normal">${
-							setor.forro
-						}</span></p>
+													setor.forro
+												}</span></p>
                         <p>Iluminação Natural: <span class="font-normal">${
-							setor.iluminacao.natural
-						}</span></p>
+													setor.iluminacao.natural
+												}</span></p>
                         <p>Iluminação Artificial: <span class="font-normal">${
-							setor.iluminacao.artificial
-						}</span></p>
+													setor.iluminacao.artificial
+												}</span></p>
                         <p>Ventilação Natural: <span class="font-normal">${
-							setor.ventilacao.natural
-						}</span></p>
+													setor.ventilacao.natural
+												}</span></p>
                         <p>Ventilação Artificial: <span class="font-normal">${
-							setor.ventilacao.artificial
-						}</span></p>
+													setor.ventilacao.artificial
+												}</span></p>
                         <p>Máquinas e Equipamentos - LUX: <span class="font-normal">${setor.me.replaceAll(
-							"\n",
-							"<br/>"
-						)}</span></p>
+													"\n",
+													"<br/>",
+												)}</span></p>
                         <p>Medidas de Controle Existentes: <span class="font-normal">${setor.mce.replaceAll(
-							"\n",
-							"<br/>"
-						)}</span></p>
+													"\n",
+													"<br/>",
+												)}</span></p>
                         <p>Medidas de Controle Recomendadas: <span class="font-normal">${setor.mcr.replaceAll(
-							"\n",
-							"<br/>"
-						)}</span></p>
+													"\n",
+													"<br/>",
+												)}</span></p>
                     </div>
                 </div>
 				${getFuncaoHtml(setor.funcoes).join("")}
@@ -115,14 +115,12 @@ function getFuncaoHtml(funcoes: VIPFuncaoType[]) {
 	});
 }
 
-function getRiscoHtml(
-	riscos: VIPRiscoType[],
-) {
+function getRiscoHtml(riscos: VIPRiscoType[]) {
 	return riscos.map((risco) => {
 		return `<div class="w-full flex border-b border-black">
 						<div class="w-1/3 border-r flex items-center justify-center border-black p-2">${
-			risco.risco
-		}</div>
+							risco.risco
+						}</div>
 						<div class="w-2/3 p-2">
 							<p>Descricão: <span class="font-normal">${risco.fonteGeradora}</span></p>
 						</div>
@@ -250,7 +248,8 @@ ${assinaturaHtml}
 		.replaceAll("$empresa.nome", empresa.nome)
 		.replaceAll(
 			"$atividades.length",
-			eval(empresa.setores.map((a) => a.funcoes.length).join("+")) || 0
+			empresa.setores.reduce((sum, setor) => sum + setor.funcoes.length, 0) ||
+				0,
 		)
 		.replaceAll("$setores.length", String(empresa.setores.length))
 		.replaceAll("$responsavel", empresa.responsavel)

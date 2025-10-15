@@ -1,17 +1,19 @@
 import { forwardRef } from "react";
 import {
-	StyleProp,
+	type StyleProp,
 	StyleSheet,
 	TextInput,
-	TextInputProps,
-	TextStyle,
+	type TextInputProps,
+	type TextStyle,
 } from "react-native";
+
 interface InputProps {
 	placeholder: string;
 	value: string;
 	onChange: (value: string) => void;
 	textarea?: boolean;
 	style?: StyleProp<TextStyle>;
+    editable?: boolean;
 	returnKeyType?: TextInputProps["returnKeyType"];
 	onSubmitEditing?: () => void;
 }
@@ -23,11 +25,12 @@ const Input = forwardRef<TextInput, InputProps>(
 			value,
 			onChange,
 			textarea,
+            editable,
 			style,
 			returnKeyType,
 			onSubmitEditing,
 		},
-		ref
+		ref,
 	) => {
 		return (
 			<TextInput
@@ -39,12 +42,13 @@ const Input = forwardRef<TextInput, InputProps>(
 				multiline={textarea}
 				onChangeText={onChange}
 				textAlignVertical="top"
+                editable={editable !== false}
 				returnKeyType={returnKeyType}
 				onSubmitEditing={onSubmitEditing}
 				blurOnSubmit={false} // Importante: não fechar o teclado ao apertar Next
 			/>
 		);
-	}
+	},
 );
 
 const styles = StyleSheet.create({

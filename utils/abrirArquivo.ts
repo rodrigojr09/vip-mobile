@@ -1,9 +1,9 @@
 import * as IntentLauncher from "expo-intent-launcher";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import Mime from "react-native-mime-types";
 
 export async function abrirArquivo(caminhoArquivo: string) {
-    const contentUri = await FileSystem.getContentUriAsync(caminhoArquivo);
+	const contentUri = await FileSystem.getContentUriAsync(caminhoArquivo);
 	const mimeType = Mime.lookup(contentUri) || "*/*";
 
 	try {

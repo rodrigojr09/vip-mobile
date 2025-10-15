@@ -12,19 +12,22 @@ import {
 } from "react-native";
 import Loading from "@/components/Loading";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import Data from "@/utils/API/Data";
 import { events } from "@/utils/API/Event";
 import { LOCATION_TASK_NAME } from "@/utils/BackgroundTasks";
+import { storage } from "@/utils/Storage";
+
+export const DIRECTORY_KEY = "DIRECTORY_URI";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const pathname = usePathname();
 	const nav = useNavigationHistory();
 	const [loading, setLoading] = useState(true);
+
 	useEffect(() => {
 		(async () => {
 			try {
-				await Data.getData();
 				await startBackgroundLocation();
+				await storage.init();
 				setLoading(false);
 			} catch (error) {
 				console.error("Erro ao carregar dados iniciais:", error);
@@ -56,7 +59,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 				await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
 					accuracy: Location.Accuracy.Balanced,
 					timeInterval: 60000, // 1 minuto
-					distanceInterval: 1, // ou 50 metros
+					distanceInterval: 1,
 					foregroundService: {
 						notificationTitle: "Vip Mobile",
 						notificationBody: "Registrando sua localização em segundo plano",
