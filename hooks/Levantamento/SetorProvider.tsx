@@ -7,20 +7,19 @@ import { v4 as uuidv4 } from "uuid";
 const SetorContext = createContext<VIPSetorType | undefined>(undefined);
 
 export function SetorProvider({ children }: { children: ReactNode }) {
+	const [id, setId] = useState<string>(uuidv4());
 	const [nome, setNome] = useState<string>("");
 	const [comprimento, setComprimento] = useState<string>("");
 	const [largura, setLargura] = useState<string>("");
-    const [peDireito, setPeDireito] = useState<string>("");
-    const [lux, setLux] = useState<string>("");
+	const [peDireito, setPeDireito] = useState<string>("");
+	const [lux, setLux] = useState<string>("");
 	const [piso, setPiso] = useState<string>("");
 	const [estrutura, setEstrutura] = useState<string>("");
 	const [forro, setForro] = useState<string>("");
 	const [iluminacaoNatural, setIluminacaoNatural] = useState<string>("");
-	const [iluminacaoArtificial, setIluminacaoArtificial] =
-		useState<string>("");
+	const [iluminacaoArtificial, setIluminacaoArtificial] = useState<string>("");
 	const [ventilacaoNatural, setVentilacaoNatural] = useState<string>("");
-	const [ventilacaoArtificial, setVentilacaoArtificial] =
-		useState<string>("");
+	const [ventilacaoArtificial, setVentilacaoArtificial] = useState<string>("");
 	const [me, setMe] = useState<string>("");
 	const [mce, setMce] = useState<string>("");
 	const [mcr, setMcr] = useState<string>("");
@@ -28,6 +27,7 @@ export function SetorProvider({ children }: { children: ReactNode }) {
 	const [images, setImages] = useState<string[]>([]);
 
 	const clear = () => {
+		setId(uuidv4());
 		setNome("");
 		setComprimento("");
 		setLargura("");
@@ -41,8 +41,8 @@ export function SetorProvider({ children }: { children: ReactNode }) {
 		setVentilacaoArtificial("");
 		setMe("");
 		setMce("");
-        setMcr("");
-        setLux("");
+		setMcr("");
+		setLux("");
 		setFuncoes([]);
 		setImages([]);
 	};
@@ -54,8 +54,8 @@ export function SetorProvider({ children }: { children: ReactNode }) {
 		setPeDireito(setor.peDireito);
 		setPiso(setor.piso);
 		setEstrutura(setor.estrutura);
-        setForro(setor.forro);
-        setLux(setor.lux);
+		setForro(setor.forro);
+		setLux(setor.lux);
 		setIluminacaoNatural(setor.iluminacao.natural);
 		setIluminacaoArtificial(setor.iluminacao.artificial);
 		setVentilacaoNatural(setor.ventilacao.natural);
@@ -70,7 +70,7 @@ export function SetorProvider({ children }: { children: ReactNode }) {
 	return (
 		<SetorContext.Provider
 			value={{
-				id: uuidv4(),
+				id,
 				nome,
 				setNome,
 				comprimento,
@@ -78,9 +78,9 @@ export function SetorProvider({ children }: { children: ReactNode }) {
 				largura,
 				setLargura,
 				peDireito,
-                setPeDireito,
-                lux,
-                setLux,
+				setPeDireito,
+				lux,
+				setLux,
 				piso,
 				setPiso,
 				estrutura,

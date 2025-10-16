@@ -1,4 +1,4 @@
-import { VIPFuncaoType } from "./VIPFuncaoType";
+import type { VIPFuncaoType } from "@/types/Levantamento/VIPFuncaoType";
 
 export interface VIPSetorType {
 	id: string;

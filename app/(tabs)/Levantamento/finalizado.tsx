@@ -9,8 +9,8 @@ import Container from "@/components/Container";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { events } from "@/utils/API/Event";
+import Levantamento from "@/utils/Data/LevanamentoData";
 import { getHtml } from "@/utils/formatHTML";
-import { storage } from "@/utils/Storage";
 
 export default function Finalizado() {
 	const nav = useNavigationHistory();
@@ -46,11 +46,11 @@ export default function Finalizado() {
 				});
 
 				setFileUri(filePath);
-                console.log(empresa);
-				storage.saveLevantamento({
+				console.log(empresa);
+				Levantamento.salvar({
 					empresa: {
 						...empresa,
-                        assinatura: query.get("assinatura") || "",
+						assinatura: query.get("assinatura") || "",
 					},
 				});
 				console.log("✅ Arquivo salvo internamente em:", filePath);

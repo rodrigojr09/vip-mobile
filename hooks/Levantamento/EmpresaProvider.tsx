@@ -1,4 +1,10 @@
-import { createContext, type ReactNode, use, useContext, useState } from "react";
+import {
+	createContext,
+	type ReactNode,
+	use,
+	useContext,
+	useState,
+} from "react";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import type { VIPEmpresaType } from "@/types/Levantamento/VIPEmpresaType";
@@ -7,7 +13,7 @@ import type { VIPSetorType } from "@/types/Levantamento/VIPSetorType";
 const EmpresaContext = createContext<VIPEmpresaType | undefined>(undefined);
 
 export const EmpresaProvider = ({ children }: { children: ReactNode }) => {
-    const [id, setId] = useState<string>("");
+	const [id, setId] = useState<string>("");
 	const [nome, setNome] = useState<string>("");
 	const [responsavel, setResponsavel] = useState<string>("");
 	const [setores, setSetores] = useState<VIPSetorType[]>([]);
@@ -21,7 +27,7 @@ export const EmpresaProvider = ({ children }: { children: ReactNode }) => {
 		<EmpresaContext.Provider
 			value={{
 				id,
-                setId,
+				setId,
 				nome,
 				setNome,
 				responsavel,
@@ -30,7 +36,7 @@ export const EmpresaProvider = ({ children }: { children: ReactNode }) => {
 				setSetores,
 				data: dataFormatada,
 				clear: () => {
-                    setId("");
+					setId("");
 					setNome("");
 					setResponsavel("");
 					setSetores([]);

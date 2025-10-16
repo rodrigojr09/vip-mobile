@@ -1,11 +1,4 @@
-import {
-	ScrollView,
-	StyleSheet,
-	Switch,
-	Text,
-	TextInput,
-	View,
-} from "react-native";
+import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 import { useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
 import { riscos } from "@/utils/Riscos";
@@ -69,7 +62,7 @@ export default function RiscoForm() {
 							</Text>
 						</View>
 
-						<View style={[ styles.col3]}>
+						<View style={[styles.col3]}>
 							<Input
 								value={userRisco?.fonteGeradora || ""}
 								placeholder="Descrição do Risco"
@@ -83,7 +76,7 @@ export default function RiscoForm() {
 										funcao.setRiscos(updated);
 									}
 								}}
-                                textarea
+								textarea
 								style={{ color: "#fff", marginVertical: 0, borderRadius: 0 }}
 							/>
 						</View>

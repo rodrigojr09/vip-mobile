@@ -6,19 +6,19 @@ import {
 } from "@/hooks/Levantamento/EmpresaProvider";
 import { FuncaoProvider, useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
 import { SetorProvider, useSetor } from "@/hooks/Levantamento/SetorProvider";
-import { storage } from "@/utils/Storage";
+import Levantamento from "@/utils/Data/LevanamentoData";
 
 function AutoSave({ children }: { children: React.ReactNode }) {
 	const empresa = useEmpresa();
-    const setor = useSetor();
-    const funcao = useFuncao();
+	const setor = useSetor();
+	const funcao = useFuncao();
 
 	useEffect(() => {
 		const saveData = async () => {
-            if (empresa.id === "") return;
+			if (empresa.id === "") return;
 			console.log("Salvando dados de levantamento automaticamente...");
 			try {
-				storage.saveLevantamento({ empresa,setor,funcao });
+				Levantamento.salvar({ empresa, setor, funcao });
 				console.log("Dados de levantamento salvos automaticamente.");
 			} catch (error) {
 				console.error(
@@ -29,7 +29,7 @@ function AutoSave({ children }: { children: React.ReactNode }) {
 		};
 
 		saveData();
-	}, [empresa,setor,funcao]);
+	}, [empresa, setor, funcao]);
 
 	return <>{children}</>;
 }

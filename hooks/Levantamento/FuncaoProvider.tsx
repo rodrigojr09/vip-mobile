@@ -7,12 +7,14 @@ import type { VIPRiscoType } from "@/types/Levantamento/VIPRiscoType";
 const FuncaoContext = createContext<VIPFuncaoType | undefined>(undefined);
 
 export const FuncaoProvider = ({ children }: { children: ReactNode }) => {
+    const [id,setId] = useState<string>(uuidv4());
 	const [nome, setNome] = useState<string>("");
 	const [description, setDescription] = useState<string>("");
 	const [funcionarios, setFuncionarios] = useState<string>("");
 	const [riscos, setRiscos] = useState<VIPRiscoType[]>([]);
 
 	const clear = () => {
+        setId(uuidv4());
 		setNome("");
 		setDescription("");
 		setFuncionarios("");
@@ -29,7 +31,7 @@ export const FuncaoProvider = ({ children }: { children: ReactNode }) => {
 	return (
 		<FuncaoContext.Provider
 			value={{
-				id: uuidv4(),
+				id,
 				nome,
 				setNome,
 				description,

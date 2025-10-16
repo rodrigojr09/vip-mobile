@@ -1,4 +1,4 @@
-import type { VIPSetorType } from "@/hooks/Levantamento/SetorProvider";
+import type { VIPSetorType } from "@/types/Levantamento/VIPSetorType";
 
 export interface VIPEmpresaType {
 	id: string;
