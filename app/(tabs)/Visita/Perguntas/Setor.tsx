@@ -76,7 +76,9 @@ export default function PerguntasSetor() {
 			<Pressable onPress={toggleSidebar} style={styles.abrirBotao}>
 				<Text style={styles.botaoTexto}>☰ Abrir Menu</Text>
 			</Pressable>
-			<Container scroller>
+			{isSidebarOpen && <Sidebar toggleSidebar={toggleSidebar} />}
+
+			<Container style={{ zIndex: 1 }} scroller>
 				<View style={styles.formContainer}>
 					<Text style={styles.title}>Perguntas do Setor</Text>
 
@@ -124,7 +126,9 @@ export default function PerguntasSetor() {
 				)}
 
 				{/* Sidebar */}
-				{isSidebarOpen && <Sidebar toggleSidebar={toggleSidebar} />}
+				<View
+					style={{ position: "absolute", width: "75%", height: "100%" }}
+				></View>
 			</Container>
 		</>
 	);
@@ -163,7 +167,6 @@ const styles = StyleSheet.create({
 		position: "fixed",
 		backgroundColor: "#444",
 		padding: 10,
-		zIndex: 9999,
 	},
 	botaoTexto: {
 		color: "#fff",

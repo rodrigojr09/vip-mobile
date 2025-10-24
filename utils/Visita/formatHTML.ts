@@ -1,98 +1,91 @@
 import type {
-	VIPPerguntaType,
-	VIPRespostaType,
+    VIPPerguntaType,
+    VIPRespostaType,
 } from "@/types/VisitaTecnica/VIPPerguntaType";
 import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 
 function getRespostaHtml(
-	pergunta: VIPPerguntaType,
-	respostas: VIPRespostaType[],
+    pergunta: VIPPerguntaType,
+    respostas: VIPRespostaType[],
 ): string {
-	const resposta = respostas.find((r) => r.pergunta === pergunta.pergunta);
-	if (!resposta && pergunta.type !== "info") return "";
-	const subperguntas = pergunta.subpergunta;
+    const resposta = respostas.find((r) => r.pergunta === pergunta.pergunta);
+    if (!resposta && pergunta.type !== "info") return "";
+    const subperguntas = pergunta.subpergunta;
 
-	const checks = subperguntas
-		? subperguntas.filter((s) => s.type === "check" && !s.when)
-		: [];
+    const checks = subperguntas
+        ? subperguntas.filter((s) => s.type === "check" && !s.when)
+        : [];
 
-	const texts = subperguntas
-		? subperguntas.filter(
-				(s) =>
-					s.type === "text" &&
-					s.when?.toLowerCase() === resposta?.checked?.toString().toLowerCase(),
-			)
-		: [];
+    const texts = subperguntas
+        ? subperguntas.filter(
+            (s) =>
+                s.type === "text" &&
+                s.when?.toLowerCase() === resposta?.checked?.toString().toLowerCase(),
+        )
+        : [];
 
-	const infos = subperguntas
-		? subperguntas.filter(
-				(s) =>
-					s.type === "info" &&
-					s.when?.toLowerCase() === resposta?.checked?.toString().toLowerCase(),
-			)
-		: [];
+    const infos = subperguntas
+        ? subperguntas.filter(
+            (s) =>
+                s.type === "info" &&
+                s.when?.toLowerCase() === resposta?.checked?.toString().toLowerCase(),
+        )
+        : [];
 
-	const condicionais = subperguntas
-		? subperguntas.filter(
-				(s) =>
-					s.type === "boolean" &&
-					s.when?.toLowerCase() === resposta?.checked?.toString().toLowerCase(),
-			)
-		: [];
+    const condicionais = subperguntas
+        ? subperguntas.filter(
+            (s) =>
+                s.type === "boolean" &&
+                s.when?.toLowerCase() === resposta?.checked?.toString().toLowerCase(),
+        )
+        : [];
 
-	return `
+    return `
 			<div class="resposta-bloco">
 				<h3 class="pergunta-titulo">${pergunta.pergunta}</h3>
-				${
-					pergunta.type !== "info"
-						? `<p class="resposta-texto">Resposta: ${
-								pergunta.type === "text"
-									? resposta?.observation
-									: resposta?.checked
-							}</p>`
-						: ""
-				}
-				${
-					resposta?.observation && resposta.checked !== "Check"
-						? `<p class="resposta-observacao">Observação: ${resposta.observation}</p>`
-						: ""
-				}
-                ${
-									texts && texts.length > 0
-										? texts
-												?.map((sub) => getRespostaHtml(sub, respostas))
-												.join("")
-										: ""
-								}
-				${
-					condicionais && condicionais.length > 0
-						? condicionais
-								?.map((sub) => getRespostaHtml(sub, respostas))
-								.join("")
-						: ""
-				}
-                ${
-									infos && infos.length > 0
-										? infos
-												?.map((sub) => getRespostaHtml(sub, respostas))
-												.join("")
-										: ""
-								}
-                ${
-									checks && checks.length > 0
-										? checks
-												?.filter(
-													(s) =>
-														respostas.find((a) => a.pergunta === s.pergunta)
-															?.checked === "Check",
-												)
-												.map(
-													(sub) =>
-														`<p class="resposta-check">- ${sub.pergunta}</p>`,
-												)
-												.join("")
-										: ""
-								}
+				${pergunta.type !== "info"
+            ? `<p class="resposta-texto">Resposta: ${pergunta.type === "text"
+                ? resposta?.observation
+                : resposta?.checked
+            }</p>`
+            : ""
+        }
+				${resposta?.observation && resposta.checked !== "Check"
+            ? `<p class="resposta-observacao">Observação: ${resposta.observation}</p>`
+            : ""
+        }
+                ${texts && texts.length > 0
+            ? texts
+                ?.map((sub) => getRespostaHtml(sub, respostas))
+                .join("")
+            : ""
+        }
+				${condicionais && condicionais.length > 0
+            ? condicionais
+                ?.map((sub) => getRespostaHtml(sub, respostas))
+                .join("")
+            : ""
+        }
+                ${infos && infos.length > 0
+            ? infos
+                ?.map((sub) => getRespostaHtml(sub, respostas))
+                .join("")
+            : ""
+        }
+                ${checks && checks.length > 0
+            ? checks
+                ?.filter(
+                    (s) =>
+                        respostas.find((a) => a.pergunta === s.pergunta)
+                            ?.checked === "Check",
+                )
+                .map(
+                    (sub) =>
+                        `<p class="resposta-check">- ${sub.pergunta}</p>`,
+                )
+                .join("")
+            : ""
+        }
 			</div>
 	`;
 }
@@ -130,7 +123,7 @@ const assinaturaHtml = `
 `;
 
 export function getHtmlVisita(visita: VIPVisitaType) {
-	return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 	<html lang="pt-BR">
 		<head>
 			<meta charset="UTF-8" />
@@ -261,57 +254,61 @@ export function getHtmlVisita(visita: VIPVisitaType) {
 				}
     	</style>
 		</head>
-		<bod
+		<body style="margin:0;padding:10px;">
 			<div class="container">
 				<h1 class="titulo-principal">Relatório de Visita Técnica</h1>
 				<div class="info">
-					<p><strong>Empresa Visitada:</strong> ${
-						visita.empresa?.razao_social || "Não informado"
-					}</p>
-					<p><strong>Técnico Responsável:</strong> ${
-						visita.tecnico || "Não informado"
-					}</p>
+					<p><strong>Empresa Visitada:</strong> ${visita.empresa?.razao_social || "Não informado"
+        }</p>
+					<p><strong>Técnico Responsável:</strong> ${visita.tecnico || "Não informado"
+        }</p>
 					<p><strong>Data:</strong> ${visita.data}</p>
 					
-					<p><strong>Responsável pela Empresa:</strong> ${
-						visita.responsavel || "Não informado"
-					}</p>
+					<p><strong>Responsável pela Empresa:</strong> ${visita.responsavel || "Não informado"
+        }</p>
 				</div>
 
 				${visita.perguntas.adm
-					.map(
-						(pergunta) =>
-							`<div class="card">${getRespostaHtml(
-								pergunta,
-								visita.respostas,
-							)}</div>`,
-					)
-					.join("")}
+            .map(
+                (pergunta) =>
+                    `<div class="card">${getRespostaHtml(
+                        pergunta,
+                        visita.respostas,
+                    )}</div>`,
+            )
+            .join("")}
 
 				${visita.setores
-					.map(
-						(setor) => `
+            .map(
+                (setor) => `
                             <div class="card-setor">
                                 <h2 class="titulo-setor">${setor.nome}</h2>
                                 ${setor.perguntas
-																	.map(
-																		(pergunta) =>
-																			`<div class="card">${getRespostaHtml(
-																				pergunta,
-																				setor.respostas,
-																			)}</div>`,
-																	)
-																	.join("")}
+                        .map(
+                            (pergunta) =>
+                                `<div class="card">${getRespostaHtml(
+                                    pergunta,
+                                    setor.respostas,
+                                )}</div>`,
+                        )
+                        .join("")}
                             </div>
 					`,
-					)
-					.join("")}
+            )
+            .join("")}
 
 				${assinaturaHtml
-					.replaceAll("$responsavel", visita.responsavel)
-					.replaceAll("$empresa_nome", visita.empresa?.razao_social || "")
-					.replaceAll("$data", visita.data)}
+            .replaceAll("$responsavel", visita.responsavel)
+            .replaceAll("$empresa_nome", visita.empresa?.razao_social || "")
+            .replaceAll("$data", visita.data)}
 			</div>
+            <script>
+				setTimeout(() => {
+					window.ReactNativeWebView.postMessage(
+						document.body.scrollHeight
+					);
+				}, 1000);
+			</script>
 		</body>
 	</html>`;
 }

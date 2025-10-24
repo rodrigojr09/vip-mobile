@@ -10,9 +10,9 @@ import { useNavigationHistory } from "@/hooks/Navigation";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 
 const SignatureScreen = () => {
-	const ref = useRef<SignatureViewRef>(null);
-	const nav = useNavigationHistory();
+    const nav = useNavigationHistory();
 	const visita = useVisita();
+	const ref = useRef<SignatureViewRef>(null);
 	const [hasSigned, setHasSigned] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false); // <-- estado de controle
  

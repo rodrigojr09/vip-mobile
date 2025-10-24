@@ -134,6 +134,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+        
 		backgroundColor: "#0f172a",
 	},
 	header: {
@@ -153,10 +154,11 @@ const styles = StyleSheet.create({
 	backButton: {
 		position: "absolute",
 		top: 35,
-		left: 20,
+		right: 20,
 		zIndex: 1000,
-		padding: 8,
-		backgroundColor: "red",
+		paddingVertical: 8,
+		paddingHorizontal: 16,
+		backgroundColor: "gray",
 		borderRadius: 6,
 	},
 	backButtonText: {

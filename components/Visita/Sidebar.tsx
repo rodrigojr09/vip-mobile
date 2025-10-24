@@ -87,10 +87,10 @@ export default function Sidebar({
 				</Button>
 				<Button
 					onPress={() => {
-						if (setores.length === 0)
+						/*if (setores.length === 0)
 							return alert(
 								"Adicione pelo menos um setor antes de finalizar a visita."
-							);
+							); */
 						toggleSidebar();
 						nav.push("/Visita/resumo");
 					}}
@@ -104,11 +104,11 @@ export default function Sidebar({
 
 const styles = StyleSheet.create({
 	sidebar: {
-		position: "absolute",
+		position: "fixed",
 		top: 0,
 		bottom: 0,
 		left: 0,
-		width: "75%",
+		width: "100%",
 		backgroundColor: "#111",
 		padding: 20,
 		zIndex: 20,
