@@ -13,7 +13,8 @@ interface InputProps {
 	onChange: (value: string) => void;
 	textarea?: boolean;
 	style?: StyleProp<TextStyle>;
-    editable?: boolean;
+	editable?: boolean;
+	keyboardType?: TextInputProps["keyboardType"];
 	returnKeyType?: TextInputProps["returnKeyType"];
 	onSubmitEditing?: () => void;
 }
@@ -22,10 +23,11 @@ const Input = forwardRef<TextInput, InputProps>(
 	(
 		{
 			placeholder,
+			keyboardType,
 			value,
 			onChange,
 			textarea,
-            editable,
+			editable,
 			style,
 			returnKeyType,
 			onSubmitEditing,
@@ -42,7 +44,8 @@ const Input = forwardRef<TextInput, InputProps>(
 				multiline={textarea}
 				onChangeText={onChange}
 				textAlignVertical="top"
-                editable={editable !== false}
+				keyboardType={keyboardType || "default"}
+				editable={editable !== false}
 				returnKeyType={returnKeyType}
 				onSubmitEditing={onSubmitEditing}
 				blurOnSubmit={false} // Importante: não fechar o teclado ao apertar Next

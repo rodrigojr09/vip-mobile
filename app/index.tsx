@@ -14,6 +14,8 @@ export default function App() {
 
 			<Button onPress={() => nav.push("/Visita")}>Visita Técnica</Button>
 
+			<Button onPress={() => nav.push("/Acidente")}>Acidente</Button>
+
 			<Button secundary onPress={() => nav.push("/Config")}>
 				Configuração
 			</Button>

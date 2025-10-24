@@ -22,7 +22,7 @@ export class Data {
 	private safDirUri: string | null = null; // <- guarda pasta pública escolhida
 
 	static base_url = __DEV__
-		? "http://192.168.3.29:3000/api/v3"
+		? "http://192.168.3.66:3000/api/v3"
 		: "https://mobile.vipsst.com.br/api/v3";
 	static base_dir = FileSystem.documentDirectory;
 

@@ -1,7 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { VIPEmpresaType as LevantamentoVIPEmpresaType } from "@/types/Levantamento/VIPEmpresaType";
-import type { VIPFuncaoType } from "@/types/Levantamento/VIPFuncaoType";
-import type { VIPSetorType } from "@/types/Levantamento/VIPSetorType";
 import type { VIPEvento } from "@/types/VIPEvent";
 import type { VIPEmpresaType } from "@/types/VisitaTecnica/VIPEmpresaType";
 import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
@@ -19,7 +17,7 @@ export default class Storage {
     public perguntas: VIPVisitaType["perguntas"] = { adm: [], setor: [] };
 
     static base_url = __DEV__
-        ? "http://192.168.3.33:3000/api/v3"
+        ? "http://192.168.3.66:3000/api/v3"
         : "https://mobile.vipsst.com.br/api/v3";
 
     async init() {

@@ -7,7 +7,7 @@ import {
 export default function Button({
 	onPress,
 	children,
-	styles = {},
+	styles,
 	disabled = false,
 	secundary,
 }: {
@@ -21,12 +21,13 @@ export default function Button({
 		<TouchableOpacity
 			style={[
 				{
-					padding: styles.padding || 18,
-					marginVertical: styles.marginVertical || 10,
-					borderRadius: styles.borderRadius || 10,
-					width: styles.width || "100%",
+					padding: styles?.padding || 18,
+					marginVertical: styles?.marginVertical || 10,
+					borderRadius: styles?.borderRadius || 10,
+					width: styles?.width || "100%",
 					backgroundColor: secundary ? "#0069ad" : "green",
 					opacity: disabled ? 0.5 : 1,
+                    ...styles,
 				},
 			]}
 			disabled={disabled}
