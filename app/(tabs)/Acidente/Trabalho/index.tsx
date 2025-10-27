@@ -9,25 +9,18 @@ import Cat6 from "@/components/Acidente/Cat6";
 import Cat7 from "@/components/Acidente/Cat7";
 import Cat8 from "@/components/Acidente/Cat8";
 import Cat9 from "@/components/Acidente/Cat9";
+import Button from "@/components/Button";
 import Container from "@/components/Container";
-import type Acidente from "@/types/Acidente";
+import { useAcidente } from "@/hooks/Acidente/AcidenteProvider";
+import { useNavigationHistory } from "@/hooks/Navigation";
 
 export default function Trabalho() {
-	const [cat, setCat] = useState<Acidente>({
-		cat1: {},
-		cat2: {},
-		cat3: {},
-		cat4: {},
-		cat5: {},
-		cat6: {},
-		cat7: {},
-		cat8: {},
-		cat9: {},
-	});
+	const nav = useNavigationHistory();
+	const { acidente, setAcidente } = useAcidente();
 	const [openSection, setOpenSection] = useState<number | null>(1);
 
 	function handleChange(tag: string, value: any) {
-		setCat((prev) => {
+		setAcidente((prev) => {
 			const keys = tag.split(".");
 			const newCat = structuredClone(prev);
 			let obj: any = newCat;
@@ -36,7 +29,9 @@ export default function Trabalho() {
 				obj[key] ??= {};
 				obj = obj[key];
 			}
-			obj[keys.at(-1)!] = value;
+			const lastKey = keys[keys.length - 1];
+			if (lastKey === undefined) return newCat;
+			obj[lastKey] = value;
 			return newCat;
 		});
 	}
@@ -45,47 +40,59 @@ export default function Trabalho() {
 		{
 			id: 1,
 			titulo: "Informações da Empresa",
-			component: <Cat1 cat={cat.cat1} handleChange={handleChange} />,
+			component: <Cat1 cat={acidente.cat1} handleChange={handleChange} />,
 		},
 		{
 			id: 2,
 			titulo: "Dados Pessoais",
-			component: <Cat2 cat={cat.cat2} handleChange={handleChange} />,
+			component: <Cat2 cat={acidente.cat2} handleChange={handleChange} />,
 		},
 		{
 			id: 3,
 			titulo: "Dados do Atestado",
-			component: <Cat3 cat={cat.cat3} handleChange={handleChange} />,
+			component: <Cat3 cat={acidente.cat3} handleChange={handleChange} />,
 		},
 		{
 			id: 4,
 			titulo: "Dados do Acidente",
-			component: <Cat4 cat={cat.cat4} handleChange={handleChange} />,
+			component: <Cat4 cat={acidente.cat4} handleChange={handleChange} />,
 		},
 		{
 			id: 5,
 			titulo: "Descrição do Acidente",
-			component: <Cat5 cat={cat.cat5} handleChange={handleChange} />,
+			component: <Cat5 cat={acidente.cat5} handleChange={handleChange} />,
 		},
 		{
 			id: 6,
 			titulo: "Fatores de Risco",
-			component: <Cat6 cat={cat.cat6} handleChange={handleChange} />,
+			component: <Cat6 cat={acidente.cat6} handleChange={handleChange} />,
 		},
 		{
 			id: 7,
 			titulo: "Responsavel pela Empresa",
-			component: <Cat7 cat={cat.cat7} handleChange={handleChange} />,
+			component: (
+				<Cat7
+					cat={acidente.cat7}
+					handleChange={handleChange}
+					relato={acidente.cat5?.descricaoAcidente || "Não houve relato"}
+				/>
+			),
 		},
 		{
 			id: 8,
 			titulo: "Testemunhas",
-			component: <Cat8 cat={cat.cat8} handleChange={handleChange} />,
+			component: (
+				<Cat8
+					cat={acidente.cat8}
+					handleChange={handleChange}
+					relato={acidente.cat5?.descricaoAcidente || "Não houve relato"}
+				/>
+			),
 		},
 		{
 			id: 9,
 			titulo: "Imagens",
-			component: <Cat9 cat={cat.cat9} handleChange={handleChange} />,
+			component: <Cat9 cat={acidente.cat9} handleChange={handleChange} />,
 		},
 	];
 
@@ -113,6 +120,13 @@ export default function Trabalho() {
 					)}
 				</View>
 			))}
+			<Button
+				onPress={() => {
+					nav.push("/Acidente/Trabalho/assinaturas");
+				}}
+			>
+				Coletar Assinaturas
+			</Button>
 		</Container>
 	);
 }

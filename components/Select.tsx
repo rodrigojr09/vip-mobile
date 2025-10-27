@@ -38,14 +38,17 @@ export default function Select({
 
 const styles = StyleSheet.create({
 	container: {
-		borderWidth: 1,
-		borderColor: "#ccc",
-		borderRadius: 8,
 		overflow: "hidden",
-		marginVertical: 5,
+		borderWidth: 1,
+		borderColor: "green",
+		borderRadius: 5,
+		marginVertical: 10,
+		fontSize: 18,
+		width: "100%",
+		color: "#FFF",
 	},
 	picker: {
-		height: 50,
 		width: "100%",
+		color: "#FFF",
 	},
 });

@@ -9,8 +9,8 @@ import Container from "@/components/Container";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { events } from "@/utils/API/Event";
-import Levantamento from "@/utils/Data/LevanamentoData";
 import { getHtml } from "@/utils/formatHTML";
+import manager from "@/utils/Data/manager";
 
 export default function Finalizado() {
 	const nav = useNavigationHistory();
@@ -47,7 +47,7 @@ export default function Finalizado() {
 
 				setFileUri(filePath);
 				console.log(empresa);
-				Levantamento.salvar({
+				manager.levantamentos.salvar({
 					empresa: {
 						...empresa,
 						assinatura: query.get("assinatura") || "",

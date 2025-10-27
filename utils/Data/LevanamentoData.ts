@@ -4,6 +4,21 @@ import type { VIPSetorType } from "@/types/Levantamento/VIPSetorType";
 import Storage from "../Storage";
 
 class LevantamentoData extends Storage {
+
+    static instance: LevantamentoData;
+
+    static getInstance() {
+        if (!LevantamentoData.instance) {
+            LevantamentoData.instance = new LevantamentoData();
+        }
+        return LevantamentoData.instance;
+    }
+
+    constructor() {
+        super();
+        console.log("🎯 Levantamentos Data initialized");
+    }
+
     async salvar(data: {
         empresa: VIPEmpresaType;
         setor?: VIPSetorType | null;
@@ -164,7 +179,35 @@ class LevantamentoData extends Storage {
 
         console.log("💾 Salvamento concluído.");
     }
+
+
+    async getAll(): Promise<string | null> {
+        return this.get(this.keys.LEVANTAMENTOS_KEY);
+    }
+
+    async clear() {
+        await this.save(this.keys.LEVANTAMENTOS_KEY, JSON.stringify([]));
+    }
+
+    async delete(id: string) {
+        const levantamentos = JSON.parse(
+            (await this.get(this.keys.LEVANTAMENTOS_KEY)) || "[]",
+        ) as { empresa: VIPEmpresaType }[];
+        const filtered = levantamentos.filter((l) => l.empresa.id !== id);
+        await this.save(this.keys.LEVANTAMENTOS_KEY, JSON.stringify(filtered));
+        return true;
+    }
+
+    async getById(
+        id: string,
+    ): Promise<VIPEmpresaType | null> {
+        const levantamentos = JSON.parse(
+            (await this.get(this.keys.LEVANTAMENTOS_KEY)) || "[]",
+        ) as { empresa: VIPEmpresaType }[];
+        const found = levantamentos.find((l) => l.empresa.id === id);
+        return found ? found.empresa : null;
+    }
+
 }
 
-const Levantamento = new LevantamentoData();
-export default Levantamento;
+export default LevantamentoData;

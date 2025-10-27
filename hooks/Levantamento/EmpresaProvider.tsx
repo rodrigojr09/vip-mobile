@@ -1,12 +1,5 @@
-import {
-	createContext,
-	type ReactNode,
-	use,
-	useContext,
-	useState,
-} from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
 import "react-native-get-random-values";
-import { v4 as uuidv4 } from "uuid";
 import type { VIPEmpresaType } from "@/types/Levantamento/VIPEmpresaType";
 import type { VIPSetorType } from "@/types/Levantamento/VIPSetorType";
 

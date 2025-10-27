@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ficha de Análise de Acidentes</title>
+    <style>
+        :root {
+            --bg: #fff;
+            --paper: #ffffff;
+            --muted: #666;
+            --label: #222;
+            --accent: #000;
+            --border: #ddd;
+            --section-bg: #f8f8f8;
+            --font-family: "Helvetica Neue", Arial, sans-serif;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            font-family: var(--font-family);
+            color: var(--label);
+            -webkit-print-color-adjust: exact;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 10mm auto;
+            padding-left: 10mm;
+            padding-right: 10mm;
+            
+            background: var(--paper);
+            box-shadow: 0 0 0.5mm rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 18px;
+            margin: 0 0 8px 0;
+            text-align: center;
+            letter-spacing: 0.6px;
+        }
+
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .meta .left,
+        .meta .right {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .section {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 12px;
+            margin-top: 12px;
+            background: white;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            overflow: visible;
+        }
+
+        .section h2 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.03), transparent);
+            padding: 6px 8px;
+            border-radius: 4px;
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .col {
+            flex: 1;
+            min-width: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .value {
+            font-size: 13px;
+            color: var(--accent);
+            padding: 8px 10px;
+            border: 1px dashed var(--border);
+            border-radius: 4px;
+            min-height: 28px;
+            background: #fff;
+            word-break: break-word;
+        }
+
+        .textarea {
+            min-height: 80px;
+            padding: 10px;
+        }
+
+        .big {
+            min-height: 140px;
+            padding: 10px;
+        }
+
+        .two {
+            display: flex;
+            gap: 12px;
+        }
+
+        .inline {
+            display: inline-block;
+            margin-right: 12px;
+        }
+
+        .section+.section {
+            margin-top: 20px;
+        }
+
+        .signature {
+            height: 120px;
+            border: 1px dashed var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fafafa;
+        }
+
+        .small {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .checkbox-list {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            background: var(--section-bg);
+        }
+
+        .footer-note {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        /* Testemunhas grid */
+        .testemunhas {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .testemunha {
+            border: 1px solid var(--border);
+            padding: 8px;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .page {
+                box-shadow: none;
+                width: auto;
+                min-height: auto;
+            }
+        }
+
+        @page {
+            size: A4 portrait;
+            padding-top: 10mm;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <h1>FICHA DE ANÁLISE DE ACIDENTE</h1>
+
+        <div class="meta">
+            <div class="left"><span class="small">DATA DE ANÁLISE:</span> <strong>${cat1?.dataAnalise}</strong></div>
+            <div class="right"><span class="small">Empresa:</span> <strong>${cat1?.empresa}</strong> — <span
+                    class="small">CNPJ/CGC:</span> <strong>${cat1?.cnpj || "N/A"}</strong></div>
+        </div>
+
+        <!-- DADOS PESSOAIS -->
+        <div class="section">
+            <h2>DADOS PESSOAIS</h2>
+
+            <div class="row">
+                <div class="col">
+                    <label>Nome</label>
+                    <div class="value">${cat2?.colaborador}</div>
+                </div>
+
+                <div class="col" style="max-width:90px">
+                    <label>Idade</label>
+                    <div class="value">${cat2?.idade}</div>
+                </div>
+
+                <div class="col" style="max-width:150px">
+                    <label>CPF</label>
+                    <div class="value">${cat2?.cpf}</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <label>Endereço</label>
+                    <div class="value">${cat2?.endereco}</div>
+                </div>
+                <div class="col" style="max-width:120px">
+                    <label>CEP (Rua)</label>
+                    <div class="value">${cat2?.cep}</div>
+                </div>
+                <div class="col" style="max-width:140px">
+                    <label>Telefone / Celular</label>
+                    <div class="value">${cat2?.telefone}</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col" style="max-width:160px">
+                    <label>Função</label>
+                    <div class="value">${cat2?.funcao}</div>
+                </div>
+                <div class="col" style="max-width:140px">
+                    <label>CBO</label>
+                    <div class="value">${cat2?.cbo}</div>
+                </div>
+                <div class="col">
+                    <label>Setor</label>
+                    <div class="value">${cat2?.setor}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DADOS DO ATESTADO -->
+        <div class="section">
+            <h2>DADOS DO ATESTADO</h2>
+
+            <div class="row">
+                <div class="col" style="max-width:160px">
+                    <label>Data do atestado</label>
+                    <div class="value">${cat3?.dataAtestado}</div>
+                </div>
+
+                <div class="col">
+                    <label>Duração provável do tratamento</label>
+                    <div class="value">${cat3?.duracaoTratamento}</div>
+                </div>
+
+                <div class="col" style="max-width:140px">
+                    <label>Hora do atendimento</label>
+                    <div class="value">${cat3?.horaAtendimento}</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col" style="max-width:140px">
+                    <label>Houve internação?</label>
+                    <div class="value">${cat3?.houveInternacao}</div>
+                </div>
+
+                <div class="col">
+                    <label>Natureza da lesão</label>
+                    <div class="value">${cat3?.naturezaLesao}</div>
+                </div>
+
+                <div class="col" style="max-width:160px">
+                    <label>Médico – CRM</label>
+                    <div class="value">${cat3?.medicoCRM}</div>
+                </div>
+
+                <div class="col" style="max-width:120px">
+                    <label>CID</label>
+                    <div class="value">${cat3?.cid}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DADOS DO ACIDENTE -->
+        <div class="section">
+            <h2>DADOS DO ACIDENTE</h2>
+
+            <div class="row">
+                <div class="col">
+                    <label>Local do Acidente</label>
+                    <div class="value">${cat4?.localAcidente}</div>
+                </div>
+
+                <div class="col" style="max-width:140px">
+                    <label>Data do Acidente</label>
+                    <div class="value">${cat4?.dataAcidente}</div>
+                </div>
+
+                <div class="col" style="max-width:140px">
+                    <label>Hora do Acidente</label>
+                    <div class="value">${cat4?.horaAcidente}</div>
+                </div>
+
+                <div class="col" style="max-width:140px">
+                    <label>Horas Trabalhadas</label>
+                    <div class="value">${cat4?.horasTrabalhadas}</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col" style="max-width:180px">
+                    <label>Cidade / Estado</label>
+                    <div class="value">${cat4?.cidade}</div>
+                </div>
+
+                <div class="col">
+                    <label>Bairro</label>
+                    <div class="value">${cat4?.bairro}</div>
+                </div>
+
+                <div class="col">
+                    <label>Rua</label>
+                    <div class="value">${cat4?.rua}</div>
+                </div>
+
+                <div class="col" style="max-width:80px">
+                    <label>N°</label>
+                    <div class="value">${cat4?.numero}</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col" style="max-width:160px">
+                    <label>Houve registro policial?</label>
+                    <div class="value">${cat4?.houveOcorrencia}</div>
+                </div>
+
+                <div class="col" style="max-width:160px">
+                    <label>Houve morte?</label>
+                    <div class="value">${cat4?.houveMorte}</div>
+                </div>
+
+                <div class="col">
+                    <label>Parte do corpo atingida</label>
+                    <div class="value">${cat4?.parteAtingida}</div>
+                </div>
+
+                <div class="col" style="max-width:160px">
+                    <label>Lateralidade</label>
+                    <div class="value">${cat4?.lateralidade}</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <label>Agente causador</label>
+                    <div class="value">${cat4?.agenteCausador}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+
+            <div style="margin-top:8px;">
+                <label>SITUAÇÃO GERADORA DO ACIDENTE (como ocorreu segundo o acidentado)</label>
+                <div class="value big textarea">${cat5?.descricaoAcidente}</div>
+            </div>
+
+            <div style="margin-top:10px;">
+                <label>Assinatura do Acidentado</label>
+                <div class="signature">${cat5?.assinaturaAcidentado}</div>
+            </div>
+        </div>
+
+        <!-- FATORES DE RISCO -->
+        <div class="section">
+            <h2>FATORES DE RISCO</h2>
+
+            <div class="row">
+                <div class="col">
+                    <label>A atividade executada era</label>
+                    <div class="checkbox-list small">
+                        <div class="checkbox-item">Habitual permanente</div>
+                        <div class="checkbox-item">Habitual intermitente</div>
+                        <div class="checkbox-item">Ocasional permanente</div>
+                        <div class="checkbox-item">Ocasional intermitente</div>
+                        <div class="checkbox-item">Eventual</div>
+                    </div>
+                    <div style="margin-top:8px;" class="small">Atividade:
+                        <strong>${cat6?.atividadeExecutada}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:8px;">
+                <label>O acidentado recebeu treinamento para a tarefa que executava</label>
+                <div class="value">${cat6?.recebeuTreiamento}</div>
+            </div>
+
+            <div style="margin-top:8px;">
+                <label>Estava utilizando adequadamente os EPI’s?</label>
+                <div class="value">${cat6?.utilizouEPI}</div>
+                <div class="small" style="margin-top:6px;">Se sim, descreva:
+                    <strong>${cat6?.utilizouEPIDescricao}</strong>
+                </div>
+
+                <div style="margin-top:8px;">
+                    <label>Os EPIs eram eficazes?</label>
+                    <div class="value">${cat6?.epiEficaz}</div>
+                    <div class="small" style="margin-top:6px;">Se não, por que:
+                        <strong>${cat6?.epiEficazDescricao}</strong>
+                    </div>
+                </div>
+
+                <div style="margin-top:8px;">
+                    <label>As ferramentas e/ou instrumentos de trabalho estavam em boas condições?</label>
+                    <div class="value">${cat6?.ferramentas}</div>
+                    <div class="small" style="margin-top:6px;">Se não, por que:
+                        <strong>${cat6?.ferramentasDescricao}</strong>
+                    </div>
+                </div>
+
+                <div style="margin-top:8px;">
+                    <label>As condições do ambiente de trabalho eram adequadas?</label>
+                    <div class="value">${cat6?.ambiente}</div>
+                    <div class="small" style="margin-top:6px;">Se não, por que:
+                        <strong>${cat6?.ambienteDescricao}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESPONSÁVEL / TESTEMUNHAS -->
+        <div class="section">
+            <h2>RESPONSÁVEL PELA EMPRESA / SETOR</h2>
+
+            <div class="row">
+                <div class="col">
+                    <label>Nome</label>
+                    <div class="value">${cat7?.responsavelEmpresa}</div>
+                </div>
+
+                <div class="col" style="max-width:160px">
+                    <label>Aceita o relato do acidente?</label>
+                    <div class="value">${cat7?.responsavelAceitacao}</div>
+                </div>
+
+                <div class="col">
+                    <label>Se não, por que?</label>
+                    <div class="value">${cat7?.responsavelAceitacaoDescricao}</div>
+                </div>
+            </div>
+
+            <div style="margin-top:10px;">
+                <label>Assinatura do Responsável</label>
+                <div class="signature">${cat7?.assinaturaResponsavel}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>TESTEMUNHAS</h2>
+
+            <div class="testemunhas">
+                <!-- Exemplo: duplicar este bloco para cada testemunha -->
+                ${cat8?.testemunhos
+                ?.map(
+                (testemunha) => `<div class="testemunha">
+                    <label>Nome</label>
+                    <div class="value">${testemunha.nome}</div>
+                    <label style="margin-top:6px">Aceita o relato?</label>
+                    <div class="value">${testemunha.aceitacao}</div>
+                    <label style="margin-top:6px">Se não, por que?</label>
+                    <div class="value">${testemunha.aceitacaoDescricao}</div>
+                    <label style="margin-top:6px">Assinatura</label>
+                    <div class="signature">${testemunha.assinaturaTestemunha}</div>
+                </div>`,
+                )
+                .join("")}
+            </div>
+
+        </div>
+
+        <div class="footer-note">
+            Documento gerado em: <strong>${new Date().getUTCFullYear()}</strong>
+        </div>
+    </div>
+</body>
+
+</html>

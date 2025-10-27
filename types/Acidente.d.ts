@@ -22,7 +22,7 @@ export default interface Acidente {
         dataAtestado?: string;
         duracaoTratamento?: string;
         horaAtendimento?: string;
-        houveInternacao?: boolean;
+        houveInternacao?: string;
         afastar?: string;
         naturezaLesao?: string;
         medicoCRM?: string;
@@ -37,8 +37,8 @@ export default interface Acidente {
         bairro?: string;
         rua?: string;
         numero?: string;
-        houveOcorrencia?: boolean;
-        houveMorte?: boolean;
+        houveOcorrencia?: string;
+        houveMorte?: string;
         parteAtingida?: string;
         lateralidade?: string;
         agenteCausador?: string;
@@ -71,6 +71,7 @@ export default interface Acidente {
     },
     cat8?: {
         testemunhos?: {
+            id?: string;
             nome?: string;
             aceitacao?: "Sim" | "Não";
             aceitacaoDescricao?: string;

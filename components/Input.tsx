@@ -12,6 +12,7 @@ interface InputProps {
 	value: string;
 	onChange: (value: string) => void;
 	textarea?: boolean;
+	lines?: number;
 	style?: StyleProp<TextStyle>;
 	editable?: boolean;
 	keyboardType?: TextInputProps["keyboardType"];
@@ -30,6 +31,7 @@ const Input = forwardRef<TextInput, InputProps>(
 			editable,
 			style,
 			returnKeyType,
+			lines,
 			onSubmitEditing,
 		},
 		ref,
@@ -42,6 +44,7 @@ const Input = forwardRef<TextInput, InputProps>(
 				placeholderTextColor="#ccc"
 				value={value}
 				multiline={textarea}
+				numberOfLines={textarea ? undefined : lines}
 				onChangeText={onChange}
 				textAlignVertical="top"
 				keyboardType={keyboardType || "default"}

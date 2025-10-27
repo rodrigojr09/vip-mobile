@@ -8,22 +8,22 @@ const DEFAULT_QUEST_FILE = `${FileSystem.documentDirectory}/quests.json`;
  * @param filePath Caminho do arquivo local opcional
  */
 export async function fetchQuests(filePath = DEFAULT_QUEST_FILE) {
-	try {
-		const response = await fetch(`${Data.base_url}/api/quests`);
+    try {
+        const response = await fetch(`${Data.base_url}/api/quests`);
 
-		if (!response.ok) {
-			throw new Error(`Erro HTTP: ${response.status}`);
-		}
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
 
-		const quests = await response.json();
+        const quests = await response.json();
 
-		const jsonContent = JSON.stringify(quests, null, 2);
+        const jsonContent = JSON.stringify(quests, null, 2);
 
-		await FileSystem.writeAsStringAsync(filePath, jsonContent);
-		console.log(`✅ Quests salvas localmente em: ${filePath}`);
-	} catch (error: any) {
-		console.error("❌ Erro ao buscar/salvar quests:", error.message || error);
-	}
+        await FileSystem.writeAsStringAsync(filePath, jsonContent);
+        console.log(`✅ Quests salvas localmente em: ${filePath}`);
+    } catch (error: any) {
+        console.error("❌ Erro ao buscar/salvar quests:", error.message || error);
+    }
 }
 
 /**
@@ -32,12 +32,12 @@ export async function fetchQuests(filePath = DEFAULT_QUEST_FILE) {
  * @returns Lista de quests ou null
  */
 export async function getQuests(filePath = DEFAULT_QUEST_FILE) {
-	try {
-		const content = await FileSystem.readAsStringAsync(filePath);
-		console.log(`✅ Quests lidas com sucesso em: ${filePath}`);
-		return JSON.parse(content);
-	} catch (error: any) {
-		console.error("❌ Erro ao ler quests:", error.message || error);
-		return null;
-	}
+    try {
+        const content = await FileSystem.readAsStringAsync(filePath);
+        console.log(`✅ Quests lidas com sucesso em: ${filePath}`);
+        return JSON.parse(content);
+    } catch (error: any) {
+        console.error("❌ Erro ao ler quests:", error.message || error);
+        return null;
+    }
 }

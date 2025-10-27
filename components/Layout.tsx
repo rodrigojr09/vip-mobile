@@ -14,7 +14,6 @@ import Loading from "@/components/Loading";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { events } from "@/utils/API/Event";
 import { LOCATION_TASK_NAME } from "@/utils/BackgroundTasks";
-import { storage } from "@/utils/Storage";
 
 export const DIRECTORY_KEY = "DIRECTORY_URI";
 
@@ -27,7 +26,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		(async () => {
 			try {
 				await startBackgroundLocation();
-				await storage.init();
 				setLoading(false);
 			} catch (error) {
 				console.error("Erro ao carregar dados iniciais:", error);
@@ -134,7 +132,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-        
+
 		backgroundColor: "#0f172a",
 	},
 	header: {

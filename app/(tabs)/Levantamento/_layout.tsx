@@ -6,7 +6,7 @@ import {
 } from "@/hooks/Levantamento/EmpresaProvider";
 import { FuncaoProvider, useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
 import { SetorProvider, useSetor } from "@/hooks/Levantamento/SetorProvider";
-import Levantamento from "@/utils/Data/LevanamentoData";
+import manager from "@/utils/Data/manager";
 
 function AutoSave({ children }: { children: React.ReactNode }) {
 	const empresa = useEmpresa();
@@ -18,7 +18,7 @@ function AutoSave({ children }: { children: React.ReactNode }) {
 			if (empresa.id === "") return;
 			console.log("Salvando dados de levantamento automaticamente...");
 			try {
-				Levantamento.salvar({ empresa, setor, funcao });
+				manager.levantamentos.salvar({ empresa, setor, funcao });
 				console.log("Dados de levantamento salvos automaticamente.");
 			} catch (error) {
 				console.error(

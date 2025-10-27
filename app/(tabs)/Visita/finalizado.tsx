@@ -9,9 +9,9 @@ import Loading from "@/components/Loading";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 import base_url from "@/utils/API/base_url";
-import Data from "@/utils/API/Data";
 import { events } from "@/utils/API/Event";
 import { abrirArquivo } from "@/utils/abrirArquivo";
+import manager from "@/utils/Data/manager";
 import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 
 export default function Finalizado() {
@@ -47,7 +47,7 @@ export default function Finalizado() {
 				ScreenOrientation.OrientationLock.PORTRAIT_UP,
 			);
 
-			const res = await Data.createVisita(
+			const res = await manager.visitas.create(
 				{
 					...visita,
 					horaSaida: `${hora}:${minutos}`,
@@ -56,7 +56,7 @@ export default function Finalizado() {
 				true,
 			);
 
-			if (res === "offline") {
+			if (res) {
 				Alert.alert("Salvo offline!");
 				setToken("offline");
 			} else {
