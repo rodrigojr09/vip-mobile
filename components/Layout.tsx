@@ -1,4 +1,3 @@
-import * as Device from "expo-device";
 import * as Location from "expo-location";
 import { usePathname } from "expo-router";
 import * as TaskManager from "expo-task-manager";
@@ -87,14 +86,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		return () => backHandler.remove();
 	}, []);
 
-	const isTablet = Device.deviceType === Device.DeviceType.TABLET;
-
 	return (
 		<View
 			style={{
 				...styles.container,
-				paddingBottom: isTablet ? 40 : 0,
-				paddingTop: isTablet ? 25 : 0,
 			}}
 		>
 			{!pathname.endsWith("assinatura") && (
@@ -132,7 +127,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-
 		backgroundColor: "#0f172a",
 	},
 	header: {
@@ -151,7 +145,7 @@ const styles = StyleSheet.create({
 	},
 	backButton: {
 		position: "absolute",
-		top: 35,
+		top: 12,
 		right: 20,
 		zIndex: 1000,
 		paddingVertical: 8,

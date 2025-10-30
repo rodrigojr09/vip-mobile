@@ -1,6 +1,5 @@
 import * as FileSystem from "expo-file-system/legacy";
 import { useSearchParams } from "expo-router/build/hooks";
-import * as ScreenOrientation from "expo-screen-orientation";
 import { useEffect, useState } from "react";
 import { Alert, Linking } from "react-native";
 import Button from "@/components/Button";
@@ -8,7 +7,6 @@ import Container from "@/components/Container";
 import Loading from "@/components/Loading";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
-import base_url from "@/utils/API/base_url";
 import { events } from "@/utils/API/Event";
 import { abrirArquivo } from "@/utils/abrirArquivo";
 import manager from "@/utils/Data/manager";
@@ -42,21 +40,19 @@ export default function Finalizado() {
 				console.warn("Erro ao adicionar evento de finalização:", error);
 			}
 
-			// Bloquear orientação tela e salvar visita
-			await ScreenOrientation.lockAsync(
-				ScreenOrientation.OrientationLock.PORTRAIT_UP,
-			);
+			const res = await manager.visitas.create({
+				...visita,
+				horaSaida: `${hora}:${minutos}`,
+				assinatura: query.get("assinatura") as string,
+			});
 
-			const res = await manager.visitas.create(
-				{
-					...visita,
-					horaSaida: `${hora}:${minutos}`,
-					assinatura: query.get("assinatura") as string,
-				},
-				true,
-			);
+			await manager.visitas.salvar({
+				...visita,
+				assinatura: query.get("assinatura") as string,
+				horaSaida: `${hora}:${minutos}`,
+			});
 
-			if (res) {
+			if (res === "offline") {
 				Alert.alert("Salvo offline!");
 				setToken("offline");
 			} else {
@@ -115,12 +111,12 @@ export default function Finalizado() {
 					Ir para o Início
 				</Button>
 
-				<Button onPress={handleDownload}>Baixar Levantamento</Button>
+				<Button onPress={handleDownload}>Baixar Visita</Button>
 				{token && token !== "offline" && (
 					<Button
 						onPress={() => {
 							Linking.openURL(
-								`${base_url}/empresas/${token}/visitas/${visita.id}`,
+								`https://mobile.vipsst.com.br/empresas/${token}/visitas/${visita.id}`,
 							);
 						}}
 					>

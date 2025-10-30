@@ -6,8 +6,6 @@ import {
 	useState,
 } from "react";
 import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
-import "react-native-get-random-values";
-import { v4 as uuidv4 } from "uuid";
 import manager from "@/utils/Data/manager";
 
 // Tipagem segura para o contexto
@@ -26,6 +24,7 @@ export default function VisitaProvider({
 }: {
 	children: React.ReactNode;
 }) {
+	const [id, setId] = useState<string>("");
 	const [empresa, setEmpresa] = useState<VIPVisitaType["empresa"] | null>(null);
 	const [responsavel, setResponsavel] = useState<string>("");
 	const [tecnico, setTecnico] = useState<string>("");
@@ -80,6 +79,7 @@ export default function VisitaProvider({
 		setTecnico("");
 		setRespostas([]);
 		setSetores([]);
+		setId("");
 	};
 
 	useEffect(() => {
@@ -90,7 +90,8 @@ export default function VisitaProvider({
 	return (
 		<VisitaContext.Provider
 			value={{
-				id: uuidv4(),
+				id,
+                setId,
 				empresa,
 				setEmpresa,
 				responsavel,

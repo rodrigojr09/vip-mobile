@@ -14,6 +14,8 @@ import { useNavigationHistory } from "@/hooks/Navigation";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import { events } from "@/utils/API/Event";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
 
 export default function Visita() {
 	const {
@@ -21,6 +23,7 @@ export default function Visita() {
 		setEmpresa,
 		responsavel,
 		setResponsavel,
+		setId,
 		tecnico,
 		empresas,
 		setTecnico,
@@ -50,6 +53,7 @@ export default function Visita() {
 			console.warn("Erro ao adicionar evento:", error);
 		}
 
+		setId(uuidv4());
 		nav.push({ pathname: "/Visita/Perguntas/Administrativo" });
 	}
 

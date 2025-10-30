@@ -40,6 +40,8 @@ export default function Container({
 const defaultStyles = StyleSheet.create({
 	Container: {
 		flex: 1,
+		width: "100%",
+		height: "100%",
 		backgroundColor: "#0f172a",
 	},
 });

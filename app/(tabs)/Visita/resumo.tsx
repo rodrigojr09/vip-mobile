@@ -13,9 +13,8 @@ export default function Rascunho() {
 	const visita = useVisita();
 	const nav = useNavigationHistory();
 	const ref = useRef<SignatureViewRef>(null);
-	const [hasSigned, setHasSigned] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [bodyHeight, setBodyHeight] = useState("");
+	const [webHeight, setWebHeight] = useState<number>(0);
 
 	if (!visita.empresa) {
 		return (
@@ -27,10 +26,6 @@ export default function Rascunho() {
 
 	const handleSignature = async (signature: string) => {
 		if (isSubmitting) return;
-		if (!hasSigned) {
-			Alert.alert("Atenção", "Você precisa assinar antes de confirmar.");
-			return;
-		}
 		if (!signature) {
 			Alert.alert("Erro", "Nenhuma assinatura foi capturada.");
 			return;
@@ -47,43 +42,85 @@ export default function Rascunho() {
 		} catch (error) {
 			console.error("Erro ao salvar ou compartilhar o arquivo:", error);
 			Alert.alert("Erro", "Não foi possível salvar ou compartilhar o arquivo.");
+		} finally {
 			setIsSubmitting(false);
 		}
 	};
 
+	const injectedHeightJS = `
+        (function() {
+            function getHeight() {
+                return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+            }
+            function sendHeight() {
+                try {
+                    window.ReactNativeWebView.postMessage(String(getHeight()));
+                } catch(e) {}
+            }
+            sendHeight();
+            if (window.ResizeObserver) {
+                new ResizeObserver(sendHeight).observe(document.body);
+            } else {
+                var mo = new MutationObserver(sendHeight);
+                mo.observe(document.body, { childList: true, subtree: true, attributes: true, characterData: true });
+                window.addEventListener('load', sendHeight);
+                window.addEventListener('resize', sendHeight);
+            }
+            true;
+        })();
+    `;
+
 	return (
 		<Container style={styles.container} scroller>
-			{/* Conteúdo HTML da visita */}
-			<Text>Altura: {bodyHeight}</Text>
-			<WebView
-				originWhitelist={["*"]}
-				source={{ html: getHtmlVisita(visita) }}
-				style={styles.webview}
-				scrollEnabled={false}
-				onMessage={(event) => {
-					const newHeight = Number(event.nativeEvent.data);
-					console.log("Height:", newHeight);
-					setBodyHeight(newHeight.toString());
-				}}
-			/>
+			<View style={styles.webviewWrapper}>
+				<WebView
+					source={{
+						html: getHtmlVisita(visita),
+					}}
+					style={[styles.webview, { height: webHeight || 1 }]}
+					scrollEnabled={false} // deixa o Container fazer o scroll
+					bounces={false}
+					nestedScrollEnabled={false}
+					javaScriptEnabled={true}
+					originWhitelist={["*"]}
+					injectedJavaScript={injectedHeightJS}
+					onMessage={(event) => {
+						const data = event.nativeEvent.data;
+						const h = parseInt(String(data), 10);
+						if (!Number.isNaN(h) && h > 0) {
+							setWebHeight(h);
+						}
+					}}
+				/>
+			</View>
 
-			<Signature
-				ref={ref}
-				onOK={handleSignature}
-				onEmpty={() => Alert.alert("Atenção", "Nenhuma assinatura capturada.")}
-				onBegin={() => setHasSigned(true)}
-				descriptionText={`Assinatura de: ${visita.responsavel}`}
-				clearText="Limpar"
-				confirmText="Confirmar"
-				webStyle={`
-					.m-signature-pad {
-						box-shadow: none;
-						border: 2px solid #00796b;
-						margin: 0;
-						height: 20%;
+			<View style={styles.signatureWrapper}>
+				<Signature
+					ref={ref}
+					onOK={handleSignature}
+					onEmpty={() =>
+						Alert.alert("Atenção", "Nenhuma assinatura capturada.")
 					}
-				`}
-			/>
+					descriptionText={`Assinatura de: ${visita.responsavel}`}
+					clearText="Limpar"
+					confirmText={isSubmitting ? "Enviando..." : "Confirmar"}
+					webStyle={`
+                        .m-signature-pad--footer {
+                            background-color: transparent;
+                        }
+                        body {
+                            background-color: transparent;
+                        }
+                        .m-signature-pad {
+                            height: 80%;
+                            width: 100%;
+                            background-color: transparent;
+                            margin: 0px;
+                        }
+                    `}
+					style={styles.signature}
+				/>
+			</View>
 		</Container>
 	);
 }
@@ -91,10 +128,23 @@ export default function Rascunho() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: "#f0f0f0",
+		backgroundColor: "#000",
+		height: "100%",
+		width: "100%",
+	},
+	webviewWrapper: {
+		flex: 1,
 	},
 	webview: {
-		width: "100%",
+		backgroundColor: "transparent",
+	},
+	signatureWrapper: {
+		height: 400,
+		backgroundColor: "#fff",
+		borderTopWidth: 1,
+		borderTopColor: "#ddd",
+	},
+	signature: {
 		flex: 1,
 		backgroundColor: "transparent",
 	},

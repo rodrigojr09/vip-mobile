@@ -173,7 +173,7 @@ export default function Config() {
 
 			{/* Lista */}
 			<FlatList
-				data={levantamentos}
+				data={levantamentos.reverse()}
 				scrollEnabled={false}
 				keyExtractor={(item, index) => `${item.id}-${index}`}
 				contentContainerStyle={{ paddingBottom: 80 }}

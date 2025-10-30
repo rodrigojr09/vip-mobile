@@ -49,6 +49,7 @@ export default class VisitaData extends Storage {
                 throw new Error(`Status ${res.status}`);
             }
         } catch (err) {
+            console.log(err);
             console.warn("⚠️ Falha ao carregar empresas. Carregando do storage local...");
             const stored = await this.get(this.keys.EMPRESAS_KEY);
             this.empresas = stored ? JSON.parse(stored) : [];
@@ -77,6 +78,7 @@ export default class VisitaData extends Storage {
                 throw new Error(`Status ${res.status}`);
             }
         } catch (err) {
+            console.log(err);
             console.warn("⚠️ Falha ao carregar perguntas. Carregando do storage local...");
             const stored = await this.get(this.keys.PERGUNTAS_KEY);
             this.perguntas = stored
@@ -89,46 +91,51 @@ export default class VisitaData extends Storage {
     }
 
     /** 🧩 Cria nova visita (offline ou online) */
-    async create(visita: VIPVisitaType, offline: boolean): Promise<boolean> {
+    /** 🧩 Cria nova visita (offline ou online) */
+    async create(visita: VIPVisitaType): Promise<boolean | "offline" | null> {
         try {
             console.log("📝 Enviando visita:", visita.id);
 
-            const payload = offline
-                ? {
-                    id: visita.id,
-                    empresaId: visita.empresa?.id,
-                    responsavel: visita.responsavel,
-                    tecnico: visita.tecnico,
-                    data: visita.data,
-                    horaEntrada: visita.horaEntrada,
-                    horaSaida: visita.horaSaida,
-                    perguntas: visita.perguntas,
-                    respostas: visita.respostas,
-                    setores: visita.setores,
-                    assinatura: visita.assinatura,
-                }
-                : visita;
+            const payload = {
+                id: visita.id,
+                empresaId: visita.empresa?.id,
+                responsavel: visita.responsavel,
+                tecnico: visita.tecnico,
+                data: visita.data,
+                horaEntrada: visita.horaEntrada,
+                horaSaida: visita.horaSaida,
+                perguntas: visita.perguntas,
+                respostas: visita.respostas,
+                setores: visita.setores,
+                assinatura: visita.assinatura,
+            };
 
+            // 🔌 Tenta enviar para o servidor
             const res = await fetch(`${Storage.base_url}/visitas`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
             });
 
+            // ✅ Sucesso
             if (res.ok) {
                 console.log("✅ Visita enviada com sucesso!");
                 return true;
             }
 
+            // ⚠️ Falha no status HTTP
             console.warn("⚠️ Falha ao enviar visita. Status:", res.status);
-            if (offline) return this.addVisita(visita);
-            return false;
+            console.warn("💾 Salvando visita localmente (modo offline)");
+            return "offline";
+
         } catch (err) {
+            // ❌ Erro de rede ou exceção
             console.error("❌ Erro ao criar visita:", err);
-            if (offline) return this.addVisita(visita);
-            return false;
+            console.warn("💾 Salvando visita localmente (erro na requisição)");
+            return "offline";
         }
     }
+
 
     /** 📦 Retorna todas as visitas salvas localmente */
     async getAll(): Promise<VIPVisitaType[]> {
@@ -142,16 +149,33 @@ export default class VisitaData extends Storage {
     }
 
     /** ➕ Adiciona uma nova visita localmente */
-    async addVisita(visita: VIPVisitaType): Promise<boolean> {
+    async addVisita(visita: VIPVisitaType): Promise<"offline" | null> {
         try {
             const visitas = await this.getAll();
             visitas.push(visita);
             await this.save(this.keys.VISITAS_KEY, JSON.stringify(visitas));
             console.log(`💾 Visita salva localmente (${visitas.length} total)`);
-            return true;
+            return "offline";
         } catch (err) {
             console.error("❌ Erro ao salvar visita local:", err);
-            return false;
+            return null;
+        }
+    }
+
+    async salvar(visita: VIPVisitaType) {
+        try {
+            const visitas = await this.getAll();
+            if (visitas.find(v => v.id === visita.id)) {
+                await this.save(this.keys.VISITAS_KEY, JSON.stringify(visitas.map(v => v.id === visita.id ? visita : v)));
+            } else {
+                visitas.push(visita);
+                await this.save(this.keys.VISITAS_KEY, JSON.stringify(visitas));
+            }
+            console.log(`💾 Visita salva localmente (${visitas.length} total)`);
+            return "offline";
+        } catch (err) {
+            console.error("❌ Erro ao salvar visita local:", err);
+            return null;
         }
     }
 
@@ -159,6 +183,7 @@ export default class VisitaData extends Storage {
     async getById(id: string): Promise<VIPVisitaType | null> {
         try {
             const visitas = await this.getAll();
+            console.log(visitas[0].assinatura)
             return visitas.find((v) => v.id === id) || null;
         } catch (err) {
             console.error("❌ Erro ao buscar visita:", err);

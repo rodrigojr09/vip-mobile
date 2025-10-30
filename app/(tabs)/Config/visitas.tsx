@@ -27,13 +27,14 @@ export default function Config() {
 			try {
 				const visitasData = await manager.visitas.getAll();
 				const data = visitasData?.map((visita: VIPVisitaType) => ({
-					id: visita.empresa?.id || "-",
+					id: visita.id || "-",
 					nome: visita.empresa?.razao_social || "Sem Nome",
 					responsavel: visita.responsavel || "Sem Responsável",
-					data: visita.data || "Sem Data",
+					data: `${visita.data} ${visita.horaEntrada}` || "Sem Data",
 				}));
+                
 				if (data) setVisitas(data);
-				throw new Error("Sem dados");
+                else setVisitas([]);
 			} catch (error) {
 				console.error("❌ Erro ao listar Visitas:", error);
 			} finally {
@@ -173,7 +174,7 @@ export default function Config() {
 
 			{/* Lista */}
 			<FlatList
-				data={visitas}
+				data={visitas.reverse()}
 				scrollEnabled={false}
 				keyExtractor={(item, index) => `${item.id}-${index}`}
 				contentContainerStyle={{ paddingBottom: 80 }}
@@ -267,7 +268,7 @@ export default function Config() {
 											const filePath = `${FileSystem.documentDirectory}${fileName}`;
 
 											// Salva o arquivo internamente
-											/*await FileSystem.writeAsStringAsync(
+											await FileSystem.writeAsStringAsync(
 												filePath,
 												htmlContent,
 												{
@@ -275,7 +276,7 @@ export default function Config() {
 												},
 											);
 
-											Sharing.shareAsync(filePath);*/
+											Sharing.shareAsync(filePath);
 										},
 									},
 									{ text: "Fechar", style: "cancel" },
