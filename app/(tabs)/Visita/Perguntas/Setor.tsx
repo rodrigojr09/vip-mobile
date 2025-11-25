@@ -61,12 +61,12 @@ export default function PerguntasSetor() {
 		if (!nome.trim()) {
 			alert("Informe o nome do setor antes de continuar.");
 			return;
-		}
+        }
 		addSetor({
 			id: (params.id as string) || uuidv4(),
 			nome,
 			respostas,
-			perguntas: quests_setor,
+			perguntas: perguntas.setor,
 		});
 		nav.push("/Visita/Perguntas/Setor");
 	}
