@@ -16,6 +16,7 @@ import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import { events } from "@/utils/API/Event";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
+import { deviceType, DeviceType } from "expo-device";
 
 export default function Visita() {
 	const {
@@ -65,13 +66,24 @@ export default function Visita() {
 		);
 	}
 
+    const isTablet = deviceType === DeviceType.TABLET;
+    const index = isTablet ? 60 : 25;
+
 	return (
 		<Container style={styles.formContainer}>
 			<View style={styles.headerTable}>
 				<View style={styles.row}>
 					<Input
 						placeholder="Nome da empresa"
-						value={empresa ? empresa.razao_social : search}
+						value={
+							empresa
+								? empresa.razao_social
+										.split("")
+										.filter((_a, i) => i < index)
+										.join("") +
+									(empresa.razao_social.length > index ? "..." : "")
+								: search
+						}
 						onChange={(e) => setSearch(e)}
 					/>
 					{empresa && (

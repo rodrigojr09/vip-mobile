@@ -99,12 +99,12 @@ const styles = StyleSheet.create({
 	},
 	headerText: {
 		fontWeight: "bold",
-		fontSize: 16,
+		fontSize: 14,
 		color: "#ffffff",
 		textAlign: "center",
 	},
 	bodyText: {
-		fontSize: 14,
+		fontSize: 12,
 		color: "#c9d1d9",
 		textAlign: "center",
 	},
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
 	emptyText: {
 		color: "#c9d1d9",
 		fontStyle: "italic",
-		fontSize: 14,
+		fontSize: 12,
 	},
 });
 

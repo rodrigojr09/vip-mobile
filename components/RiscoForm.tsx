@@ -4,10 +4,12 @@ import { useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
 import { riscos } from "@/utils/Riscos";
 import "react-native-get-random-values";
 import Input from "./Input";
+import { deviceType, DeviceType } from "expo-device";
 
 export default function RiscoForm() {
 	const funcao = useFuncao();
 	const riscosPadrao = riscos;
+    const isTablet = deviceType === DeviceType.TABLET;
 
 	const isChecked = (nome: string) => {
 		return funcao.riscos.some((r) => r.risco === nome);
@@ -31,11 +33,34 @@ export default function RiscoForm() {
 
 			{/* Cabeçalho */}
 			<View style={[styles.row, styles.headerRow]}>
-				<Text style={[styles.cell, styles.headerCell, styles.col1]}>
-					Selecionar
+				<Text
+					style={[
+						styles.cell,
+						styles.headerCell,
+						styles.col1,
+						{ fontSize: isTablet ? 16 : 12 },
+					]}
+				>
+					Possui
 				</Text>
-				<Text style={[styles.cell, styles.headerCell, styles.col2]}>Risco</Text>
-				<Text style={[styles.cell, styles.headerCell, styles.col3]}>
+				<Text
+					style={[
+						styles.cell,
+						styles.headerCell,
+						styles.col2,
+						{ fontSize: isTablet ? 16 : 12 },
+					]}
+				>
+					Risco
+				</Text>
+				<Text
+					style={[
+						styles.cell,
+						styles.headerCell,
+						styles.col3,
+						{ fontSize: isTablet ? 16 : 12 },
+					]}
+				>
 					Descrição do Risco
 				</Text>
 			</View>
@@ -110,21 +135,20 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: "#22c55e",
 		paddingHorizontal: 8,
-		paddingVertical: 6,
 		color: "#fff",
 		justifyContent: "center",
 	},
 	headerCell: {
 		fontWeight: "bold",
 		textAlign: "center",
+		paddingVertical: 6,
 	},
 	col1: { flex: 1, alignItems: "center" }, // Selecionar
-	col2: { flex: 3 }, // Risco
+	col2: { flex: 2 }, // Risco
 	col3: {
-		flex: 3,
+		flex: 4,
 		borderWidth: 1,
 		borderColor: "#22c55e",
 		color: "#fff",
-		justifyContent: "center",
 	}, // Descrição do Risco
 });

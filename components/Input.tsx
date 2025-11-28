@@ -64,7 +64,6 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 		padding: 15,
 		marginVertical: 10,
-		fontSize: 18,
 		width: "100%",
 		color: "#FFF",
 	},

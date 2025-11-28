@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import { useNavigationHistory } from "@/hooks/Navigation";
@@ -8,11 +8,14 @@ export default function Config() {
 
     return (
         <Container style={styles.container}>
+            <Text style={styles.title}>Backup's</Text>
             <Button onPress={() => nav.push("/Config/levantamentos")}>
-                Levantamentos
+                Levantamentos Salvos
             </Button>
 
-            <Button onPress={() => nav.push("/Config/visitas")}>Visitas Técnicas</Button>
+            <Button onPress={() => nav.push("/Config/visitas")}>Visitas Técnicas Salvas</Button>
+
+
         </Container>
     );
 }
@@ -22,5 +25,11 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         padding: 20,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginBottom: 20,
+        color: "#22c55e",
     },
 });
