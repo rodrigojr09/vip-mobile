@@ -1,27 +1,30 @@
 import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
-import { useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
 import { riscos } from "@/utils/Riscos";
 import "react-native-get-random-values";
+import { DeviceType, deviceType } from "expo-device";
+import { useLevantamento } from "@/hooks/v2/Levantamentos/Levantamento";
 import Input from "./Input";
-import { deviceType, DeviceType } from "expo-device";
 
 export default function RiscoForm() {
-	const funcao = useFuncao();
+	const levantamento = useLevantamento();
 	const riscosPadrao = riscos;
-    const isTablet = deviceType === DeviceType.TABLET;
+	const isTablet = deviceType === DeviceType.TABLET;
 
 	const isChecked = (nome: string) => {
-		return funcao.riscos.some((r) => r.risco === nome);
+		return levantamento.funcao?.riscos.some((r) => r.risco === nome);
 	};
 
 	const toggleRisco = (nome: string) => {
 		const exists = isChecked(nome);
 		if (exists) {
-			funcao.setRiscos(funcao.riscos.filter((r) => r.risco !== nome));
+			levantamento.atualizarFuncao(
+				"riscos",
+				levantamento.funcao?.riscos.filter((r) => r.risco !== nome) || [],
+			);
 		} else {
-			funcao.setRiscos([
-				...funcao.riscos,
+			levantamento.atualizarFuncao("riscos", [
+				...(levantamento.funcao?.riscos || []),
 				{ id: uuidv4(), risco: nome, fonteGeradora: "" },
 			]);
 		}
@@ -68,7 +71,9 @@ export default function RiscoForm() {
 			{/* Linhas */}
 			{riscosPadrao.map((item) => {
 				const checked = isChecked(item);
-				const userRisco = funcao.riscos.find((r) => r.risco === item);
+				const userRisco = levantamento.funcao?.riscos.find(
+					(r) => r.risco === item,
+				);
 
 				return (
 					<View key={item} style={styles.row}>
@@ -94,11 +99,11 @@ export default function RiscoForm() {
 								editable={checked}
 								onChange={(text) => {
 									if (!checked) return;
-									const updated = [...funcao.riscos];
+									const updated = [...(levantamento.funcao?.riscos || [])];
 									const index = updated.findIndex((r) => r.risco === item);
 									if (index >= 0) {
 										updated[index].fonteGeradora = text;
-										funcao.setRiscos(updated);
+										levantamento.atualizarFuncao("riscos", updated);
 									}
 								}}
 								textarea

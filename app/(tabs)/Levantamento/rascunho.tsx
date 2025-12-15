@@ -5,17 +5,17 @@ import Signature, {
 	type SignatureViewRef,
 } from "react-native-signature-canvas";
 import { WebView } from "react-native-webview";
-import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import { getHtml } from "@/utils/formatHTML";
+import { getHtml } from "@/hooks/v2/Levantamentos/formatHTML";
+import { useLevantamento } from "@/hooks/v2/Levantamentos/Levantamento";
 
 export default function Rascunho() {
-	const empresa = useEmpresa();
+	const levantamento = useLevantamento();
 	const nav = useNavigationHistory();
 	const ref = useRef<SignatureViewRef>(null);
 
 	// Certifica-se de que os dados da empresa estão disponíveis antes de gerar o HTML
-	if (!empresa) {
+	if (!levantamento.empresa) {
 		return (
 			<View style={styles.center}>
 				<Text>Carregando dados da empresa...</Text>
@@ -43,7 +43,7 @@ export default function Rascunho() {
 
 	const isTablet = Device.deviceType === Device.DeviceType.TABLET;
 
-	const htmlContent = getHtml(empresa);
+	const htmlContent = getHtml(levantamento.empresa);
 
 	return (
 		<View style={styles.container}>
@@ -57,7 +57,7 @@ export default function Rascunho() {
 				ref={ref}
 				onOK={handleSignature}
 				onEmpty={() => Alert.alert("Atenção", "Nenhuma assinatura capturada.")}
-				descriptionText={`Assinatura de: ${empresa.responsavel}`}
+				descriptionText={`Assinatura de: ${levantamento.empresa.responsavel}`}
 				clearText="Limpar"
 				confirmText="Confirmar"
 				webStyle={`

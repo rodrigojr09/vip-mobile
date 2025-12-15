@@ -6,11 +6,11 @@ import Signature, {
 import { WebView } from "react-native-webview";
 import Container from "@/components/Container";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import { useVisita } from "@/hooks/v2/Visitas/Visita";
 import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 
 export default function Rascunho() {
-	const visita = useVisita();
+	const { visita } = useVisita();
 	const nav = useNavigationHistory();
 	const ref = useRef<SignatureViewRef>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);

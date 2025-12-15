@@ -1,24 +1,19 @@
 import { Stack } from "expo-router";
 import { useEffect } from "react";
-import {
-	EmpresaProvider,
-	useEmpresa,
-} from "@/hooks/Levantamento/EmpresaProvider";
-import { FuncaoProvider, useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
-import { SetorProvider, useSetor } from "@/hooks/Levantamento/SetorProvider";
+import Levantamento, {
+	useLevantamento,
+} from "@/hooks/v2/Levantamentos/Levantamento";
 import manager from "@/utils/Data/manager";
 
 function AutoSave({ children }: { children: React.ReactNode }) {
-	const empresa = useEmpresa();
-	const setor = useSetor();
-	const funcao = useFuncao();
+	const levantamento = useLevantamento();
 
 	useEffect(() => {
 		const saveData = async () => {
-			if (empresa.id === "") return;
+			if (levantamento.empresa.id === "") return;
 			console.log("Salvando dados de levantamento automaticamente...");
 			try {
-				manager.levantamentos.salvar({ empresa, setor, funcao });
+				manager.levantamentos.salvar(levantamento.empresa);
 				console.log("Dados de levantamento salvos automaticamente.");
 			} catch (error) {
 				console.error(
@@ -29,21 +24,17 @@ function AutoSave({ children }: { children: React.ReactNode }) {
 		};
 
 		saveData();
-	}, [empresa, setor, funcao]);
+	}, []);
 
 	return <>{children}</>;
 }
 
 export default function Layout() {
 	return (
-		<EmpresaProvider>
-			<SetorProvider>
-				<FuncaoProvider>
-					<AutoSave>
-						<Stack screenOptions={{ headerShown: false }} />
-					</AutoSave>
-				</FuncaoProvider>
-			</SetorProvider>
-		</EmpresaProvider>
+		<Levantamento>
+			<AutoSave>
+				<Stack screenOptions={{ headerShown: false }} />
+			</AutoSave>
+		</Levantamento>
 	);
 }

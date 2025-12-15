@@ -1,7 +1,5 @@
 import { Stack } from "expo-router";
-import VisitaProvider, {
-	useVisita,
-} from "@/hooks/VisitaTecnica/VisitaProvider";
+import VisitaProvider, { useVisita } from "@/hooks/v2/Visitas/Visita";
 import { useEffect } from "react";
 import manager from "@/utils/Data/manager";
 
@@ -15,7 +13,7 @@ export default function Layout() {
 }
 
 function VisitaAutoSave() {
-	const visita = useVisita();
+	const { visita } = useVisita();
 
 	useEffect(() => {
 		if (visita.id === "") return;

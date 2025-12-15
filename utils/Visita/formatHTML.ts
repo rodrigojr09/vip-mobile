@@ -1,12 +1,13 @@
 import type {
-    VIPPerguntaType,
-    VIPRespostaType,
-} from "@/types/VisitaTecnica/VIPPerguntaType";
-import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
+    PerguntaType,
+    RespostaType,
+    VisitaType,
+} from "@/types/Visita";
+import manager from "../Data/manager";
 
 function getRespostaHtml(
-    pergunta: VIPPerguntaType,
-    respostas: VIPRespostaType[],
+    pergunta: PerguntaType,
+    respostas: RespostaType[],
 ): string {
     const resposta = respostas.find((r) => r.pergunta === pergunta.pergunta);
     if (!resposta && pergunta.type !== "info") return "";
@@ -122,7 +123,8 @@ const assinaturaHtml = `
 	</div>
 `;
 
-export function getHtmlVisita(visita: VIPVisitaType) {
+export function getHtmlVisita(visita: VisitaType) {
+    const perguntas = manager.visitas.perguntas;
     return `<!DOCTYPE html>
 	<html lang="pt-BR">
 		<head>
@@ -269,7 +271,7 @@ export function getHtmlVisita(visita: VIPVisitaType) {
         }</p>
 				</div>
 
-				${visita.perguntas.adm
+				${perguntas.adm
             .map(
                 (pergunta) =>
                     `<div class="card">${getRespostaHtml(
@@ -284,7 +286,7 @@ export function getHtmlVisita(visita: VIPVisitaType) {
                 (setor) => `
                             <div class="card-setor">
                                 <h2 class="titulo-setor">${setor.nome}</h2>
-                                ${setor.perguntas
+                                ${perguntas.setor
                         .map(
                             (pergunta) =>
                                 `<div class="card">${getRespostaHtml(

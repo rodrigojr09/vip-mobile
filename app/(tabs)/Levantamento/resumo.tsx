@@ -2,32 +2,35 @@ import { StyleSheet, Text } from "react-native";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import VIPTabela from "@/components/VIPTabela";
-import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import type { VIPFuncaoType } from "@/types/Levantamento/VIPFuncaoType";
+import { useLevantamento } from "@/hooks/v2/Levantamentos/Levantamento";
+import type { FuncaoType } from "@/types/Levantamento";
 
 export default function Resumo() {
-	const empresa = useEmpresa();
+	const levantamento = useLevantamento();
 	const nav = useNavigationHistory();
 	return (
 		<Container style={styles.container} scroller>
 			{/* Título */}
-			<Text style={styles.title}>Setores da Empresa: {empresa.nome}</Text>
+			<Text style={styles.title}>
+				Setores da Empresa: {levantamento.empresa.nome}
+			</Text>
 
 			{/* Tabela */}
 			<VIPTabela
 				headers={["Nome", "Funções"]}
-				valores={empresa.setores.map((a) => {
+				valores={levantamento.empresa.setores.map((a) => {
 					return {
 						id: a.id,
 						Nome: a.nome,
 						// prettier-ignore
-						'Funções': a.funcoes.map((b: VIPFuncaoType) => b.nome).join(", "),
+						Funções: a.funcoes.map((b: FuncaoType) => b.nome).join(", "),
 					};
 				})}
 				onExcluir={(setor) => {
-					empresa.setSetores(
-						empresa.setores.filter((a) => a.id !== setor.id)
+					levantamento.atualizarEmpresa(
+						"setores",
+						levantamento.empresa.setores.filter((a) => a.id !== setor.id),
 					);
 				}}
 				goTo={(item) => {

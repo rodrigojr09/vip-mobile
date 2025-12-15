@@ -1,10 +1,11 @@
-import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
+import type { PerguntaType, VisitaType } from "@/types/Visita";
 import Storage from "../Storage";
+import manager from "./manager";
 
 export default class VisitaData extends Storage {
     private static instance: VisitaData;
 
-    public perguntas: VIPVisitaType["perguntas"] = { adm: [], setor: [] };
+    public perguntas: { adm: PerguntaType[]; setor: PerguntaType[] } = { adm: [], setor: [] };
 
     /** 🔁 Singleton — garante apenas uma instância */
     static getInstance(): VisitaData {
@@ -91,8 +92,7 @@ export default class VisitaData extends Storage {
     }
 
     /** 🧩 Cria nova visita (offline ou online) */
-    /** 🧩 Cria nova visita (offline ou online) */
-    async create(visita: VIPVisitaType): Promise<boolean | "offline" | null> {
+    async create(visita: VisitaType): Promise<boolean | "offline" | null> {
         try {
             console.log("📝 Enviando visita:", visita.id);
 
@@ -104,7 +104,7 @@ export default class VisitaData extends Storage {
                 data: visita.data,
                 horaEntrada: visita.horaEntrada,
                 horaSaida: visita.horaSaida,
-                perguntas: visita.perguntas,
+                perguntas: manager.visitas.perguntas,
                 respostas: visita.respostas,
                 setores: visita.setores,
                 assinatura: visita.assinatura,
@@ -138,10 +138,10 @@ export default class VisitaData extends Storage {
 
 
     /** 📦 Retorna todas as visitas salvas localmente */
-    async getAll(): Promise<VIPVisitaType[]> {
+    async getAll(): Promise<VisitaType[]> {
         try {
             const data = await this.get(this.keys.VISITAS_KEY);
-            return data ? (JSON.parse(data) as VIPVisitaType[]) : [];
+            return data ? (JSON.parse(data) as VisitaType[]) : [];
         } catch (err) {
             console.error("❌ Erro ao carregar visitas:", err);
             return [];
@@ -149,7 +149,7 @@ export default class VisitaData extends Storage {
     }
 
     /** ➕ Adiciona uma nova visita localmente */
-    async addVisita(visita: VIPVisitaType): Promise<"offline" | null> {
+    async addVisita(visita: VisitaType): Promise<"offline" | null> {
         try {
             const visitas = await this.getAll();
             visitas.push(visita);
@@ -162,7 +162,7 @@ export default class VisitaData extends Storage {
         }
     }
 
-    async salvar(visita: VIPVisitaType) {
+    async salvar(visita: VisitaType) {
         try {
             const visitas = await this.getAll();
             if (visitas.find(v => v.id === visita.id)) {
@@ -180,7 +180,7 @@ export default class VisitaData extends Storage {
     }
 
     /** 🔍 Busca visita por ID */
-    async getById(id: string): Promise<VIPVisitaType | null> {
+    async getById(id: string): Promise<VisitaType | null> {
         try {
             const visitas = await this.getAll();
             console.log(visitas[0].assinatura)

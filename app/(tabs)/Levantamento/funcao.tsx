@@ -7,51 +7,56 @@ import {
 	Platform,
 	type ScrollView,
 	StyleSheet,
-	type TextInput,
 } from "react-native";
+import { v4 as uuidv4 } from "uuid";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
-import Input from "@/components/Input";
 import RiscoForm from "@/components/RiscoForm";
-import { useFuncao } from "@/hooks/Levantamento/FuncaoProvider";
-import { useSetor } from "@/hooks/Levantamento/SetorProvider";
+import "react-native-get-random-values";
+import { Form } from "@/components/v2/Levantamento/Form";
 import { useNavigationHistory } from "@/hooks/Navigation";
+import { useLevantamento } from "@/hooks/v2/Levantamentos/Levantamento";
 
 export default function Funcao() {
 	const nav = useNavigationHistory();
-	const setor = useSetor();
-	const funcao = useFuncao();
+	const levantamento = useLevantamento();
 	const params = useLocalSearchParams();
-
-	const campos = 4;
-	const refs = useRef<TextInput[]>([]);
-	const focarProximo = (index: number) => {
-		if (index + 1 < campos) {
-			refs.current[index + 1]?.focus();
-		} else {
-			refs.current[index].blur();
-		}
-	};
 
 	useEffect(() => {
 		if (params.funcao) {
-			const hasFuncao = setor.funcoes.find(
+			const hasFuncao = levantamento.setor?.funcoes.find(
 				(a) => a.id === (params.funcao as string),
 			);
-			if (hasFuncao) funcao.load(hasFuncao);
+			if (hasFuncao) levantamento.selecionarFuncao(hasFuncao.id);
+		} else {
+			const funcao = {
+				id: uuidv4(),
+				nome: "",
+				description: "",
+				funcionarios: "",
+				riscos: [],
+			};
+			levantamento.atualizarSetor("funcoes", [
+				...(levantamento.setor?.funcoes || []),
+				funcao,
+			]);
+			levantamento.selecionarFuncao(funcao.id);
 		}
 		return () => {
-			funcao.clear();
+			levantamento.selecionarSetor("");
+			levantamento.selecionarFuncao("");
 		};
 	}, []);
-	const handleCreateFuncao = () => {
-		if (!funcao.nome.trim()) return Alert.alert("Digite o nome da função");
-		if (!funcao.description.trim())
+
+	const salvarFuncao = () => {
+		if (!levantamento.funcao?.nome.trim())
+			return Alert.alert("Digite o nome da função");
+		if (!levantamento.funcao?.description.trim())
 			return Alert.alert("Digite a descrição da função");
-		if (!funcao.funcionarios.trim())
+		if (!levantamento.funcao?.funcionarios.trim())
 			return Alert.alert("Digite o nome dos funcionarios da função");
-		//Se tudo tiver ok
-		setor.setFuncoes([...setor.funcoes, funcao]);
+
+		levantamento.selecionarFuncao("");
 		nav.back();
 	};
 
@@ -80,6 +85,15 @@ export default function Funcao() {
 		};
 	}, []);
 
+	const inputs = [
+		{ placeholder: "Digite o nome da função...", name: "nome" },
+		{ placeholder: "Digite a descrição da função...", name: "description" },
+		{
+			placeholder: "Digite o nome dos funcionarios da função...",
+			name: "funcionarios",
+		},
+	];
+
 	return (
 		<KeyboardAvoidingView
 			style={{ flex: 1 }}
@@ -92,71 +106,17 @@ export default function Funcao() {
 				scroller
 				avoidKeyboard
 			>
-				<Input
-					placeholder="Digite o nome da função"
-					value={funcao.nome}
-					onChange={funcao.setNome}
-					ref={(ref) => {
-						if (ref) refs.current[0] = ref;
-					}}
-					returnKeyType={0 === campos - 1 ? "done" : "next"}
-					onSubmitEditing={() => focarProximo(0)}
-				/>
-				<Input
-					placeholder="Digite a descrição da função"
-					value={funcao.description}
-					onChange={funcao.setDescription}
-					ref={(ref) => {
-						if (ref) refs.current[1] = ref;
-					}}
-					returnKeyType={1 === campos - 1 ? "done" : "next"}
-					onSubmitEditing={() => focarProximo(1)}
-				/>
-				<Input
-					placeholder="Digite os funcionarios da função"
-					value={funcao.funcionarios}
-					onChange={funcao.setFuncionarios}
-					ref={(ref) => {
-						if (ref) refs.current[2] = ref;
-					}}
-					returnKeyType={2 === campos - 1 ? "done" : "next"}
-					onSubmitEditing={() => focarProximo(2)}
-				/>
+				<Form campos={inputs} onSubmit={salvarFuncao} type="FUNCAO" />
 
 				<RiscoForm />
 
-				{!params.funcao && (
-					<Button
-						onPress={() => {
-							handleCreateFuncao();
-						}}
-					>
-						Adicionar
-					</Button>
-				)}
-				{params.funcao && (
-					<Button
-						onPress={() => {
-							if (!funcao.nome.trim())
-								return Alert.alert("Digite o nome da função");
-							if (!funcao.description.trim())
-								return Alert.alert("Digite a descrição da função");
-							if (!funcao.funcionarios.trim())
-								return Alert.alert("Digite o nome dos funcionarios da função");
-							//Se tudo tiver ok
-							setor.setFuncoes(
-								setor.funcoes.map((a) => {
-									if (a.id !== params.funcao) return a;
-									console.log(a);
-									return funcao;
-								}),
-							);
-							nav.back();
-						}}
-					>
-						Atualizar
-					</Button>
-				)}
+				<Button
+					onPress={() => {
+						salvarFuncao();
+					}}
+				>
+					{params.funcao ? "Atualizar" : "Adicionar"}
+				</Button>
 			</Container>
 		</KeyboardAvoidingView>
 	);

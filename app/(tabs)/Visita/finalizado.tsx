@@ -6,7 +6,7 @@ import Button from "@/components/Button";
 import Container from "@/components/Container";
 import Loading from "@/components/Loading";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import { useVisita } from "@/hooks/v2/Visitas/Visita";
 import { events } from "@/utils/API/Event";
 import { abrirArquivo } from "@/utils/abrirArquivo";
 import manager from "@/utils/Data/manager";
@@ -15,7 +15,7 @@ import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 export default function Finalizado() {
 	const nav = useNavigationHistory();
 	const query = useSearchParams();
-	const visita = useVisita();
+	const { visita, clear } = useVisita();
 
 	const [loading] = useState(false);
 	const [token, setToken] = useState<string | null>(null);
@@ -104,7 +104,7 @@ export default function Finalizado() {
 			<Container style={{ padding: 10 }}>
 				<Button
 					onPress={() => {
-						visita.clear();
+						clear();
 						nav.replace("/");
 					}}
 				>

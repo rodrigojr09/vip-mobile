@@ -1,5 +1,5 @@
-import * as IntentLauncher from "expo-intent-launcher";
 import * as FileSystem from "expo-file-system/legacy";
+import * as IntentLauncher from "expo-intent-launcher";
 import Mime from "react-native-mime-types";
 
 export async function abrirArquivo(caminhoArquivo: string) {

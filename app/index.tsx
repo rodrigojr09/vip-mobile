@@ -12,7 +12,7 @@ export default function App() {
 				Novo Levantamento
 			</Button>
 
-			<Button onPress={() => nav.push("/Visita")}>Visita Técnica</Button>
+			<Button onPress={() => nav.push("/Visita")}>Nova Visita Técnica</Button>
 
 			<Button secundary onPress={() => nav.push("/Config")}>
 				Configuração

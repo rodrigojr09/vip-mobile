@@ -7,15 +7,15 @@ import Signature, {
 } from "react-native-signature-canvas";
 import Button from "@/components/Button";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import { useVisita } from "@/hooks/v2/Visitas/Visita";
 
 const SignatureScreen = () => {
-    const nav = useNavigationHistory();
-	const visita = useVisita();
+	const nav = useNavigationHistory();
+	const { visita } = useVisita();
 	const ref = useRef<SignatureViewRef>(null);
 	const [hasSigned, setHasSigned] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false); // <-- estado de controle
- 
+
 	useEffect(() => {
 		const lockOrientation = async () => {
 			await ScreenOrientation.lockAsync(

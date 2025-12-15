@@ -6,16 +6,16 @@ import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
-import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { events } from "@/utils/API/Event";
-import { getHtml } from "@/utils/formatHTML";
+import { getHtml } from "@/hooks/v2/Levantamentos/formatHTML";
 import manager from "@/utils/Data/manager";
+import { useLevantamento } from "@/hooks/v2/Levantamentos/Levantamento";
 
 export default function Finalizado() {
 	const nav = useNavigationHistory();
 	const query = useSearchParams();
-	const empresa = useEmpresa();
+	const levantamento = useLevantamento();
 	const [fileUri, setFileUri] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -26,18 +26,18 @@ export default function Finalizado() {
 				);
 				console.log("📱 Orientação travada para retrato.");
 
-				const mensagem = `Finalização da visita - Empresa: ${empresa.nome}, Responsável: ${empresa.responsavel}`;
+				const mensagem = `Finalização da visita - Empresa: ${levantamento.empresa.nome}, Responsável: ${levantamento.empresa.responsavel}`;
 				events.sendEvent(mensagem);
 				events.endEvent();
 				console.log("✅ Evento de finalização registrado.");
 
 				// Gera conteúdo HTML
-				const htmlContent = getHtml(empresa)
+				const htmlContent = getHtml(levantamento.empresa)
 					.replace("$assinatura", `${query.get("assinatura")}`)
 					.replace("not-assinatura", "");
 
 				// Caminho interno
-				const fileName = `Levantamento-${empresa.nome}.html`;
+				const fileName = `Levantamento-${levantamento.empresa.nome}.html`;
 				const filePath = `${FileSystem.documentDirectory}${fileName}`;
 
 				// Salva o arquivo internamente
@@ -46,12 +46,9 @@ export default function Finalizado() {
 				});
 
 				setFileUri(filePath);
-				console.log(empresa);
 				manager.levantamentos.salvar({
-					empresa: {
-						...empresa,
-						assinatura: query.get("assinatura") || "",
-					},
+					...levantamento.empresa,
+					assinatura: query.get("assinatura") || "",
 				});
 				console.log("✅ Arquivo salvo internamente em:", filePath);
 			} catch (error) {
@@ -77,7 +74,7 @@ export default function Finalizado() {
 		<Container style={{ padding: 10 }}>
 			<Button
 				onPress={() => {
-					empresa.clear();
+					levantamento.clear();
 					nav.replace("/");
 				}}
 			>

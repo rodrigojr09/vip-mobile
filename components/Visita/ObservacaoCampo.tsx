@@ -1,5 +1,5 @@
+import type { RespostaType } from "@/types/Visita";
 import { StyleSheet, TextInput } from "react-native";
-import type { VIPRespostaType } from "@/types/VisitaTecnica/VIPPerguntaType";
 
 const ObservacaoCampo = ({
 	label,
@@ -8,11 +8,11 @@ const ObservacaoCampo = ({
 	onChange,
 }: {
 	label: string;
-	status: VIPRespostaType["checked"];
+	status: RespostaType["checked"];
 	obs: string;
 	onChange: (
 		label: string,
-		status: VIPRespostaType["checked"],
+		status: RespostaType["checked"],
 		obs: string
 	) => void;
 }) => (

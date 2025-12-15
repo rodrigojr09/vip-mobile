@@ -1,15 +1,12 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import type {
-	VIPPerguntaType,
-	VIPRespostaType,
-} from "@/types/VisitaTecnica/VIPPerguntaType";
+import type { PerguntaType, RespostaType } from "@/types/Visita";
 import ObservacaoCampo from "./ObservacaoCampo";
 
 interface Props {
-	pergunta: VIPPerguntaType;
-	resposta?: VIPRespostaType;
-	onChange: (resposta: VIPRespostaType) => void;
-	respostas: VIPRespostaType[];
+	pergunta: PerguntaType;
+	resposta?: RespostaType;
+	onChange: (resposta: RespostaType) => void;
+	respostas: RespostaType[];
 }
 
 const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
@@ -34,7 +31,7 @@ const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
 					onPress={() =>
 						onChange({
 							pergunta: pergunta.pergunta,
-							checked: key as VIPRespostaType["checked"],
+							checked: key as RespostaType["checked"],
 						})
 					}
 				>

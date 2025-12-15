@@ -1,11 +1,13 @@
 import * as FileSystem from "expo-file-system/legacy";
-import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
+import type { VisitaType } from "@/types/Visita";
+import manager from "../Data/manager";
 
 const base_dir = `${FileSystem.documentDirectory}offline_visitas/`;
 
-export default async function saveOffline(visita: VIPVisitaType) {
+export default async function saveOffline(visita: VisitaType) {
     try {
         // Define o caminho interno
+        const perguntas = manager.visitas.perguntas;
         const filePath = `${base_dir + visita.id}.json`;
 
         const jsonData = JSON.stringify({
@@ -16,7 +18,7 @@ export default async function saveOffline(visita: VIPVisitaType) {
             data: visita.data,
             horaEntrada: visita.horaEntrada,
             horaSaida: visita.horaSaida,
-            perguntas: visita.perguntas,
+            perguntas: perguntas,
             respostas: visita.respostas,
             setores: visita.setores,
             assinatura: visita.assinatura,

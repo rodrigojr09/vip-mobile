@@ -6,17 +6,18 @@ import Button from "@/components/Button";
 import Container from "@/components/Container";
 import Input from "@/components/Input";
 import QuestionBlock from "@/components/Visita/QuestionBlock";
-import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
-import type { VIPRespostaType } from "@/types/VisitaTecnica/VIPPerguntaType";
-import { quests_setor } from "@/utils/quests";
+import { useVisita } from "@/hooks/v2/Visitas/Visita";
+import type { RespostaType } from "@/types/Visita";
 import "react-native-get-random-values";
 import Sidebar from "@/components/Visita/Sidebar";
 import { useNavigationHistory } from "@/hooks/Navigation";
+import type SetorType from "@/types/Visita";
+import manager from "@/utils/Data/manager";
 
 export default function PerguntasSetor() {
-	const { addSetor, setores, perguntas } = useVisita();
-	const [respostas, setRespostas] = useState<VIPRespostaType[]>([]);
-	const [nome, setNome] = useState("");
+	const { visita, setor, selecionarSetor, atualizarSetor } = useVisita();
+
+	const perguntas = manager.visitas.perguntas;
 
 	const nav = useNavigationHistory();
 
@@ -26,10 +27,16 @@ export default function PerguntasSetor() {
 
 	useEffect(() => {
 		if (params.id) {
-			const setor = setores.find((s) => s.id === params.id);
+			const setor = visita.setores.find((s) => s.id === params.id);
 			if (setor) {
-				setNome(setor.nome);
-				setRespostas(setor.respostas || []);
+				selecionarSetor(setor.id);
+			} else {
+				const defaultSetor: SetorType = {
+					id: uuidv4(),
+					nome: "",
+					respostas: [],
+				};
+				selecionarSetor(defaultSetor.id);
 			}
 		}
 	}, []);
@@ -38,8 +45,8 @@ export default function PerguntasSetor() {
 		setIsSidebarOpen(!isSidebarOpen);
 	};
 
-	const addResposta = useCallback((resposta: VIPRespostaType) => {
-		setRespostas((prev) => {
+	const addResposta = useCallback((resposta: RespostaType) => {
+		const att = (prev: RespostaType[]) => {
 			const index = prev.findIndex((r) => r.pergunta === resposta.pergunta);
 
 			if (index !== -1) {
@@ -54,20 +61,16 @@ export default function PerguntasSetor() {
 			}
 
 			return [...prev, resposta];
-		});
+		};
+		atualizarSetor("respostas", att(setor?.respostas || []));
 	}, []);
 
 	function handleAvancar() {
-		if (!nome.trim()) {
+		if (!setor?.nome.trim()) {
 			alert("Informe o nome do setor antes de continuar.");
 			return;
-        }
-		addSetor({
-			id: (params.id as string) || uuidv4(),
-			nome,
-			respostas,
-			perguntas: perguntas.setor,
-		});
+		}
+
 		nav.push("/Visita/Perguntas/Setor");
 	}
 
@@ -85,8 +88,8 @@ export default function PerguntasSetor() {
 					<View style={styles.inputContainer}>
 						<Input
 							placeholder="Setor Vistoriado"
-							onChange={setNome}
-							value={nome}
+							onChange={(nome) => atualizarSetor("nome", nome)}
+							value={setor?.nome || ""}
 						/>
 					</View>
 
@@ -94,9 +97,11 @@ export default function PerguntasSetor() {
 						<View key={q.id} style={styles.questionBlock}>
 							<QuestionBlock
 								pergunta={q}
-								resposta={respostas.find((r) => r.pergunta === q.pergunta)}
+								resposta={setor?.respostas.find(
+									(r) => r.pergunta === q.pergunta,
+								)}
 								onChange={addResposta}
-								respostas={respostas}
+								respostas={setor?.respostas || []}
 							/>
 						</View>
 					))}
@@ -112,7 +117,8 @@ export default function PerguntasSetor() {
 					>
 						<Button
 							disabled={
-								!nome.trim() || respostas.length !== perguntas.setor.length
+								!setor?.nome.trim() ||
+								visita?.respostas.length !== perguntas.setor.length
 							}
 							onPress={() => handleAvancar()}
 						>

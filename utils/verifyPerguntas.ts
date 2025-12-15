@@ -1,12 +1,9 @@
-import type {
-	VIPPerguntaType,
-	VIPRespostaType,
-} from "@/types/VisitaTecnica/VIPPerguntaType";
+import type { PerguntaType, RespostaType } from "@/types/Visita";
 
-type CheckedType = VIPRespostaType["checked"];
+type CheckedType = RespostaType["checked"];
 export function verifyPerguntas(
-	perguntas: VIPPerguntaType[],
-	respostas: VIPRespostaType[],
+	perguntas: PerguntaType[],
+	respostas: RespostaType[],
 	statusPai?: CheckedType,
 ): boolean {
 	for (const pergunta of perguntas) {

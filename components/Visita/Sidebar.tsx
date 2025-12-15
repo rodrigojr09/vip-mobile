@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
+import { useVisita } from "@/hooks/v2/Visitas/Visita";
 import Button from "../Button";
 
 export default function Sidebar({
@@ -8,7 +8,7 @@ export default function Sidebar({
 }: {
 	toggleSidebar: () => void;
 }) {
-	const { setores, removerSetor } = useVisita();
+	const { visita, atualizarVisita } = useVisita();
 	const nav = useNavigationHistory();
 
 	return (
@@ -47,7 +47,7 @@ export default function Sidebar({
 						</Text>
 					</Pressable>
 				</View>
-				{setores.map((t) => (
+				{visita.setores.map((t) => (
 					<View
 						style={{
 							flexDirection: "row",
@@ -71,7 +71,14 @@ export default function Sidebar({
 						>
 							<Text style={[{ color: "lime" }]}>{t.nome}</Text>
 						</Pressable>
-						<Pressable onPress={() => removerSetor(t.id as string)}>
+						<Pressable
+							onPress={() =>
+								atualizarVisita(
+									"setores",
+									visita.setores.filter((a) => a.id !== t.id),
+								)
+							}
+						>
 							<Text style={[{ color: "red" }]}>Remover</Text>
 						</Pressable>
 					</View>

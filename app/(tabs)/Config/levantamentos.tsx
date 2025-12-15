@@ -10,10 +10,10 @@ import {
 	View,
 } from "react-native";
 import Container from "@/components/Container";
-import type { VIPEmpresaType } from "@/types/Levantamento/VIPEmpresaType";
+import { getHtml } from "@/hooks/v2/Levantamentos/formatHTML";
+import type { EmpresaType } from "@/types/Levantamento";
 import { events } from "@/utils/API/Event";
 import manager from "@/utils/Data/manager";
-import { getHtml } from "@/utils/formatHTML";
 
 export default function Config() {
 	const [levantamentos, setLevantamentos] = useState<
@@ -27,11 +27,11 @@ export default function Config() {
 			try {
 				const data = JSON.parse(
 					(await manager.levantamentos.getAll()) || "[]",
-				).map((lev: { empresa: VIPEmpresaType }) => ({
-					id: lev.empresa.id || "-",
-					nome: lev.empresa.nome || "Sem Nome",
-					responsavel: lev.empresa.responsavel || "Sem Responsável",
-					data: lev.empresa.data || "Sem Data",
+				).map((lev: EmpresaType) => ({
+					id: lev.id || "-",
+					nome: lev.nome || "Sem Nome",
+					responsavel: lev.responsavel || "Sem Responsável",
+					data: lev.data || "Sem Data",
 				}));
 				setLevantamentos(data);
 			} catch (error) {

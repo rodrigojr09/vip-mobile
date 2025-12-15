@@ -1,39 +1,34 @@
-import { useRef } from "react";
-import { Alert, StyleSheet, type TextInput } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
-import Input from "@/components/Input";
-import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { events } from "@/utils/API/Event";
 import "react-native-get-random-values";
+import { Form } from "@/components/v2/Levantamento/Form";
+import { useLevantamento } from "@/hooks/v2/Levantamentos/Levantamento";
+
+const inputs = [
+	{ placeholder: "Digite o nome da empresa...", name: "nome" },
+	{ placeholder: "Quem está auxiliando o levantamento?", name: "responsavel" },
+];
 
 export default function Levantamento() {
 	const nav = useNavigationHistory();
-	const levantamento = useEmpresa();
-
-	const campos = ["nome", "responsavel"];
-	const refs = useRef<TextInput[]>([]);
-
-	const focarProximo = (index: number) => {
-		if (index + 1 < campos.length) {
-			refs.current[index + 1]?.focus();
-		} else {
-			console.log("📨 Enviar formulário!");
-		}
-	};
+	const levantamento = useLevantamento();
 
 	const handleCreateLevantamento = async () => {
-		if (!levantamento.nome.trim() || !levantamento.responsavel.trim()) {
+		if (
+			!levantamento.empresa.nome.trim() ||
+			!levantamento.empresa.responsavel.trim()
+		) {
 			Alert.alert("Atenção! preencha todos os campos");
 		} else {
 			// Mensagem personalizada para o evento
-
-			const mensagem = `Levantamento criado - Empresa: ${levantamento.nome}, Responsável: ${levantamento.responsavel}`;
+			const mensagem = `Levantamento criado - Empresa: ${levantamento.empresa.nome}, Responsável: ${levantamento.empresa.responsavel}`;
 
 			try {
-				levantamento.setId(uuidv4());
+				levantamento.atualizarEmpresa("id", uuidv4());
 				events.sendEvent(mensagem);
 				events.startEvent("levantamento");
 			} catch (error) {
@@ -46,25 +41,10 @@ export default function Levantamento() {
 
 	return (
 		<Container style={styles.formContainer}>
-			<Input
-				placeholder="Digite o nome da empresa..."
-				value={levantamento.nome}
-				onChange={levantamento.setNome}
-				ref={(ref) => {
-					if (ref) refs.current[0] = ref;
-				}}
-				returnKeyType={0 === campos.length - 1 ? "done" : "next"}
-				onSubmitEditing={() => focarProximo(0)}
-			/>
-			<Input
-				placeholder="Quem está auxiliando o levantamento ?"
-				value={levantamento.responsavel}
-				onChange={levantamento.setResponsavel}
-				ref={(ref) => {
-					if (ref) refs.current[1] = ref;
-				}}
-				returnKeyType={1 === campos.length - 1 ? "done" : "next"}
-				onSubmitEditing={() => handleCreateLevantamento()}
+			<Form
+				campos={inputs}
+				onSubmit={handleCreateLevantamento}
+				type={"EMPRESA"}
 			/>
 			<Button onPress={handleCreateLevantamento}>Criar</Button>
 		</Container>

@@ -3,8 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 import type { VIPEvento } from "@/types/VIPEvent";
 import { getCurrentLocation } from "./Locator";
 import "react-native-get-random-values";
-import Storage from "../Storage";
 import manager from "../Data/manager";
+import Storage from "../Storage";
 
 class Event {
     public atual: null | string = null;

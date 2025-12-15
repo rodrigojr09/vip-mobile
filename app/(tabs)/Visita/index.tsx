@@ -11,41 +11,34 @@ import Button from "@/components/Button";
 import Container from "@/components/Container";
 import Input from "@/components/Input";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
-import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
+import { useVisita } from "@/hooks/v2/Visitas/Visita";
 import { events } from "@/utils/API/Event";
 import "react-native-get-random-values";
+import { DeviceType, deviceType } from "expo-device";
 import { v4 as uuidv4 } from "uuid";
-import { deviceType, DeviceType } from "expo-device";
+import type { EmpresaType } from "@/types/Visita";
+import manager from "@/utils/Data/manager";
 
 export default function Visita() {
-	const {
-		empresa,
-		setEmpresa,
-		responsavel,
-		setResponsavel,
-		setId,
-		tecnico,
-		empresas,
-		setTecnico,
-	} = useVisita();
+	const { visita, atualizarVisita } = useVisita();
+	const empresas = manager.visitas.empresas;
 
 	const nav = useNavigationHistory();
 
 	const [search, setSearch] = useState("");
 
 	async function handleSave() {
-		if (empresa === null)
+		if (visita.empresa === null)
 			return Alert.alert("Atenção! O nome da empresa precisa ser preenchido");
-		if (tecnico.trim().length === 0)
+		if (visita.tecnico.trim().length === 0)
 			return Alert.alert("Atenção! O nome do técnico precisa ser preenchido");
-		if (responsavel.trim().length === 0)
+		if (visita.responsavel.trim().length === 0)
 			return Alert.alert(
 				"Atenção! O nome do cliente responsável precisa ser preenchido",
 			);
 
 		// Montar mensagem do evento
-		const msg = `Início da visita - Empresa: ${empresa.razao_social}, Técnico: ${tecnico}, Responsável: ${responsavel}`;
+		const msg = `Início da visita - Empresa: ${visita.empresa?.razao_social}, Técnico: ${visita.tecnico}, Responsável: ${visita.responsavel}`;
 
 		try {
 			events.sendEvent(msg);
@@ -54,11 +47,11 @@ export default function Visita() {
 			console.warn("Erro ao adicionar evento:", error);
 		}
 
-		setId(uuidv4());
+		atualizarVisita("id", uuidv4());
 		nav.push({ pathname: "/Visita/Perguntas/Administrativo" });
 	}
 
-	function filter(item: VIPVisitaType["empresas"][0]) {
+	function filter(item: EmpresaType) {
 		return (
 			item.nome_fantasia.toLowerCase().includes(search.toLowerCase()) ||
 			item.razao_social.toLowerCase().includes(search.toLowerCase()) ||
@@ -66,8 +59,8 @@ export default function Visita() {
 		);
 	}
 
-    const isTablet = deviceType === DeviceType.TABLET;
-    const index = isTablet ? 60 : 25;
+	const isTablet = deviceType === DeviceType.TABLET;
+	const index = isTablet ? 60 : 25;
 
 	return (
 		<Container style={styles.formContainer}>
@@ -76,26 +69,26 @@ export default function Visita() {
 					<Input
 						placeholder="Nome da empresa"
 						value={
-							empresa
-								? empresa.razao_social
+							visita.empresa
+								? visita.empresa.razao_social
 										.split("")
 										.filter((_a, i) => i < index)
 										.join("") +
-									(empresa.razao_social.length > index ? "..." : "")
+									(visita.empresa.razao_social.length > index ? "..." : "")
 								: search
 						}
 						onChange={(e) => setSearch(e)}
 					/>
-					{empresa && (
+					{visita.empresa && (
 						<TouchableOpacity
-							onPress={() => setEmpresa(null)}
+							onPress={() => atualizarVisita("empresa", null)}
 							style={styles.clearButton}
 						>
 							<Text style={styles.clearButtonText}>Limpar</Text>
 						</TouchableOpacity>
 					)}
 				</View>
-				{!empresa &&
+				{!visita.empresa &&
 					search.trim() !== "" &&
 					empresas.filter(filter).length > 0 && (
 						<FlatList
@@ -106,7 +99,7 @@ export default function Visita() {
 							renderItem={({ item }) => (
 								<TouchableOpacity
 									style={styles.suggestionItem}
-									onPress={() => setEmpresa(item)}
+									onPress={() => atualizarVisita("empresa", item)}
 								>
 									<Text style={styles.suggestionText}>{item.razao_social}</Text>
 								</TouchableOpacity>
@@ -116,15 +109,15 @@ export default function Visita() {
 				<View style={styles.row}>
 					<Input
 						placeholder="Nome do Técnico"
-						value={tecnico}
-						onChange={setTecnico}
+						value={visita.tecnico}
+						onChange={(text) => atualizarVisita("tecnico", text)}
 					/>
 				</View>
 				<View style={styles.row}>
 					<Input
 						placeholder="Responsável (Cliente)"
-						value={responsavel}
-						onChange={setResponsavel}
+						value={visita.responsavel}
+						onChange={(text) => atualizarVisita("responsavel", text)}
 					/>
 				</View>
 			</View>
