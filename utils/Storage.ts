@@ -25,7 +25,7 @@ export default class Storage {
     /** 🌐 URL base da API */
     static base_url = __DEV__
         ? "http://192.168.3.66:3000/api/v3"
-        : "https://mobile.vipsst.com.br/api/v3";
+        : "https://vip-admin.vercel.app/api/v3";
 
     constructor() {
         console.log("🎯 Storage base inicializado");

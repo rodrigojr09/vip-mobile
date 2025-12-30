@@ -116,7 +116,7 @@ export default function Finalizado() {
 					<Button
 						onPress={() => {
 							Linking.openURL(
-								`https://mobile.vipsst.com.br/empresas/${token}/visitas/${visita.id}`,
+								`https://vip-admin.vercel.app/empresas/${token}/visitas/${visita.id}`,
 							);
 						}}
 					>

@@ -66,8 +66,8 @@ export default function Visita() {
 		);
 	}
 
-    const isTablet = deviceType === DeviceType.TABLET;
-    const index = isTablet ? 60 : 25;
+	const isTablet = deviceType === DeviceType.TABLET;
+	const index = isTablet ? 60 : 25;
 
 	return (
 		<Container style={styles.formContainer}>
@@ -109,6 +109,9 @@ export default function Visita() {
 									onPress={() => setEmpresa(item)}
 								>
 									<Text style={styles.suggestionText}>{item.razao_social}</Text>
+									<Text style={styles.suggestionText2}>
+										{item.nome_fantasia}
+									</Text>
 								</TouchableOpacity>
 							)}
 						/>
@@ -181,6 +184,10 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		color: "white",
 	},
+    suggestionText2: {
+        fontSize: 14,
+        color: "gray",  
+    },
 	clearButton: {
 		position: "absolute",
 		top: 25,
