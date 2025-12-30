@@ -105,9 +105,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 						style={styles.backButton}
 						onPress={() => {
 							if (events.atual !== null) {
-								if (nav.history.length > 1) {
-									console.log(nav.history);
-								} else {
+								if (!(nav.history.length > 1)) {
 									events.sendEvent(`O evento ${events.atual} foi cancelado.`);
 									events.endEvent();
 								}

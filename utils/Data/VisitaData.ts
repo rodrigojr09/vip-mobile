@@ -10,7 +10,6 @@ export default class VisitaData extends Storage {
     static getInstance(): VisitaData {
         if (!VisitaData.instance) {
             VisitaData.instance = new VisitaData();
-            VisitaData.instance.init();
         }
         return VisitaData.instance;
     }
@@ -18,10 +17,11 @@ export default class VisitaData extends Storage {
     private constructor() {
         super();
         console.log("🎯 VisitaData inicializado");
+        this.init();
     }
 
     /** 🚀 Inicializa dados locais e remotos */
-    private async init(): Promise<void> {
+    public async init(): Promise<void> {
         try {
             console.log("🔄 Iniciando carregamento de dados...");
 
@@ -148,20 +148,6 @@ export default class VisitaData extends Storage {
         }
     }
 
-    /** ➕ Adiciona uma nova visita localmente */
-    async addVisita(visita: VIPVisitaType): Promise<"offline" | null> {
-        try {
-            const visitas = await this.getAll();
-            visitas.push(visita);
-            await this.save(this.keys.VISITAS_KEY, JSON.stringify(visitas));
-            console.log(`💾 Visita salva localmente (${visitas.length} total)`);
-            return "offline";
-        } catch (err) {
-            console.error("❌ Erro ao salvar visita local:", err);
-            return null;
-        }
-    }
-
     async salvar(visita: VIPVisitaType) {
         try {
             const visitas = await this.getAll();
@@ -183,7 +169,6 @@ export default class VisitaData extends Storage {
     async getById(id: string): Promise<VIPVisitaType | null> {
         try {
             const visitas = await this.getAll();
-            console.log(visitas[0].assinatura)
             return visitas.find((v) => v.id === id) || null;
         } catch (err) {
             console.error("❌ Erro ao buscar visita:", err);
@@ -200,4 +185,16 @@ export default class VisitaData extends Storage {
             console.error("❌ Erro ao limpar visitas:", err);
         }
     }
+
+    /** 🗑️ Deletar uma visita */
+    async delete(id: string): Promise<void> {
+        try {
+            const visitas = await this.getAll();
+            await this.save(this.keys.VISITAS_KEY, JSON.stringify(visitas.filter((v) => v.id !== id)));
+            console.log("🧹 Visita deletada com sucesso!");
+        } catch (err) {
+            console.error("❌ Erro ao deletar visita:", err);
+        }
+    }
+
 }

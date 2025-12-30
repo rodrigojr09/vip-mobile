@@ -47,10 +47,18 @@ export default function Finalizado() {
 			});
 
 			await manager.visitas.salvar({
-				...visita,
+				empresa: visita.empresa,
+				id: visita.id,
+				data: visita.data,
+				tecnico: visita.tecnico,
+				responsavel: visita.responsavel,
+				perguntas: visita.perguntas,
+				respostas: visita.respostas,
+				horaEntrada: visita.horaEntrada,
+				setores: visita.setores,
 				assinatura: query.get("assinatura") as string,
 				horaSaida: `${hora}:${minutos}`,
-			});
+			} as any);
 
 			if (res === "offline") {
 				Alert.alert("Salvo offline!");

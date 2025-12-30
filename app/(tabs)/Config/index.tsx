@@ -15,7 +15,6 @@ export default function Config() {
 
             <Button onPress={() => nav.push("/Config/visitas")}>Visitas Técnicas Salvas</Button>
 
-
         </Container>
     );
 }

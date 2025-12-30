@@ -5,6 +5,7 @@ import {
 	ActivityIndicator,
 	Alert,
 	FlatList,
+	Pressable,
 	Text,
 	TouchableOpacity,
 	View,
@@ -14,6 +15,8 @@ import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import { events } from "@/utils/API/Event";
 import manager from "@/utils/Data/manager";
 import { getHtmlVisita } from "@/utils/Visita/formatHTML";
+import { router } from "expo-router";
+import Storage from "@/utils/Storage";
 
 export default function Config() {
 	const [visitas, setVisitas] = useState<
@@ -32,9 +35,9 @@ export default function Config() {
 					responsavel: visita.responsavel || "Sem Responsável",
 					data: `${visita.data} ${visita.horaEntrada}` || "Sem Data",
 				}));
-                
+
 				if (data) setVisitas(data);
-                else setVisitas([]);
+				else setVisitas([]);
 			} catch (error) {
 				console.error("❌ Erro ao listar Visitas:", error);
 			} finally {
@@ -70,6 +73,26 @@ export default function Config() {
 			],
 		);
 	};
+
+	async function asyncAll() {
+		const visitas = await manager.visitas.getAll();
+		visitas.forEach(async (visita: VIPVisitaType) => {
+			if (!visita.id || !visita.assinatura) return;
+			const res = await fetch(`${Storage.base_url}/visitas/${visita.id}`);
+			if (res.status === 404) {
+				const created = await manager.visitas.create(visita);
+				if (created) {
+					console.log(`Visita ${visita.id} criada com sucesso!`);
+					await manager.visitas.delete(visita.id);
+				} else {
+					Alert.alert("Erro", `Nao foi possivel criar a visita: .${visita.id}`);
+				}
+			} else {
+				console.log(`Visita ${visita.id} ja existe!`);
+				await manager.visitas.delete(visita.id);
+			}
+		});
+	}
 
 	if (loading) {
 		return (
@@ -109,6 +132,33 @@ export default function Config() {
 				>
 					Visitas Salvas
 				</Text>
+
+				<View style={{ flexDirection: "row", gap: 8 }}>
+					<TouchableOpacity
+						style={{
+							backgroundColor: "#00B26D", // cor verde
+							padding: 8,
+							borderRadius: 8,
+						}}
+						onPress={async () => {
+							await manager.visitas.init();
+						}}
+					>
+						<Text style={{ color: "#fff", fontWeight: "bold" }}>Atualizar</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={{
+							backgroundColor: "#00B26D", // cor verde
+							padding: 8,
+							borderRadius: 8,
+						}}
+						onPress={async () => await asyncAll()}
+					>
+						<Text style={{ color: "#fff", fontWeight: "bold" }}>
+							Sincronizar
+						</Text>
+					</TouchableOpacity>
+				</View>
 			</View>
 
 			{/* Cabeçalho da tabela */}
@@ -180,7 +230,13 @@ export default function Config() {
 				contentContainerStyle={{ paddingBottom: 80 }}
 				ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
 				renderItem={({ item }) => (
-					<View
+					<Pressable
+						onPress={() =>
+							router.push({
+								pathname: "/Config/visitas/info",
+								params: { id: item.id },
+							})
+						}
 						style={{
 							flexDirection: "row",
 							alignItems: "center",
@@ -290,7 +346,7 @@ export default function Config() {
 						>
 							<Text style={{ color: "#58a6ff", fontWeight: "bold" }}>+</Text>
 						</TouchableOpacity>
-					</View>
+					</Pressable>
 				)}
 				ListEmptyComponent={
 					<View
