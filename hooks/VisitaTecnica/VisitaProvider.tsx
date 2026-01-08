@@ -5,6 +5,7 @@ import {
 	useEffect,
 	useState,
 } from "react";
+import type { VIPEmpresaType } from "@/types/VisitaTecnica/VIPEmpresaType";
 import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import manager from "@/utils/Data/manager";
 
@@ -13,7 +14,11 @@ interface VisitaContextType extends VIPVisitaType {
 	setEmpresa: (empresa: VIPVisitaType["empresa"] | null) => void;
 	setResponsavel: (responsavel: string) => void;
 	setTecnico: (tecnico: string) => void;
+	setInclusas: (inclusas: VIPVisitaType["inclusas"]) => void;
 	addResposta: (resposta: VIPVisitaType["respostas"][number]) => void;
+	setId: (value: string) => void;
+	addSetor: (setor: VIPVisitaType["setores"][number]) => void;
+	removerSetor: (id: string) => void;
 	clear: () => void;
 }
 
@@ -26,6 +31,7 @@ export default function VisitaProvider({
 }) {
 	const [id, setId] = useState<string>("");
 	const [empresa, setEmpresa] = useState<VIPVisitaType["empresa"] | null>(null);
+	const [inclusas, setInclusas] = useState<VIPVisitaType["inclusas"]>([]);
 	const [responsavel, setResponsavel] = useState<string>("");
 	const [tecnico, setTecnico] = useState<string>("");
 	const [respostas, setRespostas] = useState<VIPVisitaType["respostas"]>([]);
@@ -91,7 +97,7 @@ export default function VisitaProvider({
 		<VisitaContext.Provider
 			value={{
 				id,
-                setId,
+				setId,
 				empresa,
 				setEmpresa,
 				responsavel,
@@ -121,6 +127,8 @@ export default function VisitaProvider({
 						return [...prev, setor];
 					});
 				},
+				inclusas,
+				setInclusas,
 				clear,
 			}}
 		>

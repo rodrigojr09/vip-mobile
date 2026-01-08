@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import {
 	Alert,
 	FlatList,
@@ -28,11 +29,15 @@ export default function Visita() {
 		tecnico,
 		empresas,
 		setTecnico,
+		inclusas,
+		setInclusas,
 	} = useVisita();
 
 	const nav = useNavigationHistory();
 
 	const [search, setSearch] = useState("");
+	const [isearch, setiSearch] = useState("");
+	const [openInclusa, setOpenInclusa] = useState(false);
 
 	async function handleSave() {
 		if (empresa === null)
@@ -66,14 +71,29 @@ export default function Visita() {
 		);
 	}
 
+	function ifilter(item: VIPVisitaType["empresas"][0]) {
+		return (
+			item.nome_fantasia.toLowerCase().includes(isearch.toLowerCase()) ||
+			item.razao_social.toLowerCase().includes(isearch.toLowerCase()) ||
+			item.cnpj.toLowerCase().includes(isearch.toLowerCase())
+		);
+	}
+
 	const isTablet = deviceType === DeviceType.TABLET;
 	const index = isTablet ? 60 : 25;
 
 	return (
 		<Container style={styles.formContainer}>
 			<View style={styles.headerTable}>
-				<View style={styles.row}>
+				<View
+					style={{
+						...styles.row,
+						flexDirection: "row",
+						justifyContent: "space-between",
+					}}
+				>
 					<Input
+						style={{ width: "80%" }}
 						placeholder="Nome da empresa"
 						value={
 							empresa
@@ -94,6 +114,24 @@ export default function Visita() {
 							<Text style={styles.clearButtonText}>Limpar</Text>
 						</TouchableOpacity>
 					)}
+
+					<TouchableOpacity
+						onPress={() => setOpenInclusa(!openInclusa)}
+						style={{
+							width: "15%",
+							backgroundColor: "#2d2d2d",
+							alignItems: "center",
+							justifyContent: "center",
+							borderRadius: 8,
+							height: 50,
+						}}
+					>
+						{!openInclusa ? (
+							<Ionicons name="add-outline" size={24} color="green" />
+						) : (
+							<Ionicons name="remove-outline" size={24} color="red" />
+						)}
+					</TouchableOpacity>
 				</View>
 				{!empresa &&
 					search.trim() !== "" &&
@@ -116,6 +154,36 @@ export default function Visita() {
 							)}
 						/>
 					)}
+				{openInclusa && (
+					<View style={styles.row}>
+						<Input
+							placeholder={`Incluir empresa na visita`}
+							value={isearch}
+							onChange={(e) => setiSearch(e)}
+						/>
+					</View>
+				)}
+				{isearch.trim() !== "" && empresas.filter(ifilter).length > 0 && (
+					<FlatList
+						scrollEnabled
+						style={styles.suggestionsList}
+						data={empresas.filter(ifilter)}
+						keyExtractor={(_, index) => index.toString()}
+						renderItem={({ item }) => (
+							<TouchableOpacity
+								style={styles.suggestionItem}
+								onPress={() => {
+									setInclusas([...inclusas, { id: uuidv4(), empresa: item }]);
+									setOpenInclusa(false);
+									setiSearch("");
+								}}
+							>
+								<Text style={styles.suggestionText}>{item.razao_social}</Text>
+								<Text style={styles.suggestionText2}>{item.nome_fantasia}</Text>
+							</TouchableOpacity>
+						)}
+					/>
+				)}
 				<View style={styles.row}>
 					<Input
 						placeholder="Nome do Técnico"
@@ -130,6 +198,32 @@ export default function Visita() {
 						onChange={setResponsavel}
 					/>
 				</View>
+				{inclusas.filter((a) => a.empresa !== null).length > 0 && (
+					<View style={styles.row}>
+						<Text style={{ color: "white", fontWeight: "bold" }}>
+							Empresas Inclusas:
+						</Text>
+						{inclusas
+							.filter((a) => a.empresa !== null)
+							.map(({ empresa: emp }) => (
+								<View
+									key={emp?.id}
+									style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+								>
+									<Text style={{ color: "white" }}>{emp?.razao_social}</Text>
+									<TouchableOpacity
+										onPress={() => {
+											setInclusas(
+												inclusas.filter((i) => i.empresa?.id !== emp?.id),
+											);
+										}}
+									>
+										<Ionicons name="remove-outline" size={20} color="red" />
+									</TouchableOpacity>
+								</View>
+							))}
+					</View>
+				)}
 			</View>
 			<Button onPress={handleSave}>Proximo</Button>
 		</Container>
@@ -184,14 +278,14 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		color: "white",
 	},
-    suggestionText2: {
-        fontSize: 14,
-        color: "gray",  
-    },
+	suggestionText2: {
+		fontSize: 14,
+		color: "gray",
+	},
 	clearButton: {
 		position: "absolute",
 		top: 25,
-		right: 10,
+		right: "24%",
 		zIndex: 1,
 	},
 	clearButtonText: {

@@ -12,15 +12,17 @@ import { quests_setor } from "@/utils/quests";
 import "react-native-get-random-values";
 import Sidebar from "@/components/Visita/Sidebar";
 import { useNavigationHistory } from "@/hooks/Navigation";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function PerguntasSetor() {
-	const { addSetor, setores, perguntas } = useVisita();
+	const { addSetor, setores, perguntas, inclusas } = useVisita();
 	const [respostas, setRespostas] = useState<VIPRespostaType[]>([]);
 	const [nome, setNome] = useState("");
 
 	const nav = useNavigationHistory();
 
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [openModel, setOpenModel] = useState(false);
 
 	const params = useLocalSearchParams();
 
@@ -61,7 +63,7 @@ export default function PerguntasSetor() {
 		if (!nome.trim()) {
 			alert("Informe o nome do setor antes de continuar.");
 			return;
-        }
+		}
 		addSetor({
 			id: (params.id as string) || uuidv4(),
 			nome,
@@ -71,12 +73,19 @@ export default function PerguntasSetor() {
 		nav.push("/Visita/Perguntas/Setor");
 	}
 
+	function handleFinalizar() {
+		if (inclusas.length) setOpenModel(true);
+		else nav.push("/Visita/resumo");
+	}
+
 	return (
 		<>
 			<Pressable onPress={toggleSidebar} style={styles.abrirBotao}>
 				<Text style={styles.botaoTexto}>☰ Abrir Menu</Text>
 			</Pressable>
-			{isSidebarOpen && <Sidebar toggleSidebar={toggleSidebar} />}
+			{isSidebarOpen && (
+				<Sidebar toggleSidebar={toggleSidebar} finalizar={handleFinalizar} />
+			)}
 
 			<Container style={{ zIndex: 1 }} scroller>
 				<View style={styles.formContainer}>
@@ -129,6 +138,66 @@ export default function PerguntasSetor() {
 				<View
 					style={{ position: "absolute", width: "75%", height: "100%" }}
 				></View>
+
+				{openModel && (
+					<View
+						style={{
+							top: 0,
+							left: 0,
+							right: 0,
+							bottom: 0,
+							backgroundColor: "rgba(0,0,0,0.4)",
+							position: "absolute",
+							zIndex: 9999,
+						}}
+					>
+						<View
+							style={{
+								padding: 20,
+								gap: 20,
+								backgroundColor: "#1f1f1f",
+								flex: 1,
+							}}
+						>
+							<Pressable
+								style={{ alignSelf: "flex-end" }}
+								onPress={() => setOpenModel(false)}
+							>
+								<Ionicons name="close" size={24} color="red" />
+							</Pressable>
+							<Text
+								style={{
+									fontSize: 20,
+									fontWeight: "bold",
+									color: "#fff",
+									textAlign: "center",
+								}}
+							>
+								Finalização de Visita
+							</Text>
+							<Button
+								onPress={() =>
+									nav.push({
+										pathname: "/Visita/resumo",
+										params: { salvar: "separado" },
+									})
+								}
+							>
+								Salvar relatorio por empresa
+							</Button>
+							<Button
+								onPress={() =>
+									nav.push({
+										pathname: "/Visita/resumo",
+										params: { salvar: "junto" },
+									})
+								}
+							>
+								Salvar relatorio junto
+							</Button>
+						</View>
+					</View>
+				)}
 			</Container>
 		</>
 	);

@@ -41,7 +41,7 @@ export default function VisualizarVisita() {
 		})();
 	}, [id]);
 
-    const SENHA_DELETE = "vip123"; // depois pode puxar do backend
+    const SENHA_DELETE = "Erodev19"; // depois pode puxar do backend
 
 	async function handleDelete() {
 		if (!senha) {

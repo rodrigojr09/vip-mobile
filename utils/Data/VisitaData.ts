@@ -99,6 +99,7 @@ export default class VisitaData extends Storage {
             const payload = {
                 id: visita.id,
                 empresaId: visita.empresa?.id,
+                inclusasId: visita.inclusas?.map(i => i.empresa?.id) || [],
                 responsavel: visita.responsavel,
                 tecnico: visita.tecnico,
                 data: visita.data,

@@ -8,10 +8,12 @@ import Container from "@/components/Container";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 import { getHtmlVisita } from "@/utils/Visita/formatHTML";
+import { useSearchParams } from "expo-router/build/hooks";
 
 export default function Rascunho() {
 	const visita = useVisita();
 	const nav = useNavigationHistory();
+    const params = useSearchParams();
 	const ref = useRef<SignatureViewRef>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [webHeight, setWebHeight] = useState<number>(0);
@@ -37,6 +39,7 @@ export default function Rascunho() {
 				pathname: "/Visita/finalizado",
 				params: {
 					assinatura: `<img style="width: 100%; height: 100%;" src="${signature}"/>`,
+					salvar: params.get("salvar"),
 				},
 			});
 		} catch (error) {

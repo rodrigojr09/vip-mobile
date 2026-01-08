@@ -18,7 +18,9 @@ export default function Finalizado() {
 	const visita = useVisita();
 
 	const [loading] = useState(false);
-	const [token, setToken] = useState<string | null>(null);
+	const [tokens, setTokens] = useState<
+		{ id: string; empresa: string; token: string }[]
+	>([]);
 
 	useEffect(() => {
 		const agora = new Date();
@@ -40,69 +42,78 @@ export default function Finalizado() {
 				console.warn("Erro ao adicionar evento de finalização:", error);
 			}
 
-			const res = await manager.visitas.create({
-				...visita,
-				horaSaida: `${hora}:${minutos}`,
-				assinatura: query.get("assinatura") as string,
-			});
-
-			await manager.visitas.salvar({
-				empresa: visita.empresa,
-				id: visita.id,
-				data: visita.data,
-				tecnico: visita.tecnico,
-				responsavel: visita.responsavel,
-				perguntas: visita.perguntas,
-				respostas: visita.respostas,
-				horaEntrada: visita.horaEntrada,
-				setores: visita.setores,
-				assinatura: query.get("assinatura") as string,
-				horaSaida: `${hora}:${minutos}`,
-			} as any);
-
-			if (res === "offline") {
-				Alert.alert("Salvo offline!");
-				setToken("offline");
+			if (query.get("salvar") === "separado") {
+				[
+					{ id: visita.id, empresa: visita.empresa },
+					...visita.inclusas,
+				].forEach(async ({ id, empresa }) => {
+					const res = await manager.visitas.create({
+						...visita,
+						id,
+						empresa,
+						horaSaida: `${hora}:${minutos}`,
+						assinatura: query.get("assinatura") as string,
+					});
+					await manager.visitas.salvar({
+						empresa,
+						inclusas: [],
+						id,
+						data: visita.data,
+						tecnico: visita.tecnico,
+						responsavel: visita.responsavel,
+						perguntas: visita.perguntas,
+						respostas: visita.respostas,
+						horaEntrada: visita.horaEntrada,
+						setores: visita.setores,
+						assinatura: query.get("assinatura") as string,
+						horaSaida: `${hora}:${minutos}`,
+						empresas: [],
+					});
+					addToken(
+						id,
+						empresa?.razao_social || "N/D",
+						res === "offline" ? "offline" : empresa?.token || "offline",
+					);
+				});
 			} else {
-				setToken(visita.empresa?.token || "offline");
+				const res = await manager.visitas.create({
+					...visita,
+					horaSaida: `${hora}:${minutos}`,
+					assinatura: query.get("assinatura") as string,
+				});
+
+				await manager.visitas.salvar({
+					empresa: visita.empresa,
+					inclusas: visita.inclusas || [],
+					id: visita.id,
+					data: visita.data,
+					tecnico: visita.tecnico,
+					responsavel: visita.responsavel,
+					perguntas: visita.perguntas,
+					respostas: visita.respostas,
+					horaEntrada: visita.horaEntrada,
+					setores: visita.setores,
+					assinatura: query.get("assinatura") as string,
+					horaSaida: `${hora}:${minutos}`,
+					empresas: [],
+				});
+
+				addToken(
+					visita.id,
+					visita.empresa?.razao_social || "N/D",
+					res === "offline" ? "offline" : visita.empresa?.token || "offline",
+				);
 			}
 		})();
 	}, []);
-	async function handleDownload() {
-		try {
-			// Gera o HTML com assinatura substituída
-			const htmlContent = getHtmlVisita(visita)
-				.replace("$assinatura", `${query.get("assinatura")}`)
-				.replace("not-assinatura", "");
 
-			// Pasta onde o arquivo será salvo
-			const dir = `${FileSystem.documentDirectory}html`;
-
-			// Garante que o diretório existe
-			const dirInfo = await FileSystem.getInfoAsync(dir);
-			if (!dirInfo.exists) {
-				await FileSystem.makeDirectoryAsync(dir, {
-					intermediates: true,
-				});
-			}
-
-			// Gera nome de arquivo limpo
-			const nomeArquivo = `${visita.empresa?.cnpj.replace(
-				/\D/g,
-				"",
-			)}-${visita.data.replaceAll("/", "-")}.html`;
-
-			const caminhoCompleto = `${dir}/${nomeArquivo}`;
-
-			await FileSystem.writeAsStringAsync(caminhoCompleto, htmlContent);
-			console.log(`✅ Arquivo salvo localmente em: ${caminhoCompleto}`);
-
-			Alert.alert("Sucesso", "Arquivo salvo com sucesso!");
-			await abrirArquivo(caminhoCompleto);
-		} catch (error: any) {
-			console.error("❌ Erro ao salvar o arquivo:", error);
-			Alert.alert("Erro", "Não foi possível salvar ou compartilhar o arquivo.");
-		}
+	function addToken(id: string, empresa: string, token: string) {
+		if (token === "offline")
+			Alert.alert(
+				"Aviso",
+				`A visita da empresa ${empresa} foi salva localmente e não possui token de acesso online.`,
+			);
+		setTokens((prev) => [...prev, { id, empresa, token }]);
 	}
 
 	if (loading) return <Loading />;
@@ -119,18 +130,18 @@ export default function Finalizado() {
 					Ir para o Início
 				</Button>
 
-				<Button onPress={handleDownload}>Baixar Visita</Button>
-				{token && token !== "offline" && (
+				{tokens.filter((token) => token.token !== "offline").map((token) => (
 					<Button
+						key={token.token}
 						onPress={() => {
 							Linking.openURL(
-								`https://vip-admin.vercel.app/empresas/${token}/visitas/${visita.id}`,
+								`https://vip-admin.vercel.app/empresas/${token.token}/visitas/${token.id}`,
 							);
 						}}
 					>
-						Abrir Link
+						{`Abrir Visita - (${token.empresa})`}
 					</Button>
-				)}
+				))}
 			</Container>
 		);
 }

@@ -12,67 +12,42 @@ import {
 } from "react-native";
 import Container from "@/components/Container";
 import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
-import { events } from "@/utils/API/Event";
 import manager from "@/utils/Data/manager";
 import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 import { router } from "expo-router";
 import Storage from "@/utils/Storage";
+import Input from "@/components/Input";
 
 export default function Config() {
 	const [visitas, setVisitas] = useState<
 		{ id: string; nome: string; responsavel: string; data: string }[]
 	>([]);
 	const [loading, setLoading] = useState(true);
+	const [oepnModal, setOpenModal] = useState(false);
+	const [senha, setSenha] = useState("");
 
-	// 🔄 Carrega os Visitas
+	async function carregarVisitas() {
+		try {
+			const visitasData = await manager.visitas.getAll();
+			const data = visitasData?.map((visita: VIPVisitaType) => ({
+				id: visita.id || "-",
+				nome: visita.empresa?.razao_social || "Sem Nome",
+				responsavel: visita.responsavel || "Sem Responsável",
+				data: `${visita.data} ${visita.horaEntrada}` || "Sem Data",
+			}));
+
+			if (data) setVisitas(data);
+			else setVisitas([]);
+		} catch (error) {
+			console.error("❌ Erro ao listar Visitas:", error);
+		} finally {
+			setLoading(false);
+		}
+	}
+
 	useEffect(() => {
-		(async () => {
-			try {
-				const visitasData = await manager.visitas.getAll();
-				const data = visitasData?.map((visita: VIPVisitaType) => ({
-					id: visita.id || "-",
-					nome: visita.empresa?.razao_social || "Sem Nome",
-					responsavel: visita.responsavel || "Sem Responsável",
-					data: `${visita.data} ${visita.horaEntrada}` || "Sem Data",
-				}));
-
-				if (data) setVisitas(data);
-				else setVisitas([]);
-			} catch (error) {
-				console.error("❌ Erro ao listar Visitas:", error);
-			} finally {
-				setLoading(false);
-			}
-		})();
+		carregarVisitas();
 	}, []);
-
-	// 🗑️ Função para apagar Visitas
-	const _apagarVisitas = async () => {
-		Alert.alert(
-			"Apagar Visitas",
-			"Tem certeza que deseja apagar todos os Visitas salvos?",
-			[
-				{ text: "Cancelar", style: "cancel" },
-				{
-					text: "Apagar",
-					style: "destructive",
-					onPress: async () => {
-						try {
-							await manager.visitas.clearVisitas(); // limpa os dados salvos
-							setVisitas([]);
-							events.sendEvent("🗑️ Todos os Visitas foram apagados");
-							Alert.alert("Sucesso", "Todos os Visitas foram apagados!");
-						} catch (error) {
-							events.sendEvent(
-								`❌ Erro ao apagar Visitas: ${JSON.stringify(error)}`,
-							);
-							Alert.alert("Erro", "Não foi possível apagar os Visitas.");
-						}
-					},
-				},
-			],
-		);
-	};
 
 	async function asyncAll() {
 		const visitas = await manager.visitas.getAll();
@@ -84,12 +59,14 @@ export default function Config() {
 				if (created) {
 					console.log(`Visita ${visita.id} criada com sucesso!`);
 					await manager.visitas.delete(visita.id);
+                    carregarVisitas();
 				} else {
 					Alert.alert("Erro", `Nao foi possivel criar a visita: .${visita.id}`);
 				}
 			} else {
 				console.log(`Visita ${visita.id} ja existe!`);
 				await manager.visitas.delete(visita.id);
+                carregarVisitas();
 			}
 		});
 	}
@@ -135,16 +112,12 @@ export default function Config() {
 
 				<View style={{ flexDirection: "row", gap: 8 }}>
 					<TouchableOpacity
-						style={{
-							backgroundColor: "#00B26D", // cor verde
-							padding: 8,
-							borderRadius: 8,
-						}}
-						onPress={async () => {
-							await manager.visitas.init();
-						}}
+						style={{ padding: 8, borderRadius: 8 }}
+						onPress={() => setOpenModal(true)}
 					>
-						<Text style={{ color: "#fff", fontWeight: "bold" }}>Atualizar</Text>
+						<Text style={{ color: "#00B26D", fontWeight: "bold" }}>
+							Desenvolvedor
+						</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
 						style={{
@@ -364,6 +337,71 @@ export default function Config() {
 					</View>
 				}
 			/>
+			{oepnModal && (
+				<View
+					style={{
+						position: "absolute",
+						flex: 1,
+						width: "100%",
+						height: "100%",
+						backgroundColor: "rgba(0, 0, 0, 0.5)",
+						zIndex: 1,
+						justifyContent: "center",
+						alignItems: "center",
+					}}
+				>
+					<View
+						style={{
+							backgroundColor: "#161b22",
+							padding: 20,
+							borderRadius: 8,
+							width: "80%",
+						}}
+					>
+						<Text style={{ color: "#8b949e", marginBottom: 10 }}>
+							Digite sua senha para acessar:
+						</Text>
+						<Input placeholder="Senha" value={senha} onChange={setSenha} />
+						<View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+							<Pressable
+								onPress={() => {
+									if (senha === "Erodev19") {
+										router.replace("/Config/visitas/dev");
+									} else {
+										Alert.alert(
+											"Senha incorreta",
+											"A senha informada está inválida.",
+										);
+									}
+								}}
+								style={{
+									marginTop: 10,
+									backgroundColor: "#58a6ff",
+									padding: 10,
+									borderRadius: 8,
+								}}
+							>
+								<Text style={{ color: "#f0f6fc", fontWeight: "bold", fontSize: 16 }}>Entrar</Text>
+							</Pressable>
+							<Pressable
+								onPress={() => {
+									setOpenModal(false);
+								}}
+								style={{
+									marginTop: 10,
+									backgroundColor: "#dc3545",
+									padding: 10,
+									borderRadius: 8,
+								}}
+							>
+								<Text style={{ color: "#f0f6fc", fontWeight: "bold", fontSize: 16 }}>
+									Cancelar
+								</Text>
+							</Pressable>
+						</View>
+					</View>
+				</View>
+			)}
 		</Container>
 	);
 }

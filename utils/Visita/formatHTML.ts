@@ -94,9 +94,9 @@ const assinaturaHtml = `
 	<div class="assinatura-container">
 		<div class="assinatura-bloco">
 			<h1 class="titulo-assinatura">
-				Visita Técnica - $empresa_nome<br />
-				Visita feita no dia $data
+				Visita Técnica - $data
 			</h1>
+            $empresa_nome
 			<div class="assinatura-texto">
 				<p>
 					Este inventário de riscos e levantamento de dados foi realizado por
@@ -106,7 +106,7 @@ const assinaturaHtml = `
 				<p>
 					Confirmo que fui designado como responsável por informar todos os dados
 					necessários para a elaboração da documentação de Saúde e Segurança do
-					Trabalho da empresa "$empresa_nome".
+					Trabalho.
 				</p>
 				<p>
 					Declaro que, após verificar e confirmar a veracidade dos dados
@@ -261,12 +261,14 @@ export function getHtmlVisita(visita: VIPVisitaType) {
 				<div class="info">
 					<p><strong>Empresa Visitada:</strong> ${visita.empresa?.razao_social || "Não informado"
         }</p>
+                    ${(visita.inclusas || []).map(a => `<p><strong>Empresa Visitada:</strong> ${a.empresa?.razao_social || "Não informado"
+            }</p>`)}
 					<p><strong>Técnico Responsável:</strong> ${visita.tecnico || "Não informado"
         }</p>
-					<p><strong>Data:</strong> ${visita.data}</p>
-					
-					<p><strong>Responsável pela Empresa:</strong> ${visita.responsavel || "Não informado"
+        
+        <p><strong>Responsável pela Empresa:</strong> ${visita.responsavel || "Não informado"
         }</p>
+        <p><strong>Data:</strong> ${visita.data}</p>
 				</div>
 
 				${visita.perguntas.adm
@@ -300,7 +302,7 @@ export function getHtmlVisita(visita: VIPVisitaType) {
 
 				${assinaturaHtml
             .replaceAll("$responsavel", visita.responsavel)
-            .replaceAll("$empresa_nome", visita.empresa?.razao_social || "")
+        .replaceAll("$empresa_nome", `<ul>${[visita.empresa?.razao_social || "N/A", ...(visita.inclusas || []).map(a => a.empresa?.razao_social || "N/A")].map(a => `<li>${a}</li>`).join(" ")}</ul>`)
             .replaceAll("$data", visita.data)}
 			</div>
             <script>

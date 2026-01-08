@@ -5,8 +5,10 @@ import Button from "../Button";
 
 export default function Sidebar({
 	toggleSidebar,
+    finalizar,
 }: {
 	toggleSidebar: () => void;
+    finalizar: () => void;
 }) {
 	const { setores, removerSetor } = useVisita();
 	const nav = useNavigationHistory();
@@ -92,7 +94,7 @@ export default function Sidebar({
 								"Adicione pelo menos um setor antes de finalizar a visita."
 							); */
 						toggleSidebar();
-						nav.push("/Visita/resumo");
+						finalizar();
 					}}
 				>
 					Finalizar
