@@ -91,7 +91,6 @@ export default class VisitaData extends Storage {
     }
 
     /** 🧩 Cria nova visita (offline ou online) */
-    /** 🧩 Cria nova visita (offline ou online) */
     async create(visita: VIPVisitaType): Promise<boolean | "offline" | null> {
         try {
             console.log("📝 Enviando visita:", visita.id);

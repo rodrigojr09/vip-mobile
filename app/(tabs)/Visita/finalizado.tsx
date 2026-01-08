@@ -51,6 +51,7 @@ export default function Finalizado() {
 						...visita,
 						id,
 						empresa,
+						inclusas: [],
 						horaSaida: `${hora}:${minutos}`,
 						assinatura: query.get("assinatura") as string,
 					});
@@ -84,7 +85,7 @@ export default function Finalizado() {
 
 				await manager.visitas.salvar({
 					empresa: visita.empresa,
-					inclusas: visita.inclusas || [],
+					inclusas: visita.inclusas,
 					id: visita.id,
 					data: visita.data,
 					tecnico: visita.tecnico,
@@ -130,18 +131,20 @@ export default function Finalizado() {
 					Ir para o Início
 				</Button>
 
-				{tokens.filter((token) => token.token !== "offline").map((token) => (
-					<Button
-						key={token.token}
-						onPress={() => {
-							Linking.openURL(
-								`https://vip-admin.vercel.app/empresas/${token.token}/visitas/${token.id}`,
-							);
-						}}
-					>
-						{`Abrir Visita - (${token.empresa})`}
-					</Button>
-				))}
+				{tokens
+					.filter((token) => token.token !== "offline")
+					.map((token) => (
+						<Button
+							key={token.token}
+							onPress={() => {
+								Linking.openURL(
+									`https://vip-admin.vercel.app/empresas/${token.token}/visitas/${token.id}`,
+								);
+							}}
+						>
+							{`Abrir Visita - (${token.empresa})`}
+						</Button>
+					))}
 			</Container>
 		);
 }
