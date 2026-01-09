@@ -1,10 +1,9 @@
-import { getAndroidId } from "expo-application";
 import { v4 as uuidv4 } from "uuid";
 import type { VIPEvento } from "@/types/VIPEvent";
 import { getCurrentLocation } from "./Locator";
 import "react-native-get-random-values";
-import Storage from "../Storage";
 import manager from "../Data/manager";
+import Storage from "../Storage";
 
 class Event {
     public atual: null | string = null;
@@ -43,7 +42,7 @@ class Event {
 
         const novoEvento: VIPEvento = {
             id: uuidv4(),
-            device: getAndroidId() || "unknown-device",
+            device: await manager.eventos.getDevice() || "unknown-device",
             data,
             hora,
             msg: evento,

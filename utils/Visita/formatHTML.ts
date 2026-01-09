@@ -6,7 +6,7 @@ import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 
 function getRespostaHtml(
     pergunta: VIPPerguntaType,
-    respostas: VIPRespostaType[],
+    respostas: VIPRespostaType[]
 ): string {
     const resposta = respostas.find((r) => r.pergunta === pergunta.pergunta);
     if (!resposta && pergunta.type !== "info") return "";
@@ -20,7 +20,8 @@ function getRespostaHtml(
         ? subperguntas.filter(
             (s) =>
                 s.type === "text" &&
-                s.when?.toLowerCase() === resposta?.checked?.toString().toLowerCase(),
+                s.when?.toLowerCase() ===
+                resposta?.checked?.toString().toLowerCase()
         )
         : [];
 
@@ -28,7 +29,8 @@ function getRespostaHtml(
         ? subperguntas.filter(
             (s) =>
                 s.type === "info" &&
-                s.when?.toLowerCase() === resposta?.checked?.toString().toLowerCase(),
+                s.when?.toLowerCase() ===
+                resposta?.checked?.toString().toLowerCase()
         )
         : [];
 
@@ -36,21 +38,22 @@ function getRespostaHtml(
         ? subperguntas.filter(
             (s) =>
                 s.type === "boolean" &&
-                s.when?.toLowerCase() === resposta?.checked?.toString().toLowerCase(),
+                s.when?.toLowerCase() ===
+                resposta?.checked?.toString().toLowerCase()
         )
         : [];
 
     return `
-			<div class="resposta-bloco">
-				<h3 class="pergunta-titulo">${pergunta.pergunta}</h3>
-				${pergunta.type !== "info"
+            <div class="resposta-bloco">
+                <h3 class="pergunta-titulo">${pergunta.pergunta}</h3>
+                ${pergunta.type !== "info"
             ? `<p class="resposta-texto">Resposta: ${pergunta.type === "text"
                 ? resposta?.observation
                 : resposta?.checked
             }</p>`
             : ""
         }
-				${resposta?.observation && resposta.checked !== "Check"
+                ${resposta?.observation && resposta.checked !== "Check"
             ? `<p class="resposta-observacao">Observação: ${resposta.observation}</p>`
             : ""
         }
@@ -60,7 +63,7 @@ function getRespostaHtml(
                 .join("")
             : ""
         }
-				${condicionais && condicionais.length > 0
+                ${condicionais && condicionais.length > 0
             ? condicionais
                 ?.map((sub) => getRespostaHtml(sub, respostas))
                 .join("")
@@ -76,212 +79,219 @@ function getRespostaHtml(
             ? checks
                 ?.filter(
                     (s) =>
-                        respostas.find((a) => a.pergunta === s.pergunta)
-                            ?.checked === "Check",
+                        respostas.find(
+                            (a) => a.pergunta === s.pergunta
+                        )?.checked === "Check"
                 )
                 .map(
                     (sub) =>
-                        `<p class="resposta-check">- ${sub.pergunta}</p>`,
+                        `<p class="resposta-check">- ${sub.pergunta}</p>`
                 )
                 .join("")
             : ""
         }
-			</div>
-	`;
+            </div>
+    `;
 }
 
 const assinaturaHtml = `
-	<div class="assinatura-container">
-		<div class="assinatura-bloco">
-			<h1 class="titulo-assinatura">
-				Visita Técnica - $data
-			</h1>
+    <div class="assinatura-container">
+        <div class="assinatura-bloco">
+            <h1 class="titulo-assinatura">
+                Visita Técnica - $data
+            </h1>
             $empresa_nome
-			<div class="assinatura-texto">
-				<p>
-					Este inventário de riscos e levantamento de dados foi realizado por
-					profissional técnico em segurança do trabalho da empresa Vip Engenharia
-					de Segurança e Medicina do Trabalho, com o auxílio de $responsavel.
-				</p>
-				<p>
-					Confirmo que fui designado como responsável por informar todos os dados
-					necessários para a elaboração da documentação de Saúde e Segurança do
-					Trabalho.
-				</p>
-				<p>
-					Declaro que, após verificar e confirmar a veracidade dos dados
-					apresentados, aposto abaixo minha assinatura legível.
-				</p>
-			</div>
-			<div class="assinatura-final not-assinatura">
-				$assinatura
-				<div class="linha-assinatura"></div>
-				$responsavel
-			</div>
-		</div>
-	</div>
+            <div class="assinatura-texto">
+                <p>
+                    Este inventário de riscos e levantamento de dados foi realizado por
+                    profissional técnico em segurança do trabalho da empresa Vip Engenharia
+                    de Segurança e Medicina do Trabalho, com o auxílio de $responsavel.
+                </p>
+                <p>
+                    Confirmo que fui designado como responsável por informar todos os dados
+                    necessários para a elaboração da documentação de Saúde e Segurança do
+                    Trabalho.
+                </p>
+                <p>
+                    Declaro que, após verificar e confirmar a veracidade dos dados
+                    apresentados, aposto abaixo minha assinatura legível.
+                </p>
+            </div>
+            <div class="assinatura-final not-assinatura">
+                $assinatura
+                <div class="linha-assinatura"></div>
+                $responsavel
+            </div>
+        </div>
+    </div>
 `;
 
 export function getHtmlVisita(visita: VIPVisitaType) {
     return `<!DOCTYPE html>
-	<html lang="pt-BR">
-		<head>
-			<meta charset="UTF-8" />
-			<title>Relatório de Visita Técnica</title>
-			<style>
-				* {
-					box-sizing: border-box;
-					margin: 0;
-					padding: 0;
-				}
+    <html lang="pt-BR">
+        <head>
+            <meta charset="UTF-8" />
+            <title>Relatório de Visita Técnica</title>
+            <style>
+                * {
+                    box-sizing: border-box;
+                    margin: 0;
+                    padding: 0;
+                }
 
-				body {
-					font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-					background: #f4f6f8;
-					color: #333;
-					padding: 30px 20px;
-				}
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background: #f4f6f8;
+                    color: #333;
+                    padding: 30px 20px;
+                }
 
-				.container {
-					background: #ffffff;
-					border-radius: 10px;
-					max-width: 960px;
-					margin: auto;
-                    padding: 20px 30px 20px 30px;
-					box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-				}
+                .container {
+                    background: #ffffff;
+                    border-radius: 10px;
+                    max-width: 960px;
+                    margin: auto;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+                }
 
-				.titulo-principal {
-					text-align: center;
-					color: #00796b;
-					margin-bottom: 30px;
-					font-size: 2rem;
-				}
+                .titulo-principal {
+                    text-align: center;
+                    color: #00796b;
+                    margin-bottom: 30px;
+                    font-size: 2rem;
+                }
 
-				.info {
-					background-color: #eef6f9;
-					border-left: 6px solid #00796b;
-					padding: 20px;
-					border-radius: 10px;
-					margin-bottom: 30px;
-				}
+                .info {
+                    background-color: #eef6f9;
+                    border-left: 6px solid #00796b;
+                    padding: 20px;
+                    border-radius: 10px;
+                    margin-bottom: 30px;
+                }
 
-				.card,
-				.card-setor {
-					border: 1px solid #d0d7de;
-					border-radius: 12px;
-					padding: 25px;
-					margin-bottom: 25px;
-					box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-				}
+                .card,
+                .card-setor {
+                    border: 1px solid #d0d7de;
+                    border-radius: 12px;
+                    padding: 25px;
+                    margin-bottom: 25px;
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+                }
 
-				.card {
-					background: #fafafa;
-				}
+                .card {
+                    background: #fafafa;
+                }
 
-				.card-setor {
-					background: #e8f0f2;
-				}
+                .card-setor {
+                    background: #e8f0f2;
+                }
 
-				.pergunta-titulo {
-					font-size: 1.1rem;
-					color: #333;
-					margin-bottom: 8px;
+                .pergunta-titulo {
+                    font-size: 1.1rem;
+                    color: #333;
+                    margin-bottom: 8px;
                     margin-top: 1rem;
-				}
+                }
 
-				.resposta-texto {
-					color: #00695c;
-					font-weight: 500;
-					margin-bottom: 4px;
-				}
+                .resposta-texto {
+                    color: #00695c;
+                    font-weight: 500;
+                    margin-bottom: 4px;
+                }
 
-				.resposta-observacao {
-					font-style: italic;
-					color: #d32f2f;
-				}
+                .resposta-observacao {
+                    font-style: italic;
+                    color: #d32f2f;
+                }
 
-				.resposta-check {
-					margin-left: 16px;
-					color: #555;
-				}
+                .resposta-check {
+                    margin-left: 16px;
+                    color: #555;
+                }
 
-				.titulo-setor {
-					text-align: center;
-					color: #00796b;
-					margin-bottom: 20px;
-					font-size: 1.5rem;
-					font-weight: bold;
-				}
+                .titulo-setor {
+                    text-align: center;
+                    color: #00796b;
+                    margin-bottom: 20px;
+                    font-size: 1.5rem;
+                    font-weight: bold;
+                }
 
-				.assinatura-container {
-					padding: 20px;
-					min-height: 100vh;
-				}
+                .assinatura-container {
+                    padding: 20px;
+                    min-height: 100vh;
+                }
 
-				.assinatura-bloco {
-					border: 1px solid #000;
-					padding: 20px;
-					height: 100%;
-				}
+                .assinatura-bloco {
+                    border: 1px solid #000;
+                    padding: 20px;
+                    height: 100%;
+                }
 
-				.titulo-assinatura {
-					font-size: 1.5rem;
-					margin: 10px 0;
-					text-align: center;
-					font-weight: bold;
-				}
+                .titulo-assinatura {
+                    font-size: 1.5rem;
+                    margin: 10px 0;
+                    text-align: center;
+                    font-weight: bold;
+                }
 
-				.assinatura-texto {
-					margin: 20px auto;
-					max-width: 90vw;
-					word-wrap: break-word;
-				}
+                .assinatura-texto {
+                    margin: 20px auto;
+                    max-width: 90vw;
+                    word-wrap: break-word;
+                }
 
-				.assinatura-final {
-					max-width: 90vw;
-					margin: auto;
-					text-align: center;
-				}
+                .assinatura-final {
+                    max-width: 90vw;
+                    margin: auto;
+                    text-align: center;
+                }
 
                 .not-assinatura {
                     display: none;
                 }
 
-				.linha-assinatura {
-					border-bottom: 1px solid black;
-					margin: auto;
-					max-width: 90vw;
-				}
-    	</style>
-		</head>
-		<body style="margin:0;padding:0px;">
-			<div class="container">
-				<h1 class="titulo-principal">Relatório de Visita Técnica</h1>
-				<div class="info">
-					<p><strong>Empresa Visitada:</strong> ${visita.empresa?.razao_social || "Não informado"
-        }</p>
-                    ${(visita.inclusas || []).map(a => `<p><strong>Empresa Visitada:</strong> ${a.empresa?.razao_social || "Não informado"
-            }</p>`)}
-					<p><strong>Técnico Responsável:</strong> ${visita.tecnico || "Não informado"
-        }</p>
-        
-        <p><strong>Responsável pela Empresa:</strong> ${visita.responsavel || "Não informado"
-        }</p>
-        <p><strong>Data:</strong> ${visita.data}</p>
-				</div>
+                .linha-assinatura {
+                    border-bottom: 1px solid black;
+                    margin: auto;
+                    max-width: 90vw;
+                }
 
-				${visita.perguntas.adm
+                ul {
+	list-style-type: disc; /* bolinha padrão */
+	padding-left: 20px;     /* espaço da bolinha */
+}
+
+li {
+	margin-bottom: 6px;
+}
+
+        </style>
+        </head>
+        <bod
+            <div class="container">
+                <h1 class="titulo-principal">Relatório de Visita Técnica</h1>
+                <div class="info">
+                    ${[visita.empresa, ...(visita.inclusas.map(a => a.empresa) || [])].map(a => `<p><strong>Empresa Visitada:</strong> ${a?.razao_social || "Não informado"
+        } (${a?.cnpj || "Não informado"})</p>`).join('')}
+        <p><strong>Técnico Responsável:</strong> ${visita.tecnico || "Não informado"
+        }</p>
+                    <p><strong>Responsável pela Empresa:</strong> ${visita.responsavel || "Não informado"
+        }</p>
+                    <p><strong>Data:</strong> ${visita.data}</p>
+                </div>
+
+                ${visita.perguntas.adm
             .map(
                 (pergunta) =>
                     `<div class="card">${getRespostaHtml(
                         pergunta,
-                        visita.respostas,
-                    )}</div>`,
+                        visita.respostas
+                    )}</div>`
             )
             .join("")}
 
-				${visita.setores
+                ${visita.setores
             .map(
                 (setor) => `
                             <div class="card-setor">
@@ -291,27 +301,20 @@ export function getHtmlVisita(visita: VIPVisitaType) {
                             (pergunta) =>
                                 `<div class="card">${getRespostaHtml(
                                     pergunta,
-                                    setor.respostas,
-                                )}</div>`,
+                                    setor.respostas
+                                )}</div>`
                         )
                         .join("")}
                             </div>
-					`,
+                    `
             )
             .join("")}
 
-				${assinaturaHtml
+                ${assinaturaHtml
             .replaceAll("$responsavel", visita.responsavel)
-        .replaceAll("$empresa_nome", `<ul>${[visita.empresa?.razao_social || "N/A", ...(visita.inclusas || []).map(a => a.empresa?.razao_social || "N/A")].map(a => `<li>${a}</li>`).join(" ")}</ul>`)
+            .replaceAll("$empresa_nome", `<ul>${[visita.empresa, ...(visita.inclusas.map(a => a.empresa) || [])].map(a => ({ razao_social: a?.razao_social, cnpj: a?.cnpj })).map(a => `<li>${a.razao_social || "N/A"} (${a?.cnpj || "N/A"})</li>`).join(" ")}</ul>`)
             .replaceAll("$data", visita.data)}
-			</div>
-            <script>
-				setTimeout(() => {
-					window.ReactNativeWebView.postMessage(
-						document.body.scrollHeight
-					);
-				}, 1000);
-			</script>
-		</body>
-	</html>`;
+            </div>
+        </body>
+    </html>`;
 }

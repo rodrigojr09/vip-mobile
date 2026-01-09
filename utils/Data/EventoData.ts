@@ -30,4 +30,13 @@ export default class EventoData extends Storage {
     async clear() {
         await this.save(this.keys.EVENTOS_KEY, JSON.stringify([]));
     }
+
+    async getDevice(): Promise<string | null> {
+        const device = await this.get("@vip:device_id");
+        return device;
+    }
+
+    async setDevice(deviceId: string) {
+        await this.save("@vip:device_id", deviceId);
+    }
 }

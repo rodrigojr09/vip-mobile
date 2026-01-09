@@ -60,7 +60,7 @@ export default function Visita() {
 		}
 
 		setId(uuidv4());
-		nav.push({ pathname: "/Visita/Perguntas/Administrativo" });
+		nav.push({ pathname: "/Visita/Perguntas/Setor" });
 	}
 
 	function filter(item: VIPVisitaType["empresas"][0]) {
@@ -92,28 +92,48 @@ export default function Visita() {
 						justifyContent: "space-between",
 					}}
 				>
-					<Input
-						style={{ width: "80%" }}
-						placeholder="Nome da empresa"
-						value={
-							empresa
-								? empresa.razao_social
-										.split("")
-										.filter((_a, i) => i < index)
-										.join("") +
-									(empresa.razao_social.length > index ? "..." : "")
-								: search
-						}
-						onChange={(e) => setSearch(e)}
-					/>
-					{empresa && (
-						<TouchableOpacity
-							onPress={() => setEmpresa(null)}
-							style={styles.clearButton}
-						>
-							<Text style={styles.clearButtonText}>Limpar</Text>
-						</TouchableOpacity>
-					)}
+					<View
+						style={{
+							width: "80%",
+							position: "relative", // 🔑 chave de tudo
+						}}
+					>
+						<Input
+							style={{
+								width: "100%",
+								paddingRight: 44, // 🔑 espaço pro botão
+							}}
+							placeholder="Nome da empresa"
+							value={
+								empresa
+									? empresa.razao_social
+											.split("")
+											.filter((_a, i) => i < index)
+											.join("") +
+										(empresa.razao_social.length > index ? "..." : "")
+									: search
+							}
+							onChange={(e) => setSearch(e)}
+						/>
+						{empresa && (
+							<TouchableOpacity
+								onPress={() => setEmpresa(null)}
+								style={{
+									...styles.clearButton,
+									position: "absolute",
+									right: 6,
+									top: "50%",
+									transform: [{ translateY: -12 }],
+									width: 50,
+									height: 24,
+									alignItems: "center",
+									justifyContent: "center",
+								}}
+							>
+								<Text style={styles.clearButtonText}>Limpar</Text>
+							</TouchableOpacity>
+						)}
+					</View>
 
 					<TouchableOpacity
 						onPress={() => setOpenInclusa(!openInclusa)}

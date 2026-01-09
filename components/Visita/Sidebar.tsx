@@ -5,63 +5,31 @@ import Button from "../Button";
 
 export default function Sidebar({
 	toggleSidebar,
-    finalizar,
+	finalizar,
 }: {
 	toggleSidebar: () => void;
-    finalizar: () => void;
+	finalizar: () => void;
 }) {
 	const { setores, removerSetor } = useVisita();
 	const nav = useNavigationHistory();
 
 	return (
 		<View style={[styles.sidebar]}>
-			<Text style={styles.sidebarTitulo}>Setores Registrados</Text>
-			<Pressable onPress={toggleSidebar}>
-				<Text style={styles.fecharTexto}>✕ Fechar</Text>
-			</Pressable>
+			<View
+				style={{
+					flexDirection: "row",
+					justifyContent: "space-between",
+					alignItems: "center",
+				}}
+			>
+				<Text style={styles.sidebarTitulo}>Setores Registrados</Text>
+				<Pressable onPress={toggleSidebar}>
+					<Text style={styles.fecharTexto}>✕ Fechar</Text>
+				</Pressable>
+			</View>
 			<View style={styles.menuItens}>
-				<View
-					style={{
-						marginBottom: 12,
-						padding: 12,
-						borderRadius: 12,
-						backgroundColor: "#2a2a2a",
-					}}
-				>
-					<Pressable
-						onPress={() => {
-							toggleSidebar();
-							nav.push({
-								pathname: "/Visita/Perguntas/Administrativo",
-							});
-						}}
-					>
-						<Text
-							style={[
-								{
-									color: "lime",
-									textAlign: "center",
-									width: "100%",
-								},
-							]}
-						>
-							Perguntas Administrativas
-						</Text>
-					</Pressable>
-				</View>
 				{setores.map((t) => (
-					<View
-						style={{
-							flexDirection: "row",
-							justifyContent: "space-between",
-							marginBottom: 12,
-							padding: 12,
-							borderRadius: 12,
-							alignItems: "center",
-							backgroundColor: "#2a2a2a",
-						}}
-						key={t.id}
-					>
+					<View style={styles.item} key={t.id}>
 						<Pressable
 							onPress={() => {
 								toggleSidebar();
@@ -89,15 +57,15 @@ export default function Sidebar({
 				</Button>
 				<Button
 					onPress={() => {
-						/*if (setores.length === 0)
+						if (setores.length === 0)
 							return alert(
-								"Adicione pelo menos um setor antes de finalizar a visita."
-							); */
+								"Adicione pelo menos um setor antes de finalizar a visita.",
+							);
 						toggleSidebar();
 						finalizar();
 					}}
 				>
-					Finalizar
+					Ir para Perguntas Administrativas
 				</Button>
 			</View>
 		</View>
@@ -126,12 +94,23 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		marginBottom: 20,
 	},
+	/* Sera um grid de 3 colunas no expo */
 	menuItens: {
 		gap: 10,
+		gridTemplateColumns: "repeat(3, 1fr)",
+		//display: "grid",
+		flexWrap: "wrap",
+		flexDirection: "row",
 	},
 	item: {
 		color: "#ccc",
 		fontSize: 18,
 		marginBottom: 10,
+		width: "20%",
+		backgroundColor: "#222",
+		padding: 10,
+		borderRadius: 8,
+		flexDirection: "row",
+		justifyContent: "space-between",
 	},
 });

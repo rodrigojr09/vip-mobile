@@ -38,7 +38,7 @@ export default function Button({
 					{
 						fontSize: 18,
 						textAlign: "center",
-						color: secundary ? "black" : "white",
+						color: "white",
 					},
 				]}
 			>
