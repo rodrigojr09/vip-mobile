@@ -1,7 +1,7 @@
 import * as FileSystem from "expo-file-system/legacy";
+import * as Sharing from "expo-sharing";
 import { useSearchParams } from "expo-router/build/hooks";
 import * as ScreenOrientation from "expo-screen-orientation";
-import * as Sharing from "expo-sharing";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import Button from "@/components/Button";

@@ -1,4 +1,3 @@
-import * as FileSystem from "expo-file-system/legacy";
 import { useSearchParams } from "expo-router/build/hooks";
 import { useEffect, useState } from "react";
 import { Alert, Linking } from "react-native";
@@ -8,9 +7,7 @@ import Loading from "@/components/Loading";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 import { events } from "@/utils/API/Event";
-import { abrirArquivo } from "@/utils/abrirArquivo";
 import manager from "@/utils/Data/manager";
-import { getHtmlVisita } from "@/utils/Visita/formatHTML";
 
 export default function Finalizado() {
 	const nav = useNavigationHistory();
