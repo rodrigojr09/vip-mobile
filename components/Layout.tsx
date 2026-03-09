@@ -13,6 +13,7 @@ import Loading from "@/components/Loading";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { events } from "@/utils/API/Event";
 import { LOCATION_TASK_NAME } from "@/utils/BackgroundTasks";
+import manager from "@/utils/Data/manager";
 
 export const DIRECTORY_KEY = "DIRECTORY_URI";
 
@@ -25,6 +26,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		(async () => {
 			try {
 				await startBackgroundLocation();
+				await manager.visitas.init();
 				setLoading(false);
 			} catch (error) {
 				console.error("Erro ao carregar dados iniciais:", error);

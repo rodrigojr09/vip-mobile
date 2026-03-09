@@ -17,7 +17,6 @@ export default class VisitaData extends Storage {
     private constructor() {
         super();
         console.log("🎯 VisitaData inicializado");
-        this.init();
     }
 
     /** 🚀 Inicializa dados locais e remotos */

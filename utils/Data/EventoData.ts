@@ -13,6 +13,7 @@ export default class EventoData extends Storage {
 
     private constructor() {
         super();
+        
         console.log("🎯 EventoData inicializado");
     }
 
