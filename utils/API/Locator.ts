@@ -1,24 +1,21 @@
 import * as Location from "expo-location";
 import type { VIPLocalizacao } from "@/types/VIPEvent";
+import { logger } from "../logger";
 
 export async function getCurrentLocation(): Promise<VIPLocalizacao | undefined> {
 	try {
-		// 1️⃣ Verifica se a permissão já foi concedida
 		let { status } = await Location.getForegroundPermissionsAsync();
 
-		// 2️⃣ Se não tiver, solicita
 		if (status !== "granted") {
-			const response =
-				await Location.requestForegroundPermissionsAsync();
+			const response = await Location.requestForegroundPermissionsAsync();
 			status = response.status;
 		}
 
 		if (status !== "granted") {
-			console.warn("Permissão de localização negada");
+			logger.warn("Location", "Foreground permission denied");
 			return undefined;
 		}
 
-		// 3️⃣ Pega a localização
 		const location = await Location.getCurrentPositionAsync({
 			accuracy: Location.Accuracy.High,
 		});
@@ -28,7 +25,7 @@ export async function getCurrentLocation(): Promise<VIPLocalizacao | undefined> 
 			longitude: location.coords.longitude,
 		};
 	} catch (error) {
-		console.error("Erro ao obter localização:", error);
+		logger.error("Location", "Failed to read current location", error);
 		return undefined;
 	}
 }

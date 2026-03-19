@@ -8,6 +8,9 @@ import {
 	TouchableOpacity,
 	View,
 } from "react-native";
+import { deviceType, DeviceType } from "expo-device";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import Input from "@/components/Input";
@@ -15,9 +18,23 @@ import { useNavigationHistory } from "@/hooks/Navigation";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import { events } from "@/utils/API/Event";
-import "react-native-get-random-values";
-import { v4 as uuidv4 } from "uuid";
-import { deviceType, DeviceType } from "expo-device";
+
+type EmpresaItem = VIPVisitaType["empresas"][0];
+
+function matchesSearch(item: EmpresaItem, value: string) {
+	const normalized = value.toLowerCase();
+
+	return (
+		item.nome_fantasia.toLowerCase().includes(normalized) ||
+		item.razao_social.toLowerCase().includes(normalized) ||
+		item.cnpj.toLowerCase().includes(normalized)
+	);
+}
+
+function truncateLabel(value: string, maxLength: number) {
+	if (value.length <= maxLength) return value;
+	return `${value.slice(0, maxLength)}...`;
+}
 
 export default function Visita() {
 	const {
@@ -36,20 +53,33 @@ export default function Visita() {
 	const nav = useNavigationHistory();
 
 	const [search, setSearch] = useState("");
-	const [isearch, setiSearch] = useState("");
+	const [inclusaSearch, setInclusaSearch] = useState("");
 	const [openInclusa, setOpenInclusa] = useState(false);
 
+	const isTablet = deviceType === DeviceType.TABLET;
+	const titleLimit = isTablet ? 60 : 25;
+
+	const filteredEmpresas = empresas.filter((item) => matchesSearch(item, search));
+	const filteredInclusas = empresas.filter((item) =>
+		matchesSearch(item, inclusaSearch),
+	);
+	const selectedInclusas = inclusas.filter((item) => item.empresa !== null);
+
 	async function handleSave() {
-		if (empresa === null)
+		if (empresa === null) {
 			return Alert.alert("Atenção! O nome da empresa precisa ser preenchido");
-		if (tecnico.trim().length === 0)
+		}
+
+		if (tecnico.trim().length === 0) {
 			return Alert.alert("Atenção! O nome do técnico precisa ser preenchido");
-		if (responsavel.trim().length === 0)
+		}
+
+		if (responsavel.trim().length === 0) {
 			return Alert.alert(
 				"Atenção! O nome do cliente responsável precisa ser preenchido",
 			);
+		}
 
-		// Montar mensagem do evento
 		const msg = `Início da visita - Empresa: ${empresa.razao_social}, Técnico: ${tecnico}, Responsável: ${responsavel}`;
 
 		try {
@@ -63,72 +93,50 @@ export default function Visita() {
 		nav.push({ pathname: "/Visita/Perguntas/Setor" });
 	}
 
-	function filter(item: VIPVisitaType["empresas"][0]) {
-		return (
-			item.nome_fantasia.toLowerCase().includes(search.toLowerCase()) ||
-			item.razao_social.toLowerCase().includes(search.toLowerCase()) ||
-			item.cnpj.toLowerCase().includes(search.toLowerCase())
-		);
+	function addEmpresaInclusa(selectedEmpresa: EmpresaItem) {
+		setInclusas([...inclusas, { id: uuidv4(), empresa: selectedEmpresa }]);
+		setOpenInclusa(false);
+		setInclusaSearch("");
 	}
 
-	function ifilter(item: VIPVisitaType["empresas"][0]) {
-		return (
-			item.nome_fantasia.toLowerCase().includes(isearch.toLowerCase()) ||
-			item.razao_social.toLowerCase().includes(isearch.toLowerCase()) ||
-			item.cnpj.toLowerCase().includes(isearch.toLowerCase())
-		);
+	function removeEmpresaInclusa(empresaId?: string) {
+		setInclusas(inclusas.filter((item) => item.empresa?.id !== empresaId));
 	}
 
-	const isTablet = deviceType === DeviceType.TABLET;
-	const index = isTablet ? 60 : 25;
+	function renderSuggestionItem(
+		item: EmpresaItem,
+		onPress: (empresaSelecionada: EmpresaItem) => void,
+	) {
+		return (
+			<TouchableOpacity
+				style={styles.suggestionItem}
+				onPress={() => onPress(item)}
+			>
+				<Text style={styles.suggestionText}>{item.razao_social}</Text>
+				<Text style={styles.suggestionText2}>{item.nome_fantasia}</Text>
+			</TouchableOpacity>
+		);
+	}
 
 	return (
 		<Container style={styles.formContainer}>
 			<View style={styles.headerTable}>
-				<View
-					style={{
-						...styles.row,
-						flexDirection: "row",
-						justifyContent: "space-between",
-					}}
-				>
-					<View
-						style={{
-							width: "80%",
-							position: "relative", // 🔑 chave de tudo
-						}}
-					>
+				<View style={styles.headerRow}>
+					<View style={styles.searchWrapper}>
 						<Input
-							style={{
-								width: "100%",
-								paddingRight: 44, // 🔑 espaço pro botão
-							}}
+							style={styles.searchInput}
 							placeholder="Nome da empresa"
 							value={
 								empresa
-									? empresa.razao_social
-											.split("")
-											.filter((_a, i) => i < index)
-											.join("") +
-										(empresa.razao_social.length > index ? "..." : "")
+									? truncateLabel(empresa.razao_social, titleLimit)
 									: search
 							}
-							onChange={(e) => setSearch(e)}
+							onChange={setSearch}
 						/>
 						{empresa && (
 							<TouchableOpacity
 								onPress={() => setEmpresa(null)}
-								style={{
-									...styles.clearButton,
-									position: "absolute",
-									right: 6,
-									top: "50%",
-									transform: [{ translateY: -12 }],
-									width: 50,
-									height: 24,
-									alignItems: "center",
-									justifyContent: "center",
-								}}
+								style={styles.companyClearButton}
 							>
 								<Text style={styles.clearButtonText}>Limpar</Text>
 							</TouchableOpacity>
@@ -137,14 +145,7 @@ export default function Visita() {
 
 					<TouchableOpacity
 						onPress={() => setOpenInclusa(!openInclusa)}
-						style={{
-							width: "15%",
-							backgroundColor: "#2d2d2d",
-							alignItems: "center",
-							justifyContent: "center",
-							borderRadius: 8,
-							height: 50,
-						}}
+						style={styles.includeToggleButton}
 					>
 						{!openInclusa ? (
 							<Ionicons name="add-outline" size={24} color="green" />
@@ -153,57 +154,39 @@ export default function Visita() {
 						)}
 					</TouchableOpacity>
 				</View>
-				{!empresa &&
-					search.trim() !== "" &&
-					empresas.filter(filter).length > 0 && (
-						<FlatList
-							scrollEnabled
-							style={styles.suggestionsList}
-							data={empresas.filter(filter)}
-							keyExtractor={(_, index) => index.toString()}
-							renderItem={({ item }) => (
-								<TouchableOpacity
-									style={styles.suggestionItem}
-									onPress={() => setEmpresa(item)}
-								>
-									<Text style={styles.suggestionText}>{item.razao_social}</Text>
-									<Text style={styles.suggestionText2}>
-										{item.nome_fantasia}
-									</Text>
-								</TouchableOpacity>
-							)}
-						/>
-					)}
-				{openInclusa && (
-					<View style={styles.row}>
-						<Input
-							placeholder={`Incluir empresa na visita`}
-							value={isearch}
-							onChange={(e) => setiSearch(e)}
-						/>
-					</View>
-				)}
-				{isearch.trim() !== "" && empresas.filter(ifilter).length > 0 && (
+
+				{!empresa && search.trim() !== "" && filteredEmpresas.length > 0 && (
 					<FlatList
 						scrollEnabled
 						style={styles.suggestionsList}
-						data={empresas.filter(ifilter)}
+						data={filteredEmpresas}
 						keyExtractor={(_, index) => index.toString()}
-						renderItem={({ item }) => (
-							<TouchableOpacity
-								style={styles.suggestionItem}
-								onPress={() => {
-									setInclusas([...inclusas, { id: uuidv4(), empresa: item }]);
-									setOpenInclusa(false);
-									setiSearch("");
-								}}
-							>
-								<Text style={styles.suggestionText}>{item.razao_social}</Text>
-								<Text style={styles.suggestionText2}>{item.nome_fantasia}</Text>
-							</TouchableOpacity>
-						)}
+						renderItem={({ item }) => renderSuggestionItem(item, setEmpresa)}
 					/>
 				)}
+
+				{openInclusa && (
+					<View style={styles.row}>
+						<Input
+							placeholder="Incluir empresa na visita"
+							value={inclusaSearch}
+							onChange={setInclusaSearch}
+						/>
+					</View>
+				)}
+
+				{inclusaSearch.trim() !== "" && filteredInclusas.length > 0 && (
+					<FlatList
+						scrollEnabled
+						style={styles.suggestionsList}
+						data={filteredInclusas}
+						keyExtractor={(_, index) => index.toString()}
+						renderItem={({ item }) =>
+							renderSuggestionItem(item, addEmpresaInclusa)
+						}
+					/>
+				)}
+
 				<View style={styles.row}>
 					<Input
 						placeholder="Nome do Técnico"
@@ -211,6 +194,7 @@ export default function Visita() {
 						onChange={setTecnico}
 					/>
 				</View>
+
 				<View style={styles.row}>
 					<Input
 						placeholder="Responsável (Cliente)"
@@ -218,33 +202,26 @@ export default function Visita() {
 						onChange={setResponsavel}
 					/>
 				</View>
-				{inclusas.filter((a) => a.empresa !== null).length > 0 && (
+
+				{selectedInclusas.length > 0 && (
 					<View style={styles.row}>
-						<Text style={{ color: "white", fontWeight: "bold" }}>
-							Empresas Inclusas:
-						</Text>
-						{inclusas
-							.filter((a) => a.empresa !== null)
-							.map(({ empresa: emp }) => (
-								<View
-									key={emp?.id}
-									style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+						<Text style={styles.inclusasTitle}>Empresas Inclusas:</Text>
+						{selectedInclusas.map(({ empresa: empresaInclusa }) => (
+							<View key={empresaInclusa?.id} style={styles.inclusaItem}>
+								<Text style={styles.inclusaText}>
+									{empresaInclusa?.razao_social}
+								</Text>
+								<TouchableOpacity
+									onPress={() => removeEmpresaInclusa(empresaInclusa?.id)}
 								>
-									<Text style={{ color: "white" }}>{emp?.razao_social}</Text>
-									<TouchableOpacity
-										onPress={() => {
-											setInclusas(
-												inclusas.filter((i) => i.empresa?.id !== emp?.id),
-											);
-										}}
-									>
-										<Ionicons name="remove-outline" size={20} color="red" />
-									</TouchableOpacity>
-								</View>
-							))}
+									<Ionicons name="remove-outline" size={20} color="red" />
+								</TouchableOpacity>
+							</View>
+						))}
 					</View>
 				)}
 			</View>
+
 			<Button onPress={handleSave}>Proximo</Button>
 		</Container>
 	);
@@ -262,27 +239,36 @@ const styles = StyleSheet.create({
 		backgroundColor: "#1f1f1f",
 		elevation: 3,
 	},
+	headerRow: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+	},
+	searchWrapper: {
+		width: "80%",
+		position: "relative",
+	},
+	searchInput: {
+		width: "100%",
+		paddingRight: 44,
+	},
+	includeToggleButton: {
+		width: "15%",
+		backgroundColor: "#2d2d2d",
+		alignItems: "center",
+		justifyContent: "center",
+		borderRadius: 8,
+		height: 50,
+	},
 	row: {
 		flexDirection: "column",
 		width: "100%",
 		alignItems: "center",
 		marginTop: 12,
 	},
-
-	resultItem: {
-		padding: 10,
-		backgroundColor: "#f0f0f0",
-		marginBottom: 8,
-		borderRadius: 6,
-	},
-	noResults: {
-		marginTop: 10,
-		color: "#888",
-		fontStyle: "italic",
-	},
 	suggestionsList: {
 		marginTop: 5,
-		maxHeight: 200, // Limita o tamanho da lista
+		maxHeight: 200,
 		borderColor: "white",
 		borderRadius: 10,
 		borderWidth: 1,
@@ -302,24 +288,30 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		color: "gray",
 	},
-	clearButton: {
+	companyClearButton: {
 		position: "absolute",
-		top: 25,
-		right: "24%",
-		zIndex: 1,
+		right: 6,
+		top: "50%",
+		transform: [{ translateY: -12 }],
+		width: 50,
+		height: 24,
+		alignItems: "center",
+		justifyContent: "center",
 	},
 	clearButtonText: {
 		fontSize: 16,
 		color: "red",
 	},
-	nextButton: {
-		position: "absolute",
-		top: 10,
-		right: 10,
-		zIndex: 1,
+	inclusasTitle: {
+		color: "white",
+		fontWeight: "bold",
 	},
-	nextButtonText: {
-		fontSize: 16,
-		color: "green",
+	inclusaItem: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 8,
+	},
+	inclusaText: {
+		color: "white",
 	},
 });

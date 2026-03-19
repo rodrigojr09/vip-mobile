@@ -1,5 +1,5 @@
 import * as FileSystem from "expo-file-system/legacy";
-import { Data } from "./Data";
+import Storage from "@/utils/Storage";
 
 const DEFAULT_QUEST_FILE = `${FileSystem.documentDirectory}/quests.json`;
 
@@ -9,7 +9,7 @@ const DEFAULT_QUEST_FILE = `${FileSystem.documentDirectory}/quests.json`;
  */
 export async function fetchQuests(filePath = DEFAULT_QUEST_FILE) {
     try {
-        const response = await fetch(`${Data.base_url}/api/quests`);
+        const response = await fetch(`${Storage.base_url}/quests`);
 
         if (!response.ok) {
             throw new Error(`Erro HTTP: ${response.status}`);

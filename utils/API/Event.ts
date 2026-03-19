@@ -1,123 +1,152 @@
 import { v4 as uuidv4 } from "uuid";
-import type { VIPEvento } from "@/types/VIPEvent";
-import { getCurrentLocation } from "./Locator";
+import type { VIPEvento, VIPLocalizacao } from "@/types/VIPEvent";
 import "react-native-get-random-values";
 import manager from "../Data/manager";
 import Storage from "../Storage";
+import { getCurrentLocation } from "./Locator";
+import { logger } from "../logger";
 
 class Event {
-    public atual: null | string = null;
+	public atual: null | string = null;
+	private context: string | null = null;
 
-    constructor() {
-        this.sendEvent("[Event] Instância criada").catch(console.error);
-    }
+	constructor() {
+		this.sendEvent("Event instance created").catch((error) =>
+			logger.error("Event", "Failed to send startup event", error),
+		);
+	}
 
-    private formatDateTime() {
-        const agora = new Date();
-        const data = `${String(agora.getDate()).padStart(2, "0")}/${String(
-            agora.getMonth() + 1,
-        ).padStart(2, "0")}/${agora.getFullYear()}`;
-        const hora = `${String(agora.getHours()).padStart(2, "0")}:${String(
-            agora.getMinutes(),
-        ).padStart(2, "0")}:${String(agora.getSeconds()).padStart(2, "0")}`;
-        return { data, hora };
-    }
+	private formatDateTime() {
+		const agora = new Date();
+		const data = `${String(agora.getDate()).padStart(2, "0")}/${String(
+			agora.getMonth() + 1,
+		).padStart(2, "0")}/${agora.getFullYear()}`;
+		const hora = `${String(agora.getHours()).padStart(2, "0")}:${String(
+			agora.getMinutes(),
+		).padStart(2, "0")}:${String(agora.getSeconds()).padStart(2, "0")}`;
+		return { data, hora };
+	}
 
-    public startEvent(eventName: string) {
-        this.atual = eventName;
-        console.log(`🔄 Evento iniciado: ${eventName}`);
-    }
+	private formatMessage(message: string, contextOverride?: string | null) {
+		const parts: string[] = [];
+		const context = contextOverride ?? this.context;
 
-    public endEvent() {
-        if (!this.atual) {
-            console.warn("Nenhum evento ativo para encerrar.");
-            return;
-        }
-        console.log(`✅ Evento encerrado: ${this.atual}`);
-        this.atual = null;
-    }
+		if (context) parts.push(context);
+		if (this.atual) parts.push(this.atual);
 
-    public async sendEvent(evento: string) {
-        const { data, hora } = this.formatDateTime();
+		if (parts.length === 0) return message;
+		return `[${parts.join("][")}] ${message}`;
+	}
 
-        const novoEvento: VIPEvento = {
-            id: uuidv4(),
-            device: await manager.eventos.getDevice() || "unknown-device",
-            data,
-            hora,
-            msg: evento,
-            localizacao: await getCurrentLocation(),
-        };
+	public setContext(context: string | null) {
+		this.context = context;
+		logger.debug("Event", "Context updated", context ?? "none");
+	}
 
-        try {
-            const res = await fetch(`${Storage.base_url}/eventos/send`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(novoEvento),
-            });
+	public startEvent(eventName: string) {
+		this.atual = eventName;
+		logger.info("Event", `Event started: ${eventName}`);
+	}
 
-            if (!res.ok) throw new Error("Falha ao enviar para API");
+	public endEvent() {
+		if (!this.atual) {
+			logger.warn("Event", "No active event to close");
+			return;
+		}
+		logger.info("Event", `Event finished: ${this.atual}`);
+		this.atual = null;
+	}
 
-            return true;
-        } catch {
-            console.warn("⚠️ Evento salvo offline:", novoEvento.msg);
-            await manager.eventos.add(novoEvento);
-            return false;
-        }
-    }
+	public async sendEvent(evento: string) {
+		return this.sendEventWithLocation(evento);
+	}
 
-    public async saveOfflineEvento(evento: VIPEvento) {
-        try {
-            await manager.eventos.add(evento);
-            console.log("📦 Evento salvo offline:", evento.msg);
-        } catch (error) {
-            console.error("Erro ao salvar evento offline:", error);
-        }
-    }
+	public async sendEventWithLocation(
+		evento: string,
+		localizacao?: VIPLocalizacao,
+		contextOverride?: string | null,
+	) {
+		const { data, hora } = this.formatDateTime();
+		const msg = this.formatMessage(evento, contextOverride);
 
-    public async syncOfflineEventos() {
-        try {
-            const content = (await manager.eventos.getAll()) || [];
-            const eventos: VIPEvento[] = content;
+		const novoEvento: VIPEvento = {
+			id: uuidv4(),
+			device: (await manager.eventos.getDevice()) || "unknown-device",
+			data,
+			hora,
+			msg,
+			localizacao: localizacao ?? (await getCurrentLocation()),
+		};
 
-            if (!eventos.length) return;
+		try {
+			const res = await fetch(`${Storage.base_url}/eventos/send`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(novoEvento),
+			});
 
-            const enviado = await this.setEventos(eventos);
+			if (!res.ok) throw new Error("Failed to send event to API");
 
-            if (enviado) {
-                await manager.eventos.clear();
-                console.log("✅ Eventos offline sincronizados com sucesso.");
-            } else {
-                console.warn("⚠️ Falha ao sincronizar eventos offline.");
-            }
-        } catch (error) {
-            console.error("❌ Erro ao sincronizar eventos offline:", error);
-        }
-    }
+			return true;
+		} catch {
+			logger.warn("Event", "Event saved offline", novoEvento.msg);
+			await manager.eventos.add(novoEvento);
+			return false;
+		}
+	}
 
-    private async setEventos(eventos: VIPEvento[]) {
-        try {
-            const res = await fetch(`${Storage.base_url}/eventos/set`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(eventos),
-            });
-            return res.ok;
-        } catch (error) {
-            console.error("Erro ao enviar eventos para API:", error);
-            return false;
-        }
-    }
+	public async saveOfflineEvento(evento: VIPEvento) {
+		try {
+			await manager.eventos.add(evento);
+			logger.info("Event", "Event saved offline", evento.msg);
+		} catch (error) {
+			logger.error("Event", "Failed to save event offline", error);
+		}
+	}
 
-    public async getOfflineEventos(): Promise<VIPEvento[]> {
-        try {
-            const content = (await manager.eventos.getAll()) || [];
-            return content;
-        } catch (error) {
-            console.error("Erro ao ler eventos offline:", error);
-            return [];
-        }
-    }
+	public async syncOfflineEventos() {
+		try {
+			const content = (await manager.eventos.getAll()) || [];
+			const eventos: VIPEvento[] = content;
+
+			if (!eventos.length) return;
+
+			const enviado = await this.setEventos(eventos);
+
+			if (enviado) {
+				await manager.eventos.clear();
+				logger.info("Event", "Offline events synced");
+			} else {
+				logger.warn("Event", "Failed to sync offline events");
+			}
+		} catch (error) {
+			logger.error("Event", "Error syncing offline events", error);
+		}
+	}
+
+	private async setEventos(eventos: VIPEvento[]) {
+		try {
+			const res = await fetch(`${Storage.base_url}/eventos/set`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(eventos),
+			});
+			return res.ok;
+		} catch (error) {
+			logger.error("Event", "Failed to send events to API", error);
+			return false;
+		}
+	}
+
+	public async getOfflineEventos(): Promise<VIPEvento[]> {
+		try {
+			const content = (await manager.eventos.getAll()) || [];
+			return content;
+		} catch (error) {
+			logger.error("Event", "Failed to read offline events", error);
+			return [];
+		}
+	}
 }
 
 export const events = new Event();

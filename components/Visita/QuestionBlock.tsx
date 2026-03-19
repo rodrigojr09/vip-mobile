@@ -12,123 +12,120 @@ interface Props {
 	respostas: VIPRespostaType[];
 }
 
+const BOOLEAN_OPTIONS = ["Sim", "Não", "NA"] as const;
+
+function getButtonStyle(status: VIPRespostaType["checked"], key: string) {
+	if (status !== key) return null;
+	if (key === "Sim") return styles.choiceButtonSelectedGreen;
+	if (key === "Não") return styles.choiceButtonSelectedRed;
+	return styles.choiceButtonSelectedGray;
+}
+
+function splitSubquestions(
+	subperguntas: VIPPerguntaType[],
+	status: VIPRespostaType["checked"],
+) {
+	const matchesStatus = (item: VIPPerguntaType) =>
+		item.when?.toLowerCase() === status?.toString().toLowerCase();
+
+	return {
+		checks: subperguntas.filter((item) => item.type === "check" && !item.when),
+		texts: subperguntas.filter(
+			(item) => item.type === "text" && matchesStatus(item),
+		),
+		infos: subperguntas.filter(
+			(item) => item.type === "info" && matchesStatus(item),
+		),
+		conditionals: subperguntas.filter(
+			(item) => item.type === "boolean" && matchesStatus(item),
+		),
+	};
+}
+
 const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
 	const status = resposta?.checked ?? null;
 	const obs = resposta?.observation || "";
-	const subperguntas = pergunta.subpergunta;
+	const subperguntas = pergunta.subpergunta || [];
+
+	const findResposta = (question: VIPPerguntaType) =>
+		respostas.find((item) => item.pergunta === question.pergunta);
+
+	const emitChange = (
+		perguntaLabel: string,
+		checked: VIPRespostaType["checked"],
+		observation?: string,
+	) => {
+		onChange({
+			pergunta: perguntaLabel,
+			checked,
+			observation,
+		});
+	};
+
+	const renderNestedQuestions = (questions: VIPPerguntaType[]) =>
+		questions.map((sub) => (
+			<View key={sub.id} style={styles.subQuestionWrapper}>
+				<QuestionBlock
+					pergunta={sub}
+					resposta={findResposta(sub)}
+					onChange={onChange}
+					respostas={respostas}
+				/>
+			</View>
+		));
 
 	const renderButtons = () =>
-		["Sim", "Não", "NA"].map((key) => {
-			const isSelected = status === key;
-			const selectedStyle =
-				key === "Sim"
-					? styles.choiceButtonSelectedGreen
-					: key === "Não"
-						? styles.choiceButtonSelectedRed
-						: styles.choiceButtonSelectedGray;
+		BOOLEAN_OPTIONS.map((key) => (
+			<TouchableOpacity
+				key={key}
+				style={[styles.choiceButton, getButtonStyle(status, key)]}
+				onPress={() => emitChange(pergunta.pergunta, key)}
+			>
+				<Text style={styles.choiceLabel}>{key}</Text>
+			</TouchableOpacity>
+		));
 
-			return (
-				<TouchableOpacity
-					key={key}
-					style={[styles.choiceButton, isSelected && selectedStyle]}
-					onPress={() =>
-						onChange({
-							pergunta: pergunta.pergunta,
-							checked: key as VIPRespostaType["checked"],
-						})
-					}
-				>
-					<Text style={styles.choiceLabel}>{key}</Text>
-				</TouchableOpacity>
-			);
-		});
+	const renderCheckOptions = (checks: VIPPerguntaType[]) => {
+		if (checks.length === 0) return null;
+
+		return (
+			<View style={styles.checkGrid}>
+				{checks.map((sub) => {
+					const isSelected = findResposta(sub);
+
+					return (
+						<TouchableOpacity
+							key={sub.pergunta}
+							style={[
+								styles.checkItem,
+								isSelected && styles.checkItemSelected,
+							]}
+							onPress={() => emitChange(sub.pergunta, "Check")}
+						>
+							<Text style={styles.checkText}>
+								{sub.pergunta.split(" - ")[0]}
+							</Text>
+						</TouchableOpacity>
+					);
+				})}
+			</View>
+		);
+	};
 
 	const renderSubperguntas = () => {
-		if (!subperguntas) return null;
+		if (subperguntas.length === 0) return null;
 
-		const checks = subperguntas.filter((s) => s.type === "check" && !s.when);
-
-		const texts = subperguntas.filter(
-			(s) =>
-				s.type === "text" &&
-				s.when?.toLowerCase() === status?.toString().toLowerCase(),
-		);
-
-		const infos = subperguntas.filter(
-			(s) =>
-				s.type === "info" &&
-				s.when?.toLowerCase() === status?.toString().toLowerCase(),
-		);
-
-		const condicionais = subperguntas.filter(
-			(s) =>
-				s.type === "boolean" &&
-				s.when?.toLowerCase() === status?.toString().toLowerCase(),
+		const { checks, texts, infos, conditionals } = splitSubquestions(
+			subperguntas,
+			status,
 		);
 
 		return (
 			<>
-				{texts.map((sub) => (
-					<View key={sub.id} style={{ marginTop: 32 }}>
-						<QuestionBlock
-							pergunta={sub}
-							resposta={respostas.find((r) => r.pergunta === sub.pergunta)}
-							onChange={onChange}
-							respostas={respostas}
-						/>
-					</View>
-				))}
-
-				{condicionais.map((sub) => (
-					<View key={sub.id} style={{ marginTop: 32 }}>
-						<QuestionBlock
-							pergunta={sub}
-							resposta={respostas.find((r) => r.pergunta === sub.pergunta)}
-							onChange={onChange}
-							respostas={respostas}
-						/>
-					</View>
-				))}
-
-				{infos.map((sub) => (
-					<View key={sub.id} style={{ marginTop: 32 }}>
-						<QuestionBlock
-							pergunta={sub}
-							resposta={respostas.find((r) => r.pergunta === sub.pergunta)}
-							onChange={onChange}
-							respostas={respostas}
-						/>
-					</View>
-				))}
-
-				{checks.length > 0 && (
-					<View style={styles.checkGrid}>
-						{checks.map((sub) => {
-							const isSelected = respostas.find(
-								(r) => r.pergunta === sub.pergunta,
-							);
-							return (
-								<TouchableOpacity
-									style={[
-										styles.checkItem,
-										isSelected && styles.checkItemSelected,
-									]}
-									key={sub.pergunta}
-									onPress={() =>
-										onChange({
-											pergunta: sub.pergunta,
-											checked: "Check",
-										})
-									}
-								>
-									<Text style={styles.checkText}>
-										{sub.pergunta.split(" - ")[0]}
-									</Text>
-								</TouchableOpacity>
-							);
-						})}
-					</View>
-				)}
+				{renderNestedQuestions(texts)}
+				{renderNestedQuestions(conditionals)}
+				{renderNestedQuestions(infos)}
+				{renderCheckOptions(checks)}
 			</>
 		);
 	};
@@ -146,12 +143,12 @@ const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
 					label={pergunta.pergunta}
 					status={pergunta.type === "text" ? "Check" : status}
 					obs={obs}
-					onChange={(label, status, obs) =>
-						onChange({
-							pergunta: label,
-							checked: pergunta.type === "text" ? "Check" : status,
-							observation: obs,
-						})
+					onChange={(label, selectedStatus, observation) =>
+						emitChange(
+							label,
+							pergunta.type === "text" ? "Check" : selectedStatus,
+							observation,
+						)
 					}
 				/>
 			)}
@@ -162,16 +159,14 @@ const QuestionBlock = ({ pergunta, resposta, onChange, respostas }: Props) => {
 };
 
 const styles = StyleSheet.create({
+	subQuestionWrapper: {
+		marginTop: 32,
+	},
 	questionText: {
 		fontSize: 20,
 		color: "#ffffff",
 		fontWeight: "bold",
 		marginBottom: 20,
-	},
-	infoText: {
-		fontSize: 18,
-		color: "#ccc",
-		fontStyle: "italic",
 	},
 	buttonGroup: {
 		flexDirection: "row",
@@ -201,7 +196,6 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		fontWeight: "600",
 	},
-
 	checkGrid: {
 		flexDirection: "row",
 		flexWrap: "wrap",

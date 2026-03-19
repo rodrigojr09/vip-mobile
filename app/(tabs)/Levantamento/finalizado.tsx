@@ -1,16 +1,12 @@
-import * as FileSystem from "expo-file-system/legacy";
-import * as Sharing from "expo-sharing";
 import { useSearchParams } from "expo-router/build/hooks";
-import * as ScreenOrientation from "expo-screen-orientation";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
-import { events } from "@/utils/API/Event";
-import { getHtml } from "@/utils/formatHTML";
-import manager from "@/utils/Data/manager";
+import { finalizeLevantamento } from "@/utils/services/levantamentoFinalization";
+import { shareReport } from "@/utils/services/reportFile";
 
 export default function Finalizado() {
 	const nav = useNavigationHistory();
@@ -21,56 +17,28 @@ export default function Finalizado() {
 	useEffect(() => {
 		(async () => {
 			try {
-				await ScreenOrientation.lockAsync(
-					ScreenOrientation.OrientationLock.PORTRAIT_UP,
+				const result = await finalizeLevantamento(
+					empresa,
+					query.get("assinatura") || "",
 				);
-				console.log("📱 Orientação travada para retrato.");
-
-				const mensagem = `Finalização da visita - Empresa: ${empresa.nome}, Responsável: ${empresa.responsavel}`;
-				events.sendEvent(mensagem);
-				events.endEvent();
-				console.log("✅ Evento de finalização registrado.");
-
-				// Gera conteúdo HTML
-				const htmlContent = getHtml(empresa)
-					.replace("$assinatura", `${query.get("assinatura")}`)
-					.replace("not-assinatura", "");
-
-				// Caminho interno
-				const fileName = `Levantamento-${empresa.nome}.html`;
-				const filePath = `${FileSystem.documentDirectory}${fileName}`;
-
-				// Salva o arquivo internamente
-				await FileSystem.writeAsStringAsync(filePath, htmlContent, {
-					encoding: FileSystem.EncodingType.UTF8,
-				});
-
-				setFileUri(filePath);
-				console.log(empresa);
-				manager.levantamentos.salvar({
-					empresa: {
-						...empresa,
-						assinatura: query.get("assinatura") || "",
-					},
-				});
-				console.log("✅ Arquivo salvo internamente em:", filePath);
+				setFileUri(result.fileUri);
 			} catch (error) {
-				console.error("❌ Erro ao gerar e salvar levantamento:", error);
+				console.error("Erro ao gerar e salvar levantamento:", error);
 				Alert.alert(
 					"Erro ao salvar",
-					"Não foi possível salvar o levantamento. Tente novamente.",
+					"Nao foi possivel salvar o levantamento. Tente novamente.",
 				);
 			}
 		})();
 	}, []);
 
-	async function shareFile() {
+	async function handleShare() {
 		if (!fileUri) {
 			Alert.alert("Nenhum arquivo", "Nenhum levantamento foi salvo ainda.");
 			return;
-		} else {
-			Sharing.shareAsync(fileUri);
 		}
+
+		await shareReport(fileUri);
 	}
 
 	return (
@@ -81,23 +49,10 @@ export default function Finalizado() {
 					nav.replace("/");
 				}}
 			>
-				Ir para o Início
+				Ir para o Inicio
 			</Button>
 
-			<Button
-				onPress={() => {
-					if (fileUri) {
-						shareFile();
-					} else {
-						Alert.alert(
-							"Nenhum Arquivo",
-							"Nenhum levantamento foi salvo ainda.",
-						);
-					}
-				}}
-			>
-				Compartilhar Arquivo
-			</Button>
+			<Button onPress={handleShare}>Compartilhar Arquivo</Button>
 		</Container>
 	);
 }

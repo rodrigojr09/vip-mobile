@@ -9,250 +9,219 @@ import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useSetor } from "@/hooks/Levantamento/SetorProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
 
+const campos = 12;
+
+const validationRules = [
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.nome.trim(), message: "Nome do setor invalido!" },
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.largura.trim(), message: "Largura do setor invalida!" },
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.comprimento.trim(), message: "Comprimento do setor invalido!" },
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.peDireito.trim(), message: "Pe direito do setor invalido!" },
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.piso.trim(), message: "Piso do setor invalido!" },
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.estrutura.trim(), message: "Estrutura do setor invalida!" },
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.forro.trim(), message: "Forro do setor invalido!" },
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.iluminacao.natural.trim(), message: "Iluminacao natural do setor invalida!" },
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.iluminacao.artificial.trim(), message: "Iluminacao artificial do setor invalida!" },
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.ventilacao.natural.trim(), message: "Ventilacao natural do setor invalida!" },
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.ventilacao.artificial.trim(), message: "Ventilacao artificial do setor invalida!" },
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.me.trim(), message: "Maquinas e equipamentos invalidos!" },
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.mce.trim(), message: "Medidas de controle existentes invalidas!" },
+	{ isValid: (setor: ReturnType<typeof useSetor>) => setor.mcr.trim(), message: "Medidas de controle recomendadas invalidas!" },
+];
+
 export default function Setor() {
 	const nav = useNavigationHistory();
 	const params = useLocalSearchParams();
 	const empresa = useEmpresa();
 	const setor = useSetor();
-
-	const campos = 12;
 	const refs = useRef<TextInput[]>([]);
-	const focarProximo = (index: number) => {
-		if (index + 1 <= campos) {
-			refs.current[index + 1]?.focus();
-		}
-	};
+
+	const isEditing = typeof params.setor === "string" && params.setor.length > 0;
 
 	useEffect(() => {
-		if (params.setor && setor.nome === "") {
-			const hasSetor = empresa.setores.find(
-				(a) => a.id === (params.setor as string),
-			);
-			if (hasSetor) setor.load(hasSetor);
+		if (isEditing && setor.nome === "") {
+			const selectedSetor = empresa.setores.find((item) => item.id === params.setor);
+			if (selectedSetor) setor.load(selectedSetor);
 		}
+
 		return () => {
 			setor.clear();
 		};
 	}, []);
 
-	const handleCreateSetor = () => {
-		// Validações individuais para os campos
-		if (!setor.nome.trim())
-			return Alert.alert("Erro", "Nome do setor inválido!");
-		if (!setor.largura.trim())
-			return Alert.alert("Erro", "Largura do setor inválida!");
-		if (!setor.comprimento.trim())
-			return Alert.alert("Erro", "Comprimento do setor inválido!");
-		if (!setor.peDireito.trim())
-			return Alert.alert("Erro", "Pé direito do setor inválido!");
-		if (!setor.piso.trim())
-			return Alert.alert("Erro", "Piso do setor inválido!");
-		if (!setor.estrutura.trim())
-			return Alert.alert("Erro", "Estrutura do setor inválida!");
-		if (!setor.forro.trim())
-			return Alert.alert("Erro", "Forro do setor inválido!");
-		if (!setor.iluminacao.natural.trim())
-			return Alert.alert("Erro", "Iluminação natural do setor inválida!");
-		if (!setor.iluminacao.artificial.trim())
-			return Alert.alert("Erro", "Iluminação artificial do setor inválida!");
-		if (!setor.ventilacao.natural.trim())
-			return Alert.alert("Erro", "Ventilação natural do setor inválida!");
-		if (!setor.ventilacao.artificial.trim())
-			return Alert.alert("Erro", "Ventilação artificial do setor inválida!");
-		if (!setor.me.trim())
-			return Alert.alert("Erro", "Máquinas e equipamentos inválidos!");
-		if (!setor.mce.trim())
-			return Alert.alert("Erro", "Medidas de controle existentes inválidas!");
-		if (!setor.mcr.trim())
-			return Alert.alert("Erro", "Medidas de controle recomendadas inválidas!");
+	function focarProximo(index: number) {
+		if (index + 1 <= campos) {
+			refs.current[index + 1]?.focus();
+		}
+	}
 
-		// Confirmação se as funções estão vazias
+	function validateForm() {
+		for (const rule of validationRules) {
+			if (!rule.isValid(setor)) {
+				Alert.alert("Erro", rule.message);
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	function persistSetor() {
+		if (isEditing) {
+			empresa.setSetores(
+				empresa.setores.map((item) => {
+					if (item.id !== params.setor) return item;
+					return setor;
+				}),
+			);
+		} else {
+			empresa.setSetores([...empresa.setores, setor]);
+		}
+
+		nav.back();
+	}
+
+	function handleSave() {
+		if (!validateForm()) return;
+
 		if (setor.funcoes.length === 0) {
-			return Alert.alert(
-				"Confirmação",
-				"Realmente não existe nenhuma função no setor?",
+			Alert.alert(
+				"Confirmacao",
+				"Realmente nao existe nenhuma funcao no setor?",
 				[
 					{ text: "Cancelar", style: "cancel" },
 					{
 						text: "Confirmar",
-						onPress: () => {
-							// Adiciona o setor após confirmação
-							empresa.setSetores([...empresa.setores, setor]);
-							nav.back();
-						},
+						onPress: persistSetor,
 					},
 				],
 				{ cancelable: false },
 			);
+			return;
 		}
 
-		// Adiciona o setor diretamente se há funções
-		empresa.setSetores([...empresa.setores, setor]);
-		nav.back();
-	};
+		persistSetor();
+	}
+
+	const sectorInputs = [
+		{
+			placeholder: "Digite o nome do setor...",
+			value: setor.nome,
+			onChange: setor.setNome,
+		},
+		{
+			placeholder: "Digite o lux do setor...",
+			value: setor.lux,
+			onChange: setor.setLux,
+		},
+		{
+			placeholder: "Digite a largura setor...",
+			value: setor.largura,
+			onChange: setor.setLargura,
+		},
+		{
+			placeholder: "Digite o comprimento do setor...",
+			value: setor.comprimento,
+			onChange: setor.setComprimento,
+		},
+		{
+			placeholder: "Digite o pe direito do setor...",
+			value: setor.peDireito,
+			onChange: setor.setPeDireito,
+		},
+		{
+			placeholder: "Digite o piso do setor...",
+			value: setor.piso,
+			onChange: setor.setPiso,
+		},
+		{
+			placeholder: "Digite a estrutura do setor...",
+			value: setor.estrutura,
+			onChange: setor.setEstrutura,
+		},
+		{
+			placeholder: "Digite o forro do setor...",
+			value: setor.forro,
+			onChange: setor.setForro,
+		},
+		{
+			placeholder: "Digite a iluminacao natural do setor...",
+			value: setor.iluminacao.natural,
+			onChange: setor.iluminacao.setNatural,
+		},
+		{
+			placeholder: "Digite a iluminacao artificial do setor...",
+			value: setor.iluminacao.artificial,
+			onChange: setor.iluminacao.setArtificial,
+		},
+		{
+			placeholder: "Digite a ventilacao natural do setor...",
+			value: setor.ventilacao.natural,
+			onChange: setor.ventilacao.setNatural,
+		},
+		{
+			placeholder: "Digite a ventilacao artificial do setor...",
+			value: setor.ventilacao.artificial,
+			onChange: setor.ventilacao.setArtificial,
+		},
+	];
+
+	const textareaInputs = [
+		{
+			placeholder: "Digite as maquinas e equipamentos presente setor",
+			value: setor.me,
+			onChange: setor.setMe,
+		},
+		{
+			placeholder: "Digite as medidas de controle existentes no setor",
+			value: setor.mce,
+			onChange: setor.setMce,
+		},
+		{
+			placeholder: "Digite as medidas de controle recomendadas para o setor",
+			value: setor.mcr,
+			onChange: setor.setMcr,
+		},
+	];
 
 	return (
 		<Container style={styles.formContainer} scroller>
-			<Input
-				placeholder="Digite o nome do setor..."
-				value={setor.nome}
-				onChange={setor.setNome}
-				ref={(ref) => {
-					if (ref) refs.current[0] = ref;
-				}}
-				returnKeyType={0 === campos - 1 ? "done" : "next"}
-				onSubmitEditing={() => focarProximo(0)}
-			/>
-			{
-				//Lux
-			}
-			<Input
-				placeholder="Digite o lux do setor..."
-				value={setor.lux}
-				onChange={setor.setLux}
-				ref={(ref) => {
-					if (ref) refs.current[1] = ref;
-				}}
-				returnKeyType={1 === campos - 1 ? "done" : "next"}
-				onSubmitEditing={() => focarProximo(1)}
-			/>
-			<Input
-				placeholder="Digite a largura setor..."
-				value={setor.largura}
-				onChange={setor.setLargura}
-				ref={(ref) => {
-					if (ref) refs.current[2] = ref;
-				}}
-				returnKeyType={2 === campos - 1 ? "done" : "next"}
-				onSubmitEditing={() => focarProximo(2)}
-			/>
-			<Input
-				placeholder="Digite o comprimento do setor..."
-				value={setor.comprimento}
-				onChange={setor.setComprimento}
-				ref={(ref) => {
-					if (ref) refs.current[3] = ref;
-				}}
-				returnKeyType={3 === campos - 1 ? "done" : "next"}
-				onSubmitEditing={() => focarProximo(3)}
-			/>
-			<Input
-				placeholder="Digite o pé direito do setor..."
-				value={setor.peDireito}
-				onChange={setor.setPeDireito}
-				ref={(ref) => {
-					if (ref) refs.current[4] = ref;
-				}}
-				returnKeyType={4 === campos - 1 ? "done" : "next"}
-				onSubmitEditing={() => focarProximo(4)}
-			/>
-			<Input
-				placeholder="Digite o piso do setor..."
-				value={setor.piso}
-				onChange={setor.setPiso}
-				ref={(ref) => {
-					if (ref) refs.current[5] = ref;
-				}}
-				returnKeyType={5 === campos - 1 ? "done" : "next"}
-				onSubmitEditing={() => focarProximo(5)}
-			/>
-			<Input
-				placeholder="Digite a estrutura do setor..."
-				value={setor.estrutura}
-				onChange={setor.setEstrutura}
-				ref={(ref) => {
-					if (ref) refs.current[6] = ref;
-				}}
-				returnKeyType={6 === campos - 1 ? "done" : "next"}
-				onSubmitEditing={() => focarProximo(6)}
-			/>
-			<Input
-				placeholder="Digite o forro do setor..."
-				value={setor.forro}
-				onChange={setor.setForro}
-				ref={(ref) => {
-					if (ref) refs.current[7] = ref;
-				}}
-				returnKeyType={7 === campos - 1 ? "done" : "next"}
-				onSubmitEditing={() => focarProximo(7)}
-			/>
-			<Input
-				placeholder="Digite a iluminção natural do setor..."
-				value={setor.iluminacao.natural}
-				onChange={setor.iluminacao.setNatural}
-				ref={(ref) => {
-					if (ref) refs.current[8] = ref;
-				}}
-				returnKeyType={8 === campos - 1 ? "done" : "next"}
-				onSubmitEditing={() => focarProximo(8)}
-			/>
-			<Input
-				placeholder="Digite a iluminação artificial do setor..."
-				value={setor.iluminacao.artificial}
-				onChange={setor.iluminacao.setArtificial}
-				ref={(ref) => {
-					if (ref) refs.current[9] = ref;
-				}}
-				returnKeyType={9 === campos - 1 ? "done" : "next"}
-				onSubmitEditing={() => focarProximo(9)}
-			/>
-			<Input
-				placeholder="Digite a ventilação natural do setor..."
-				value={setor.ventilacao.natural}
-				onChange={setor.ventilacao.setNatural}
-				ref={(ref) => {
-					if (ref) refs.current[10] = ref;
-				}}
-				returnKeyType={10 === campos - 1 ? "done" : "next"}
-				onSubmitEditing={() => focarProximo(10)}
-			/>
-			<Input
-				placeholder="Digite a ventilação artificial do setor..."
-				value={setor.ventilacao.artificial}
-				onChange={setor.ventilacao.setArtificial}
-				ref={(ref) => {
-					if (ref) refs.current[11] = ref;
-				}}
-				returnKeyType={11 === campos - 1 ? "done" : "next"}
-				onSubmitEditing={() => focarProximo(11)}
-			/>
-			<Input
-				placeholder="Digite as maquinas e equipamentos presente setor"
-				value={setor.me}
-				textarea={true}
-				ref={(ref) => {
-					if (ref) refs.current[12] = ref;
-				}}
-				onChange={setor.setMe}
-			/>
-			<Input
-				placeholder="Digite as medidas de controle existentes no setor"
-				value={setor.mce}
-				textarea={true}
-				onChange={setor.setMce}
-			/>
-			<Input
-				placeholder="Digite as medidas de controle recomendadas para o setor"
-				value={setor.mcr}
-				textarea={true}
-				onChange={setor.setMcr}
-			/>
+			{sectorInputs.map((field, index) => (
+				<Input
+					key={field.placeholder}
+					placeholder={field.placeholder}
+					value={field.value}
+					onChange={field.onChange}
+					ref={(ref) => {
+						if (ref) refs.current[index] = ref;
+					}}
+					returnKeyType={index === campos - 1 ? "done" : "next"}
+					onSubmitEditing={() => focarProximo(index)}
+				/>
+			))}
+
+			{textareaInputs.map((field, index) => (
+				<Input
+					key={field.placeholder}
+					placeholder={field.placeholder}
+					value={field.value}
+					textarea
+					ref={(ref) => {
+						if (index === 0 && ref) refs.current[12] = ref;
+					}}
+					onChange={field.onChange}
+				/>
+			))}
 
 			<VIPTabela
 				headers={["Função", "Descrição", "Riscos"]}
-				valores={setor.funcoes.map((a) => {
-					return {
-						id: a.id,
-						// prettier-ignore
-						Função: a.nome,
-						// prettier-ignore
-						Descrição: a.description,
-						// prettier-ignore
-						Riscos: `${a.riscos.length}`,
-					};
-				})}
+				valores={setor.funcoes.map((funcao) => ({
+					id: funcao.id,
+					Função: funcao.nome,
+					Descrição: funcao.description,
+					Riscos: `${funcao.riscos.length}`,
+				}))}
 				onExcluir={(item) =>
-					setor.setFuncoes(setor.funcoes.filter((a) => a.id !== item.id))
+					setor.setFuncoes(setor.funcoes.filter((funcao) => funcao.id !== item.id))
 				}
 				goTo={(item) => {
 					nav.push({
@@ -263,111 +232,12 @@ export default function Setor() {
 					});
 				}}
 			/>
-			<Button
-				onPress={() => {
-					nav.push("/Levantamento/funcao");
-				}}
-			>
+
+			<Button onPress={() => nav.push("/Levantamento/funcao")}>
 				Adicionar Função
 			</Button>
-			{!params.setor && (
-				<Button
-					onPress={() => {
-						handleCreateSetor();
-					}}
-				>
-					Criar
-				</Button>
-			)}
-			{params.setor && (
-				<Button
-					onPress={() => {
-						// Validações individuais para os campos
-						if (!setor.nome.trim())
-							return Alert.alert("Erro", "Nome do setor inválido!");
-						if (!setor.largura.trim())
-							return Alert.alert("Erro", "Largura do setor inválida!");
-						if (!setor.comprimento.trim())
-							return Alert.alert("Erro", "Comprimento do setor inválido!");
-						if (!setor.peDireito.trim())
-							return Alert.alert("Erro", "Pé direito do setor inválido!");
-						if (!setor.piso.trim())
-							return Alert.alert("Erro", "Piso do setor inválido!");
-						if (!setor.estrutura.trim())
-							return Alert.alert("Erro", "Estrutura do setor inválida!");
-						if (!setor.forro.trim())
-							return Alert.alert("Erro", "Forro do setor inválido!");
-						if (!setor.iluminacao.natural.trim())
-							return Alert.alert(
-								"Erro",
-								"Iluminação natural do setor inválida!",
-							);
-						if (!setor.iluminacao.artificial.trim())
-							return Alert.alert(
-								"Erro",
-								"Iluminação artificial do setor inválida!",
-							);
-						if (!setor.ventilacao.natural.trim())
-							return Alert.alert(
-								"Erro",
-								"Ventilação natural do setor inválida!",
-							);
-						if (!setor.ventilacao.artificial.trim())
-							return Alert.alert(
-								"Erro",
-								"Ventilação artificial do setor inválida!",
-							);
-						if (!setor.me.trim())
-							return Alert.alert("Erro", "Máquinas e equipamentos inválidos!");
-						if (!setor.mce.trim())
-							return Alert.alert(
-								"Erro",
-								"Medidas de controle existentes inválidas!",
-							);
-						if (!setor.mcr.trim())
-							return Alert.alert(
-								"Erro",
-								"Medidas de controle recomendadas inválidas!",
-							);
 
-						// Confirmação se as funções estão vazias
-						if (setor.funcoes.length === 0) {
-							return Alert.alert(
-								"Confirmação",
-								"Realmente não existe nenhuma função no setor?",
-								[
-									{ text: "Cancelar", style: "cancel" },
-									{
-										text: "Confirmar",
-										onPress: () => {
-											// Adiciona o setor após confirmação
-											empresa.setSetores(
-												empresa.setores.map((a) => {
-													if (a.id !== params.setor) return a;
-													return setor;
-												}),
-											);
-											nav.back();
-										},
-									},
-								],
-								{ cancelable: false },
-							);
-						}
-
-						// Adiciona o setor diretamente se há funções
-						empresa.setSetores(
-							empresa.setores.map((a) => {
-								if (a.id !== params.setor) return a;
-								return setor;
-							}),
-						);
-						nav.back();
-					}}
-				>
-					Atualizar
-				</Button>
-			)}
+			<Button onPress={handleSave}>{isEditing ? "Atualizar" : "Criar"}</Button>
 		</Container>
 	);
 }

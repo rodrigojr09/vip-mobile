@@ -1,203 +1,159 @@
-import * as FileSystem from "expo-file-system/legacy";
-import * as Sharing from "expo-sharing";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
 	ActivityIndicator,
 	Alert,
 	FlatList,
 	Pressable,
+	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
 } from "react-native";
 import Container from "@/components/Container";
+import Input from "@/components/Input";
 import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import manager from "@/utils/Data/manager";
-import { getHtmlVisita } from "@/utils/Visita/formatHTML";
-import { router } from "expo-router";
 import Storage from "@/utils/Storage";
-import Input from "@/components/Input";
+import { exportVisitaReport } from "@/utils/services/configExports";
+
+interface VisitaListItem {
+	id: string;
+	nome: string;
+	responsavel: string;
+	data: string;
+}
+
+const DEV_PASSWORD = "Erodev19";
+
+function TableHeader() {
+	return (
+		<View style={styles.tableHeader}>
+			<Text style={[styles.headerText, styles.idColumn]}>ID</Text>
+			<Text style={[styles.headerText, styles.nameColumn]}>Empresa</Text>
+			<Text style={[styles.headerText, styles.nameColumn]}>Responsável</Text>
+			<Text style={[styles.headerText, styles.dateColumn]}>Data</Text>
+			<Text style={[styles.headerText, styles.actionColumn]}></Text>
+		</View>
+	);
+}
+
+function EmptyList() {
+	return (
+		<View style={styles.emptyState}>
+			<Text style={styles.emptyStateText}>Nenhum Visita encontrado</Text>
+		</View>
+	);
+}
 
 export default function Config() {
-	const [visitas, setVisitas] = useState<
-		{ id: string; nome: string; responsavel: string; data: string }[]
-	>([]);
+	const [visitas, setVisitas] = useState<VisitaListItem[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [oepnModal, setOpenModal] = useState(false);
+	const [openModal, setOpenModal] = useState(false);
 	const [senha, setSenha] = useState("");
 
-	async function carregarVisitas() {
+	useEffect(() => {
+		loadVisitas();
+	}, []);
+
+	async function loadVisitas() {
 		try {
 			const visitasData = await manager.visitas.getAll();
-			const data = visitasData?.map((visita: VIPVisitaType) => ({
-				id: visita.id || "-",
-				nome: visita.empresa?.razao_social || "Sem Nome",
-				responsavel: visita.responsavel || "Sem Responsável",
-				data: `${visita.data} ${visita.horaEntrada}` || "Sem Data",
-			}));
-
-			if (data) setVisitas(data);
-			else setVisitas([]);
+			setVisitas(
+				visitasData.map((visita: VIPVisitaType) => ({
+					id: visita.id || "-",
+					nome: visita.empresa?.razao_social || "Sem Nome",
+					responsavel: visita.responsavel || "Sem Responsável",
+					data: `${visita.data} ${visita.horaEntrada}` || "Sem Data",
+				})),
+			);
 		} catch (error) {
-			console.error("❌ Erro ao listar Visitas:", error);
+			console.error("Erro ao listar Visitas:", error);
 		} finally {
 			setLoading(false);
 		}
 	}
 
-	useEffect(() => {
-		carregarVisitas();
-	}, []);
+	async function syncSingleVisita(visita: VIPVisitaType) {
+		if (!visita.id || !visita.assinatura) return;
 
-	async function asyncAll() {
-		const visitas = await manager.visitas.getAll();
-		visitas.forEach(async (visita: VIPVisitaType) => {
-			if (!visita.id || !visita.assinatura) return;
-			const res = await fetch(`${Storage.base_url}/visitas/${visita.id}`);
-			if (res.status === 404) {
-				const created = await manager.visitas.create(visita);
-				if (created) {
-					console.log(`Visita ${visita.id} criada com sucesso!`);
-					await manager.visitas.delete(visita.id);
-                    carregarVisitas();
-				} else {
-					Alert.alert("Erro", `Nao foi possivel criar a visita: .${visita.id}`);
-				}
-			} else {
-				console.log(`Visita ${visita.id} ja existe!`);
-				await manager.visitas.delete(visita.id);
-                carregarVisitas();
+		const response = await fetch(`${Storage.base_url}/visitas/${visita.id}`);
+
+		if (response.status === 404) {
+			const created = await manager.visitas.create(visita);
+			if (!created) {
+				Alert.alert("Erro", `Nao foi possivel criar a visita: ${visita.id}`);
+				return;
 			}
-		});
+		}
+
+		await manager.visitas.delete(visita.id);
+	}
+
+	async function handleSyncAll() {
+		const storedVisitas = await manager.visitas.getAll();
+
+		for (const visita of storedVisitas) {
+			await syncSingleVisita(visita);
+		}
+
+		await loadVisitas();
+	}
+
+	async function handleExport(id: string) {
+		const result = await exportVisitaReport(id);
+
+		if (!result) {
+			Alert.alert("Erro", "Não foi possível encontrar os dados da visita.");
+		}
+	}
+
+	function handleDeveloperAccess() {
+		if (senha === DEV_PASSWORD) {
+			setOpenModal(false);
+			setSenha("");
+			router.replace("/Config/visitas/dev");
+			return;
+		}
+
+		Alert.alert("Senha incorreta", "A senha informada está inválida.");
 	}
 
 	if (loading) {
 		return (
-			<Container
-				style={{
-					flex: 1,
-					justifyContent: "center",
-					alignItems: "center",
-					backgroundColor: "#0d1117",
-				}}
-			>
+			<Container style={styles.loadingContainer}>
 				<ActivityIndicator size="large" color="#0dcaf0" />
-				<Text style={{ marginTop: 10, color: "#c9d1d9" }}>
-					Carregando visitas...
-				</Text>
+				<Text style={styles.loadingText}>Carregando visitas...</Text>
 			</Container>
 		);
 	}
 
 	return (
-		<Container style={{ padding: 16, backgroundColor: "#0d1117" }} scroller>
-			{/* Cabeçalho com botão */}
-			<View
-				style={{
-					flexDirection: "row",
-					alignItems: "center",
-					justifyContent: "space-between",
-					marginBottom: 16,
-				}}
-			>
-				<Text
-					style={{
-						fontSize: 22,
-						fontWeight: "bold",
-						color: "#00B26D", // cor verde
-					}}
-				>
-					Visitas Salvas
-				</Text>
+		<Container style={styles.container} scroller>
+			<View style={styles.titleRow}>
+				<Text style={styles.title}>Visitas Salvas</Text>
 
-				<View style={{ flexDirection: "row", gap: 8 }}>
+				<View style={styles.headerActions}>
 					<TouchableOpacity
-						style={{ padding: 8, borderRadius: 8 }}
+						style={styles.devButton}
 						onPress={() => setOpenModal(true)}
 					>
-						<Text style={{ color: "#00B26D", fontWeight: "bold" }}>
-							Desenvolvedor
-						</Text>
+						<Text style={styles.devButtonText}>Desenvolvedor</Text>
 					</TouchableOpacity>
+
 					<TouchableOpacity
-						style={{
-							backgroundColor: "#00B26D", // cor verde
-							padding: 8,
-							borderRadius: 8,
-						}}
-						onPress={async () => await asyncAll()}
+						style={styles.syncButton}
+						onPress={handleSyncAll}
 					>
-						<Text style={{ color: "#fff", fontWeight: "bold" }}>
-							Sincronizar
-						</Text>
+						<Text style={styles.syncButtonText}>Sincronizar</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
 
-			{/* Cabeçalho da tabela */}
-			<View
-				style={{
-					flexDirection: "row",
-					paddingVertical: 10,
-					backgroundColor: "#21262d",
-					borderRadius: 8,
-					marginBottom: 8,
-					elevation: 2,
-				}}
-			>
-				<Text
-					style={{
-						flex: 0.25,
-						fontWeight: "bold",
-						color: "#00B26D",
-						textAlign: "center",
-					}}
-				>
-					ID
-				</Text>
-				<Text
-					style={{
-						flex: 0.6,
-						fontWeight: "bold",
-						color: "#00B26D",
-						textAlign: "center",
-					}}
-				>
-					Empresa
-				</Text>
-				<Text
-					style={{
-						flex: 0.6,
-						fontWeight: "bold",
-						color: "#00B26D",
-						textAlign: "center",
-					}}
-				>
-					Responsável
-				</Text>
-				<Text
-					style={{
-						flex: 0.45,
-						fontWeight: "bold",
-						color: "#00B26D",
-						textAlign: "center",
-					}}
-				>
-					Data
-				</Text>
-				<Text
-					style={{
-						flex: 0.3,
-						fontWeight: "bold",
-						color: "#00B26D",
-						textAlign: "center",
-					}}
-				></Text>
-			</View>
+			<TableHeader />
 
-			{/* Lista */}
 			<FlatList
-				data={visitas.reverse()}
+				data={[...visitas].reverse()}
 				scrollEnabled={false}
 				keyExtractor={(item, index) => `${item.id}-${index}`}
 				contentContainerStyle={{ paddingBottom: 80 }}
@@ -210,38 +166,14 @@ export default function Config() {
 								params: { id: item.id },
 							})
 						}
-						style={{
-							flexDirection: "row",
-							alignItems: "center",
-							paddingVertical: 12,
-							paddingHorizontal: 10,
-							backgroundColor: "#161b22",
-							borderRadius: 10,
-							shadowColor: "#000",
-							shadowOpacity: 0.2,
-							shadowOffset: { width: 0, height: 2 },
-							shadowRadius: 3,
-							elevation: 2,
-						}}
+						style={styles.row}
 					>
-						<Text
-							style={{
-								flex: 0.25,
-								color: "#9ba3af",
-								fontWeight: "bold",
-								textAlign: "center",
-							}}
-						>
+						<Text style={[styles.idText, styles.idColumn]}>
 							{item.id?.slice(0, 7) || "-"}
 						</Text>
 
 						<Text
-							style={{
-								flex: 0.6,
-								color: "#f0f6fc",
-								textAlign: "center",
-								fontSize: 15,
-							}}
+							style={[styles.primaryText, styles.nameColumn]}
 							numberOfLines={1}
 							ellipsizeMode="tail"
 						>
@@ -249,26 +181,14 @@ export default function Config() {
 						</Text>
 
 						<Text
-							style={{
-								flex: 0.6,
-								color: "#f0f6fc",
-								textAlign: "center",
-								fontSize: 15,
-							}}
+							style={[styles.primaryText, styles.nameColumn]}
 							numberOfLines={1}
 							ellipsizeMode="tail"
 						>
 							{item.responsavel}
 						</Text>
 
-						<Text
-							style={{
-								flex: 0.45,
-								color: "#8b949e",
-								textAlign: "center",
-								fontSize: 13,
-							}}
-						>
+						<Text style={[styles.secondaryText, styles.dateColumn]}>
 							{item.data}
 						</Text>
 
@@ -279,124 +199,38 @@ export default function Config() {
 										text: "Baixar",
 										style: "default",
 										onPress: async () => {
-											const visita = await manager.visitas.getById(item.id);
-											if (!visita) {
-												Alert.alert(
-													"Erro",
-													"Não foi possível encontrar os dados do Visita.",
-												);
-												return;
-											}
-
-											const htmlContent = getHtmlVisita(visita)
-												.replace("$assinatura", visita.assinatura || "")
-												.replace("not-assinatura", "");
-
-											// Caminho interno
-											const fileName = `Visita - ${visita.empresa?.razao_social}.html`;
-											const filePath = `${FileSystem.documentDirectory}${fileName}`;
-
-											// Salva o arquivo internamente
-											await FileSystem.writeAsStringAsync(
-												filePath,
-												htmlContent,
-												{
-													encoding: FileSystem.EncodingType.UTF8,
-												},
-											);
-
-											Sharing.shareAsync(filePath);
+											await handleExport(item.id);
 										},
 									},
 									{ text: "Fechar", style: "cancel" },
 								]);
 							}}
-							style={{
-								flex: 0.3,
-								alignItems: "center",
-								justifyContent: "center",
-							}}
+							style={styles.actionColumn}
 						>
-							<Text style={{ color: "#58a6ff", fontWeight: "bold" }}>+</Text>
+							<Text style={styles.actionText}>+</Text>
 						</TouchableOpacity>
 					</Pressable>
 				)}
-				ListEmptyComponent={
-					<View
-						style={{
-							padding: 20,
-							alignItems: "center",
-							backgroundColor: "#161b22",
-							borderRadius: 8,
-							marginTop: 20,
-						}}
-					>
-						<Text style={{ color: "#8b949e", fontStyle: "italic" }}>
-							Nenhum Visita encontrado
-						</Text>
-					</View>
-				}
+				ListEmptyComponent={<EmptyList />}
 			/>
-			{oepnModal && (
-				<View
-					style={{
-						position: "absolute",
-						flex: 1,
-						width: "100%",
-						height: "100%",
-						backgroundColor: "rgba(0, 0, 0, 0.5)",
-						zIndex: 1,
-						justifyContent: "center",
-						alignItems: "center",
-					}}
-				>
-					<View
-						style={{
-							backgroundColor: "#161b22",
-							padding: 20,
-							borderRadius: 8,
-							width: "80%",
-						}}
-					>
-						<Text style={{ color: "#8b949e", marginBottom: 10 }}>
-							Digite sua senha para acessar:
-						</Text>
+
+			{openModal && (
+				<View style={styles.modalOverlay}>
+					<View style={styles.modalBox}>
+						<Text style={styles.modalText}>Digite sua senha para acessar:</Text>
 						<Input placeholder="Senha" value={senha} onChange={setSenha} />
-						<View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+						<View style={styles.modalActions}>
 							<Pressable
-								onPress={() => {
-									if (senha === "Erodev19") {
-										router.replace("/Config/visitas/dev");
-									} else {
-										Alert.alert(
-											"Senha incorreta",
-											"A senha informada está inválida.",
-										);
-									}
-								}}
-								style={{
-									marginTop: 10,
-									backgroundColor: "#58a6ff",
-									padding: 10,
-									borderRadius: 8,
-								}}
+								onPress={handleDeveloperAccess}
+								style={styles.enterButton}
 							>
-								<Text style={{ color: "#f0f6fc", fontWeight: "bold", fontSize: 16 }}>Entrar</Text>
+								<Text style={styles.modalButtonText}>Entrar</Text>
 							</Pressable>
 							<Pressable
-								onPress={() => {
-									setOpenModal(false);
-								}}
-								style={{
-									marginTop: 10,
-									backgroundColor: "#dc3545",
-									padding: 10,
-									borderRadius: 8,
-								}}
+								onPress={() => setOpenModal(false)}
+								style={styles.cancelButton}
 							>
-								<Text style={{ color: "#f0f6fc", fontWeight: "bold", fontSize: 16 }}>
-									Cancelar
-								</Text>
+								<Text style={styles.modalButtonText}>Cancelar</Text>
 							</Pressable>
 						</View>
 					</View>
@@ -405,3 +239,163 @@ export default function Config() {
 		</Container>
 	);
 }
+
+const styles = StyleSheet.create({
+	container: {
+		padding: 16,
+		backgroundColor: "#0d1117",
+	},
+	loadingContainer: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+		backgroundColor: "#0d1117",
+	},
+	loadingText: {
+		marginTop: 10,
+		color: "#c9d1d9",
+	},
+	titleRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		marginBottom: 16,
+	},
+	title: {
+		fontSize: 22,
+		fontWeight: "bold",
+		color: "#00B26D",
+	},
+	headerActions: {
+		flexDirection: "row",
+		gap: 8,
+	},
+	devButton: {
+		padding: 8,
+		borderRadius: 8,
+	},
+	devButtonText: {
+		color: "#00B26D",
+		fontWeight: "bold",
+	},
+	syncButton: {
+		backgroundColor: "#00B26D",
+		padding: 8,
+		borderRadius: 8,
+	},
+	syncButtonText: {
+		color: "#fff",
+		fontWeight: "bold",
+	},
+	tableHeader: {
+		flexDirection: "row",
+		paddingVertical: 10,
+		backgroundColor: "#21262d",
+		borderRadius: 8,
+		marginBottom: 8,
+		elevation: 2,
+	},
+	row: {
+		flexDirection: "row",
+		alignItems: "center",
+		paddingVertical: 12,
+		paddingHorizontal: 10,
+		backgroundColor: "#161b22",
+		borderRadius: 10,
+		shadowColor: "#000",
+		shadowOpacity: 0.2,
+		shadowOffset: { width: 0, height: 2 },
+		shadowRadius: 3,
+		elevation: 2,
+	},
+	headerText: {
+		fontWeight: "bold",
+		color: "#00B26D",
+		textAlign: "center",
+	},
+	idText: {
+		color: "#9ba3af",
+		fontWeight: "bold",
+		textAlign: "center",
+	},
+	primaryText: {
+		color: "#f0f6fc",
+		textAlign: "center",
+		fontSize: 15,
+	},
+	secondaryText: {
+		color: "#8b949e",
+		textAlign: "center",
+		fontSize: 13,
+	},
+	idColumn: {
+		flex: 0.25,
+	},
+	nameColumn: {
+		flex: 0.6,
+	},
+	dateColumn: {
+		flex: 0.45,
+	},
+	actionColumn: {
+		flex: 0.3,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	actionText: {
+		color: "#58a6ff",
+		fontWeight: "bold",
+	},
+	emptyState: {
+		padding: 20,
+		alignItems: "center",
+		backgroundColor: "#161b22",
+		borderRadius: 8,
+		marginTop: 20,
+	},
+	emptyStateText: {
+		color: "#8b949e",
+		fontStyle: "italic",
+	},
+	modalOverlay: {
+		position: "absolute",
+		flex: 1,
+		width: "100%",
+		height: "100%",
+		backgroundColor: "rgba(0, 0, 0, 0.5)",
+		zIndex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	modalBox: {
+		backgroundColor: "#161b22",
+		padding: 20,
+		borderRadius: 8,
+		width: "80%",
+	},
+	modalText: {
+		color: "#8b949e",
+		marginBottom: 10,
+	},
+	modalActions: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+	},
+	enterButton: {
+		marginTop: 10,
+		backgroundColor: "#58a6ff",
+		padding: 10,
+		borderRadius: 8,
+	},
+	cancelButton: {
+		marginTop: 10,
+		backgroundColor: "#dc3545",
+		padding: 10,
+		borderRadius: 8,
+	},
+	modalButtonText: {
+		color: "#f0f6fc",
+		fontWeight: "bold",
+		fontSize: 16,
+	},
+});
