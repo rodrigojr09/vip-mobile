@@ -26,6 +26,7 @@ function matchesSearch(item: EmpresaItem, value: string) {
 
 	return (
 		item.nome_fantasia.toLowerCase().includes(normalized) ||
+		item.apelido?.toLowerCase().includes(normalized) ||
 		item.razao_social.toLowerCase().includes(normalized) ||
 		item.cnpj.toLowerCase().includes(normalized)
 	);
@@ -59,7 +60,9 @@ export default function Visita() {
 	const isTablet = deviceType === DeviceType.TABLET;
 	const titleLimit = isTablet ? 60 : 25;
 
-	const filteredEmpresas = empresas.filter((item) => matchesSearch(item, search));
+	const filteredEmpresas = empresas.filter((item) =>
+		matchesSearch(item, search),
+	);
 	const filteredInclusas = empresas.filter((item) =>
 		matchesSearch(item, inclusaSearch),
 	);
@@ -113,7 +116,9 @@ export default function Visita() {
 				onPress={() => onPress(item)}
 			>
 				<Text style={styles.suggestionText}>{item.razao_social}</Text>
-				<Text style={styles.suggestionText2}>{item.nome_fantasia}</Text>
+				<Text style={styles.suggestionText2}>
+					{item.apelido || item.nome_fantasia}
+				</Text>
 			</TouchableOpacity>
 		);
 	}

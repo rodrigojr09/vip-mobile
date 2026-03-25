@@ -81,7 +81,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 			await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
 				accuracy: Location.Accuracy.Balanced,
 				timeInterval: 60000,
-				distanceInterval: 1,
+				deferredUpdatesInterval: 60000,
+				distanceInterval: 50,
+				deferredUpdatesDistance: 50,
+				pausesUpdatesAutomatically: false,
 				foregroundService: {
 					notificationTitle: "Vip Mobile",
 					notificationBody: "Registrando sua localizacao em segundo plano",

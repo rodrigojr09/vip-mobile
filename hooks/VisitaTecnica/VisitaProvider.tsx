@@ -89,8 +89,14 @@ export default function VisitaProvider({
 	};
 
 	useEffect(() => {
-		setEmpresas(manager.visitas.empresas);
-		setPerguntas(manager.visitas.perguntas);
+		const syncFromManager = () => {
+			setEmpresas(manager.visitas.empresas);
+			setPerguntas(manager.visitas.perguntas);
+		};
+
+		syncFromManager();
+		const unsubscribe = manager.visitas.subscribe(syncFromManager);
+		return unsubscribe;
 	}, []);
 
 	return (

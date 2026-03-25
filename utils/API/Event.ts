@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import * as Network from "expo-network";
 import type { VIPEvento, VIPLocalizacao } from "@/types/VIPEvent";
 import "react-native-get-random-values";
 import manager from "../Data/manager";
@@ -79,6 +80,21 @@ class Event {
 		};
 
 		try {
+			const network = await Network.getNetworkStateAsync();
+			const offline =
+				network.isConnected === false ||
+				network.isInternetReachable === false;
+
+			if (offline) {
+				logger.warn("Event", "Offline, queued event", novoEvento.msg);
+				await manager.eventos.add(novoEvento);
+				return false;
+			}
+		} catch (error) {
+			logger.warn("Event", "Failed to check network state", error);
+		}
+
+		try {
 			const res = await fetch(`${Storage.base_url}/eventos/send`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -92,15 +108,6 @@ class Event {
 			logger.warn("Event", "Event saved offline", novoEvento.msg);
 			await manager.eventos.add(novoEvento);
 			return false;
-		}
-	}
-
-	public async saveOfflineEvento(evento: VIPEvento) {
-		try {
-			await manager.eventos.add(evento);
-			logger.info("Event", "Event saved offline", evento.msg);
-		} catch (error) {
-			logger.error("Event", "Failed to save event offline", error);
 		}
 	}
 

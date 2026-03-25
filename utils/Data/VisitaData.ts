@@ -3,6 +3,7 @@ import Storage from "../Storage";
 
 export default class VisitaData extends Storage {
     private static instance: VisitaData;
+	private listeners: Array<() => void> = [];
 
     public perguntas: VIPVisitaType["perguntas"] = { adm: [], setor: [] };
 
@@ -30,17 +31,39 @@ export default class VisitaData extends Storage {
             console.log("✅ Dados de visitas inicializados com sucesso!");
         } catch (error) {
             console.error("❌ Erro ao carregar dados em VisitaData:", error);
-        }
+        } finally {
+			this.notify();
+		}
     }
+
+	public subscribe(listener: () => void) {
+		this.listeners.push(listener);
+		return () => {
+			this.listeners = this.listeners.filter((item) => item !== listener);
+		};
+	}
+
+	private notify() {
+		this.listeners.forEach((listener) => {
+			try {
+				listener();
+			} catch (error) {
+				console.error("❌ Erro ao notificar listeners de VisitaData:", error);
+			}
+		});
+	}
 
     /** 🌐 Carrega empresas da API ou localmente */
     private async loadEmpresas(): Promise<void> {
         try {
             console.log("🌐 Buscando empresas da API...");
-            const res = await fetch(`${Storage.base_url}/empresas`);
+            const res = await fetch(`${Storage.base_url}/empresas?exclude=true`);
 
             if (res.ok) {
                 const empresas = await res.json();
+				if (!Array.isArray(empresas)) {
+					throw new Error("Payload de empresas invalido");
+				}
                 this.empresas = empresas;
                 console.log(`✅ ${empresas.length} empresas carregadas da API`);
                 await this.save(this.keys.EMPRESAS_KEY, JSON.stringify(empresas));
@@ -51,7 +74,17 @@ export default class VisitaData extends Storage {
             console.log(err);
             console.warn("⚠️ Falha ao carregar empresas. Carregando do storage local...");
             const stored = await this.get(this.keys.EMPRESAS_KEY);
-            this.empresas = stored ? JSON.parse(stored) : [];
+			if (stored) {
+				try {
+					const parsed = JSON.parse(stored);
+					this.empresas = Array.isArray(parsed) ? parsed : [];
+				} catch (parseError) {
+					console.warn("⚠️ Erro ao ler cache de empresas:", parseError);
+					this.empresas = [];
+				}
+			} else {
+				this.empresas = [];
+			}
             console.log(`💾 ${this.empresas.length} empresas carregadas do cache`);
         }
     }
@@ -64,6 +97,13 @@ export default class VisitaData extends Storage {
 
             if (res.ok) {
                 const perguntas = await res.json();
+				if (
+					!perguntas ||
+					!Array.isArray(perguntas.questionsAdm) ||
+					!Array.isArray(perguntas.questionsSetor)
+				) {
+					throw new Error("Payload de perguntas invalido");
+				}
                 this.perguntas = {
                     adm: perguntas.questionsAdm || [],
                     setor: perguntas.questionsSetor || [],
@@ -80,9 +120,25 @@ export default class VisitaData extends Storage {
             console.log(err);
             console.warn("⚠️ Falha ao carregar perguntas. Carregando do storage local...");
             const stored = await this.get(this.keys.PERGUNTAS_KEY);
-            this.perguntas = stored
-                ? JSON.parse(stored)
-                : { adm: [], setor: [] };
+			if (stored) {
+				try {
+					const parsed = JSON.parse(stored);
+					if (
+						parsed &&
+						Array.isArray(parsed.adm) &&
+						Array.isArray(parsed.setor)
+					) {
+						this.perguntas = parsed;
+					} else {
+						this.perguntas = { adm: [], setor: [] };
+					}
+				} catch (parseError) {
+					console.warn("⚠️ Erro ao ler cache de perguntas:", parseError);
+					this.perguntas = { adm: [], setor: [] };
+				}
+			} else {
+				this.perguntas = { adm: [], setor: [] };
+			}
             console.log(
                 `💾 Perguntas carregadas do cache: adm=${this.perguntas.adm.length}, setor=${this.perguntas.setor.length}`
             );

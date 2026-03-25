@@ -16,6 +16,7 @@ export default class Storage {
         LEVANTAMENTOS_KEY: "@vip:levantamentos",
         VISITAS_KEY: "@vip:visitas",
         EVENTOS_KEY: "@vip:eventos",
+		QUESTS_KEY: "@vip:quests",
     } as const;
 
     /** 🧾 Cache de dados em memória (não persistente) */
