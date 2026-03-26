@@ -14,8 +14,8 @@ import Container from "@/components/Container";
 import Input from "@/components/Input";
 import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import manager from "@/utils/Data/manager";
-import Storage from "@/utils/Storage";
 import { exportVisitaReport } from "@/utils/services/configExports";
+import { syncOfflineVisitas } from "@/utils/services/visitaSync";
 
 interface VisitaListItem {
 	id: string;
@@ -74,29 +74,8 @@ export default function Config() {
 		}
 	}
 
-	async function syncSingleVisita(visita: VIPVisitaType) {
-		if (!visita.id || !visita.assinatura) return;
-
-		const response = await fetch(`${Storage.base_url}/visitas/${visita.id}`);
-
-		if (response.status === 404) {
-			const created = await manager.visitas.create(visita);
-			if (!created) {
-				Alert.alert("Erro", `Nao foi possivel criar a visita: ${visita.id}`);
-				return;
-			}
-		}
-
-		await manager.visitas.delete(visita.id);
-	}
-
 	async function handleSyncAll() {
-		const storedVisitas = await manager.visitas.getAll();
-
-		for (const visita of storedVisitas) {
-			await syncSingleVisita(visita);
-		}
-
+		await syncOfflineVisitas();
 		await loadVisitas();
 	}
 

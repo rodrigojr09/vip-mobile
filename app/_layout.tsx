@@ -4,7 +4,7 @@ import { NavigationProvider } from "@/hooks/Navigation";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect } from "react";
 import manager from "@/utils/Data/manager";
-import { events } from "@/utils/API/Event";
+import { syncSystemData } from "@/utils/services/systemSync";
 
 export default function BaseLayout() {
 	useEffect(() => {
@@ -12,13 +12,7 @@ export default function BaseLayout() {
 		manager.levantamentos;
 		manager.eventos;
 
-		events.startEvent("sync");
-		events.sendEvent("Sincronizando os dados...");
-
-		events.syncOfflineEventos();
-
-		events.sendEvent("Dados sincronizados!");
-		events.endEvent();
+		void syncSystemData({ force: true, reason: "startup" });
 	}, []);
 	return (
 		<NavigationProvider>

@@ -5,7 +5,7 @@ import { useNavigationHistory } from "@/hooks/Navigation";
 import Input from "@/components/Input";
 import { useEffect, useState } from "react";
 import manager from "@/utils/Data/manager";
-import { events } from "@/utils/API/Event";
+import { syncSystemData } from "@/utils/services/systemSync";
 
 export default function Config() {
 	const nav = useNavigationHistory();
@@ -23,19 +23,18 @@ export default function Config() {
 		if (syncing) return;
 		setSyncing(true);
 		try {
-			events.startEvent("sync");
-			await events.sendEvent("Sincronizando os dados...");
-			await manager.visitas.init();
-			await events.syncOfflineEventos();
-			await events.sendEvent("Dados sincronizados!");
-			Alert.alert("Sincronizado", "Dados atualizados com sucesso.");
+			const synced = await syncSystemData({ force: true, reason: "manual" });
+			if (synced) {
+				Alert.alert("Sincronizado", "Dados atualizados com sucesso.");
+			} else {
+				Alert.alert(
+					"Aviso",
+					"Sem internet ou sincronizacao ja em andamento.",
+				);
+			}
 		} catch (error) {
-			await events.sendEvent(
-				`Falha ao sincronizar: ${error instanceof Error ? error.message : "erro desconhecido"}`,
-			);
 			Alert.alert("Erro", "Falha ao sincronizar os dados.");
 		} finally {
-			events.endEvent();
 			setSyncing(false);
 		}
 	};

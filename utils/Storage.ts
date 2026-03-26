@@ -2,80 +2,116 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { VIPEmpresaType } from "@/types/VisitaTecnica/VIPEmpresaType";
 import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 
-/**
- * Classe base de armazenamento e inicialização dos módulos de dados.
- * 
- * Cada módulo (EventoData, LevantamentoData, VisitaData)
- * herda esta classe e usa AsyncStorage para persistência local.
- */
 export default class Storage {
-    /** 🗝️ Chaves de armazenamento */
-    public keys = {
-        EMPRESAS_KEY: "@vip:empresas",
-        PERGUNTAS_KEY: "@vip:perguntas",
-        LEVANTAMENTOS_KEY: "@vip:levantamentos",
-        VISITAS_KEY: "@vip:visitas",
-        EVENTOS_KEY: "@vip:eventos",
+	public keys = {
+		EMPRESAS_KEY: "@vip:empresas",
+		PERGUNTAS_KEY: "@vip:perguntas",
+		LEVANTAMENTOS_KEY: "@vip:levantamentos",
+		VISITAS_KEY: "@vip:visitas",
+		EVENTOS_KEY: "@vip:eventos",
 		QUESTS_KEY: "@vip:quests",
-    } as const;
+	} as const;
 
-    /** 🧾 Cache de dados em memória (não persistente) */
-    public empresas: VIPEmpresaType[] = [];
-    public perguntas: VIPVisitaType["perguntas"] = { adm: [], setor: [] };
+	public empresas: VIPEmpresaType[] = [];
+	public perguntas: VIPVisitaType["perguntas"] = { adm: [], setor: [] };
 
-    /** 🌐 URL base da API */
-    static base_url = __DEV__
-        ? "http://192.168.3.66:3000/api/v3"
-        : "https://vip-admin.vercel.app/api/v3";
+	static base_url = __DEV__
+		? "http://192.168.3.66:3000/api/v3"
+		: "https://vip-admin.vercel.app/api/v3";
 
-    constructor() {
-        console.log("🎯 Storage base inicializado");
-    }
+	constructor() {
+		console.log("Storage base inicializado");
+	}
 
-    /**
-     * 💾 Salva um valor no AsyncStorage
-     */
-    async save(key: string, value: string): Promise<void> {
-        try {
-            await AsyncStorage.setItem(key, value);
-        } catch (e) {
-            console.error(`❌ Erro ao salvar dados em ${key}:`, e);
-        }
-    }
+	private isStorageFullError(error: unknown) {
+		const message =
+			typeof error === "object" && error !== null && "message" in error
+				? String((error as { message?: unknown }).message)
+				: String(error);
+		return (
+			message.includes("SQLITE_FULL") ||
+			message.includes("database or disk is full")
+		);
+	}
 
-    /**
-     * 📦 Recupera um valor do AsyncStorage
-     */
-    async get(key: string): Promise<string | null> {
-        try {
-            const value = await AsyncStorage.getItem(key);
-            return value;
-        } catch (e) {
-            console.error(`❌ Erro ao ler dados de ${key}:`, e);
-            return null;
-        }
-    }
+	private async tryFreeSpace() {
+		try {
+			await AsyncStorage.removeItem(this.keys.QUESTS_KEY);
+		} catch (e) {
+			console.error("Erro ao limpar cache de quests:", e);
+		}
 
-    /**
-     * 🧹 Remove uma chave específica (opcional)
-     */
-    async remove(key: string): Promise<void> {
-        try {
-            await AsyncStorage.removeItem(key);
-        } catch (e) {
-            console.error(`❌ Erro ao remover ${key}:`, e);
-        }
-    }
+		try {
+			const rawEvents = await AsyncStorage.getItem(this.keys.EVENTOS_KEY);
+			if (!rawEvents) return;
 
-    /**
-     * 💣 Limpa todos os dados locais (somente em DEV!)
-     */
-    static async clearAll(): Promise<void> {
-        try {
-            await AsyncStorage.clear();
-            console.log("🧹 Todos os dados locais foram apagados!");
-        } catch (e) {
-            console.error("❌ Erro ao limpar o AsyncStorage:", e);
-        }
-    }
+			let parsed: unknown = null;
+			try {
+				parsed = JSON.parse(rawEvents);
+			} catch {
+				await AsyncStorage.removeItem(this.keys.EVENTOS_KEY);
+				return;
+			}
+
+			if (Array.isArray(parsed) && parsed.length > 200) {
+				const trimmed = parsed.slice(-200);
+				await AsyncStorage.setItem(
+					this.keys.EVENTOS_KEY,
+					JSON.stringify(trimmed),
+				);
+			} else {
+				await AsyncStorage.removeItem(this.keys.EVENTOS_KEY);
+			}
+		} catch (e) {
+			console.error("Erro ao liberar espaco no AsyncStorage:", e);
+		}
+	}
+
+	async save(key: string, value: string): Promise<void> {
+		try {
+			await AsyncStorage.setItem(key, value);
+		} catch (e) {
+			if (this.isStorageFullError(e)) {
+				console.warn(
+					`AsyncStorage cheio. Tentando liberar espaco para salvar ${key}...`,
+				);
+				await this.tryFreeSpace();
+				try {
+					await AsyncStorage.setItem(key, value);
+					return;
+				} catch (retryError) {
+					console.error(`Erro ao salvar dados em ${key}:`, retryError);
+					return;
+				}
+			}
+			console.error(`Erro ao salvar dados em ${key}:`, e);
+		}
+	}
+
+	async get(key: string): Promise<string | null> {
+		try {
+			const value = await AsyncStorage.getItem(key);
+			return value;
+		} catch (e) {
+			console.error(`Erro ao ler dados de ${key}:`, e);
+			return null;
+		}
+	}
+
+	async remove(key: string): Promise<void> {
+		try {
+			await AsyncStorage.removeItem(key);
+		} catch (e) {
+			console.error(`Erro ao remover ${key}:`, e);
+		}
+	}
+
+	static async clearAll(): Promise<void> {
+		try {
+			await AsyncStorage.clear();
+			console.log("Todos os dados locais foram apagados!");
+		} catch (e) {
+			console.error("Erro ao limpar o AsyncStorage:", e);
+		}
+	}
 }

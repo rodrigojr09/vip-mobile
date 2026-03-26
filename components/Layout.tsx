@@ -1,7 +1,9 @@
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
+import * as BackgroundFetch from "expo-background-fetch";
 import { usePathname } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import * as Network from "expo-network";
 import {
 	BackHandler,
 	StyleSheet,
@@ -12,9 +14,13 @@ import {
 import Loading from "@/components/Loading";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { events } from "@/utils/API/Event";
-import { LOCATION_TASK_NAME } from "@/utils/BackgroundTasks";
+import {
+	BACKGROUND_SYNC_TASK_NAME,
+	LOCATION_TASK_NAME,
+} from "@/utils/BackgroundTasks";
 import manager from "@/utils/Data/manager";
 import { logger } from "@/utils/logger";
+import { syncSystemData } from "@/utils/services/systemSync";
 
 export const DIRECTORY_KEY = "DIRECTORY_URI";
 
@@ -22,11 +28,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 	const pathname = usePathname();
 	const nav = useNavigationHistory();
 	const [loading, setLoading] = useState(true);
+	const isOnlineRef = useRef(false);
 
 	useEffect(() => {
 		(async () => {
 			try {
+				await registerBackgroundSync();
+			} catch (error) {
+				logger.error("Layout", "Failed to register background sync", error);
+			}
+
+			try {
 				await startBackgroundLocation();
+			} catch (error) {
+				logger.error("Layout", "Failed to start background location", error);
+				events.sendEvent(
+					`Failed to start background location: ${JSON.stringify(error)}`,
+				);
+			}
+
+			try {
 				await manager.visitas.init();
 			} catch (error) {
 				logger.error("Layout", "Failed to load initial data", error);
@@ -37,6 +58,35 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 				setLoading(false);
 			}
 		})();
+	}, []);
+
+	useEffect(() => {
+		const handleNetworkChange = (state: Network.NetworkState) => {
+			const online =
+				state.isConnected === true && state.isInternetReachable !== false;
+
+			if (online && !isOnlineRef.current) {
+				isOnlineRef.current = true;
+				void syncSystemData({ reason: "reconexao" });
+				return;
+			}
+
+			if (!online) {
+				isOnlineRef.current = false;
+			}
+		};
+
+		Network.getNetworkStateAsync()
+			.then((state) => {
+				isOnlineRef.current =
+					state.isConnected === true && state.isInternetReachable !== false;
+			})
+			.catch((error) =>
+				logger.warn("Network", "Failed to read initial network state", error),
+			);
+
+		const subscription = Network.addNetworkStateListener(handleNetworkChange);
+		return () => subscription.remove();
 	}, []);
 
 	useEffect(() => {
@@ -82,8 +132,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 				accuracy: Location.Accuracy.Balanced,
 				timeInterval: 60000,
 				deferredUpdatesInterval: 60000,
-				distanceInterval: 50,
-				deferredUpdatesDistance: 50,
+				distanceInterval: 0,
+				deferredUpdatesDistance: 0,
 				pausesUpdatesAutomatically: false,
 				foregroundService: {
 					notificationTitle: "Vip Mobile",
@@ -99,6 +149,29 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 				`Failed to start background updates: ${JSON.stringify(error)}`,
 			);
 		}
+	};
+
+	const registerBackgroundSync = async () => {
+		const status = await BackgroundFetch.getStatusAsync();
+		if (status !== BackgroundFetch.BackgroundFetchStatus.Available) {
+			logger.warn("BackgroundSync", "Background fetch unavailable", status);
+			return;
+		}
+
+		const isRegistered = await TaskManager.isTaskRegisteredAsync(
+			BACKGROUND_SYNC_TASK_NAME,
+		);
+		if (isRegistered) {
+			logger.debug("BackgroundSync", "Background sync already registered");
+			return;
+		}
+
+		await BackgroundFetch.registerTaskAsync(BACKGROUND_SYNC_TASK_NAME, {
+			minimumInterval: 15 * 60,
+			stopOnTerminate: false,
+			startOnBoot: true,
+		});
+		logger.info("BackgroundSync", "Background sync registered");
 	};
 
 	useEffect(() => {
