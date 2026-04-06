@@ -128,8 +128,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		}
 
 		try {
+			let useHighAccuracy = true;
+			try {
+				const networkState = await Network.getNetworkStateAsync();
+				const isOnline =
+					networkState.isConnected === true &&
+					networkState.isInternetReachable === true;
+				useHighAccuracy = !isOnline;
+			} catch (networkError) {
+				logger.warn(
+					"Location",
+					"Failed to check network state for accuracy",
+					networkError,
+				);
+			}
+
 			await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-				accuracy: Location.Accuracy.Balanced,
+				accuracy: useHighAccuracy
+					? Location.Accuracy.High
+					: Location.Accuracy.Balanced,
 				timeInterval: 60000,
 				deferredUpdatesInterval: 60000,
 				distanceInterval: 0,
@@ -142,7 +159,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 				showsBackgroundLocationIndicator: true,
 			});
 			logger.info("Location", "Background updates started");
-			events.sendEvent("Background location updates started");
+			events.sendEvent(
+				`Background location updates started (${useHighAccuracy ? "high" : "balanced"} accuracy)`,
+			);
 		} catch (error) {
 			logger.error("Location", "Failed to start background updates", error);
 			events.sendEvent(
