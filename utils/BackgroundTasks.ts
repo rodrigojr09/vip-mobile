@@ -5,11 +5,19 @@ import * as BackgroundFetch from "expo-background-fetch";
 import { events } from "./API/Event";
 import { logger } from "./logger";
 import { syncSystemData } from "./services/systemSync";
+import { LocationFilter } from "./locationFilter";
 
 export const LOCATION_TASK_NAME = "RASTREIO_LOCATION_TASK";
 export const BACKGROUND_SYNC_TASK_NAME = "VIP_BACKGROUND_SYNC_TASK";
 const LAST_BG_LOCATION_KEY = "@vip:last_bg_location";
 const COORD_PRECISION = 5;
+const locationFilter = new LocationFilter({
+    minDistance: 5,
+    minAccuracy: 25,
+    stopSpeed: 0.5,
+    stopTime: 30000,
+    throttleTime: 5000,
+});
 
 type LocationTaskData = {
     locations?: LocationObject[];
@@ -72,34 +80,57 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
 
     const payload = data as LocationTaskData | undefined;
     const locations = payload?.locations ?? [];
-    const latest = locations[locations.length - 1];
-
-    if (!latest) {
+    if (!locations.length) {
         logger.warn("LocationTask", "No location data received");
         return;
     }
 
-    const localizacao = {
-        latitude: latest.coords.latitude,
-        longitude: latest.coords.longitude,
-    };
+    let lastStored = await getLastBackgroundLocation();
+    let sentAny = false;
 
-    const normalizedLocation = normalizeLocation(localizacao);
-    const last = await getLastBackgroundLocation();
-    if (last && isSameLocation(last, normalizedLocation)) {
-        logger.debug("LocationTask", "Same location received, skipping");
-        return;
+    for (const item of locations) {
+        const point = {
+            latitude: item.coords.latitude,
+            longitude: item.coords.longitude,
+            accuracy: item.coords.accuracy ?? undefined,
+            speed: item.coords.speed ?? null,
+            timestamp: item.timestamp,
+        };
+
+        const filtered = locationFilter.process(point);
+        if (!filtered) continue;
+
+        const localizacao = {
+            latitude: filtered.latitude,
+            longitude: filtered.longitude,
+        };
+
+        const normalizedLocation = normalizeLocation(localizacao);
+        if (lastStored && isSameLocation(lastStored, normalizedLocation)) {
+            logger.debug("LocationTask", "Same location received, skipping");
+            continue;
+        }
+
+        try {
+            await events.sendEventWithLocation(
+                "Background location update",
+                normalizedLocation,
+                "background",
+            );
+            await setLastBackgroundLocation(normalizedLocation);
+            lastStored = normalizedLocation;
+            sentAny = true;
+        } catch (sendError) {
+            logger.error(
+                "LocationTask",
+                "Failed to send background location",
+                sendError,
+            );
+        }
     }
 
-    try {
-        await events.sendEventWithLocation(
-            "Background location update",
-            normalizedLocation,
-            "background",
-        );
-        await setLastBackgroundLocation(normalizedLocation);
-    } catch (sendError) {
-        logger.error("LocationTask", "Failed to send background location", sendError);
+    if (!sentAny) {
+        logger.debug("LocationTask", "No location passed the filter");
     }
 });
 

@@ -5,6 +5,7 @@ import { usePathname } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import * as Network from "expo-network";
 import {
+	AppState,
 	BackHandler,
 	StyleSheet,
 	Text,
@@ -93,80 +94,100 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		events.setContext(pathname);
 	}, [pathname]);
 
-	const startBackgroundLocation = async () => {
-		const { status: foregroundStatus } =
-			await Location.requestForegroundPermissionsAsync();
-
-		if (foregroundStatus !== "granted") {
-			logger.warn("Location", "Foreground permission denied");
-			events.sendEvent("Foreground location permission denied");
-			return;
-		}
-
-		const { status: backgroundStatus } =
-			await Location.requestBackgroundPermissionsAsync();
-
-		if (backgroundStatus !== "granted") {
-			logger.warn("Location", "Background permission denied");
-			events.sendEvent("Background location permission denied");
-			return;
-		}
-
-		const isTaskDefined = TaskManager.isTaskDefined(LOCATION_TASK_NAME);
-		if (!isTaskDefined) {
-			logger.error("Location", "Location task not defined");
-			events.sendEvent("Location task not defined");
-			return;
-		}
-
-		const hasStarted =
-			await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
-
-		if (hasStarted) {
-			logger.debug("Location", "Background updates already running");
-			return;
-		}
-
-		try {
-			let useHighAccuracy = true;
+	useEffect(() => {
+		const interval = setInterval(async () => {
 			try {
-				const networkState = await Network.getNetworkStateAsync();
-				const isOnline =
-					networkState.isConnected === true &&
-					networkState.isInternetReachable === true;
-				useHighAccuracy = !isOnline;
-			} catch (networkError) {
-				logger.warn(
-					"Location",
-					"Failed to check network state for accuracy",
-					networkError,
-				);
+				const isRunning =
+					await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+
+				if (!isRunning) {
+					logger.warn("Location", "Watchdog restarting location");
+					await startBackgroundLocation();
+				}
+			} catch (error) {
+				logger.error("Location", "Watchdog error", error);
+			}
+		}, 60000); // a cada 1 min
+
+		return () => clearInterval(interval);
+	}, []);
+
+	useEffect(() => {
+		const sub = AppState.addEventListener("change", async (state) => {
+			if (state === "active") {
+				const isRunning =
+					await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+
+				if (!isRunning) {
+					logger.warn("Location", "App resumed, restarting location");
+					await startBackgroundLocation();
+				}
+			}
+		});
+
+		return () => sub.remove();
+	}, []);
+
+	const startBackgroundLocation = async () => {
+		try {
+			// 🔐 Permissões
+			const { status: fgStatus } =
+				await Location.requestForegroundPermissionsAsync();
+
+			if (fgStatus !== "granted") {
+				logger.warn("Location", "Foreground permission denied");
+				return;
 			}
 
+			const { status: bgStatus } =
+				await Location.requestBackgroundPermissionsAsync();
+
+			if (bgStatus !== "granted") {
+				logger.warn("Location", "Background permission denied");
+				return;
+			}
+
+			// 🧠 Garantir que task existe
+			if (!TaskManager.isTaskDefined(LOCATION_TASK_NAME)) {
+				logger.error("Location", "Task not defined");
+				return;
+			}
+
+			// 🧹 Sempre reinicia (evita estado bugado do Android)
+			const hasStarted =
+				await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+
+			if (hasStarted) {
+				logger.warn("Location", "Restarting location updates (force)");
+				await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
+			}
+
+			// 🚀 Start forte
 			await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-				accuracy: useHighAccuracy
-					? Location.Accuracy.High
-					: Location.Accuracy.Balanced,
-				timeInterval: 60000,
-				deferredUpdatesInterval: 60000,
-				distanceInterval: 0,
+				accuracy: Location.Accuracy.BestForNavigation,
+
+				timeInterval: 10000, // 10s
+				distanceInterval: 5,
+
+				deferredUpdatesInterval: 0,
 				deferredUpdatesDistance: 0,
+
 				pausesUpdatesAutomatically: false,
+
 				foregroundService: {
 					notificationTitle: "Vip Mobile",
-					notificationBody: "Registrando sua localizacao em segundo plano",
+					notificationBody: "Rastreamento ativo em segundo plano",
+					notificationColor: "#0000ff",
 				},
+
 				showsBackgroundLocationIndicator: true,
 			});
-			logger.info("Location", "Background updates started");
-			events.sendEvent(
-				`Background location updates started (${useHighAccuracy ? "high" : "balanced"} accuracy)`,
-			);
+
+			logger.info("Location", "Background location STARTED");
+			events.sendEvent("Background location started");
 		} catch (error) {
-			logger.error("Location", "Failed to start background updates", error);
-			events.sendEvent(
-				`Failed to start background updates: ${JSON.stringify(error)}`,
-			);
+			logger.error("Location", "Start failed", error);
+			events.sendEvent(`Start failed: ${JSON.stringify(error)}`);
 		}
 	};
 
