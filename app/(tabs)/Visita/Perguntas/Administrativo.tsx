@@ -2,28 +2,30 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
-import Model from "@/components/Model";
 import QuestionBlock from "@/components/Visita/QuestionBlock";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { useVisita } from "@/hooks/VisitaTecnica/VisitaProvider";
 import { verifyPerguntas } from "@/utils/verifyPerguntas";
+import Model from "@/components/Model";
 
 export default function Sidebar() {
-	const { respostas, addResposta, perguntas, inclusas } = useVisita();
+	const { respostas, addResposta, perguntas,inclusas } = useVisita();
 	const [block, setBlock] = React.useState(false);
 	const nav = useNavigationHistory();
-
-	useEffect(() => {
-		setBlock(verifyPerguntas(perguntas.adm, respostas));
-	}, [respostas, perguntas.adm]);
-
 	const [openModel, setOpenModel] = useState(false);
+
 	function handleFinalizar() {
 		if (inclusas.length) setOpenModel(true);
 		else nav.push("/Visita/resumo");
 	}
 
-	return !openModel ? (
+	useEffect(() => {
+		setBlock(verifyPerguntas(perguntas.adm, respostas));
+	}, [respostas, perguntas.adm]);
+
+	return openModel ? (
+		<Model setOpenModel={setOpenModel} />
+	) : (
 		<Container scroller>
 			<View style={styles.formContainer}>
 				<Text style={styles.title}>Perguntas Administrativas</Text>
@@ -38,8 +40,16 @@ export default function Sidebar() {
 					</View>
 				))}
 
-				<View style={{}}>
-					<Button disabled={block} onPress={handleFinalizar}>
+				<View
+					style={{
+						marginTop: 20,
+						flexDirection: "column",
+						gap: 10,
+						flex: 1,
+						justifyContent: "space-between",
+					}}
+				>
+					<Button disabled={block} onPress={() => handleFinalizar()}>
 						Finalizar Visita
 					</Button>
 					<Button disabled={block} onPress={() => nav.push("/Visita/setores")}>
@@ -48,8 +58,6 @@ export default function Sidebar() {
 				</View>
 			</View>
 		</Container>
-	) : (
-		<Model setOpenModel={setOpenModel} />
 	);
 }
 

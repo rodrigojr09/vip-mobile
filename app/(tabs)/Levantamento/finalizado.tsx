@@ -7,6 +7,7 @@ import { useEmpresa } from "@/hooks/Levantamento/EmpresaProvider";
 import { useNavigationHistory } from "@/hooks/Navigation";
 import { finalizeLevantamento } from "@/utils/services/levantamentoFinalization";
 import { shareReport } from "@/utils/services/reportFile";
+import { events } from "@/utils/API/Event";
 
 export default function Finalizado() {
 	const nav = useNavigationHistory();
@@ -21,7 +22,8 @@ export default function Finalizado() {
 					empresa,
 					query.get("assinatura") || "",
 				);
-				setFileUri(result.fileUri);
+                setFileUri(result.fileUri);
+                events.endEvent();
 			} catch (error) {
 				console.error("Erro ao gerar e salvar levantamento:", error);
 				Alert.alert(

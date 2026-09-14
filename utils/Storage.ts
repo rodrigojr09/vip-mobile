@@ -7,6 +7,7 @@ export default class Storage {
 		EMPRESAS_KEY: "@vip:empresas",
 		PERGUNTAS_KEY: "@vip:perguntas",
 		LEVANTAMENTOS_KEY: "@vip:levantamentos",
+		PSICOSSOCIAIS_KEY: "@vip:psicossociais",
 		VISITAS_KEY: "@vip:visitas",
 		EVENTOS_KEY: "@vip:eventos",
 		QUESTS_KEY: "@vip:quests",
@@ -16,8 +17,8 @@ export default class Storage {
 	public perguntas: VIPVisitaType["perguntas"] = { adm: [], setor: [] };
 
 	static base_url = __DEV__
-		? "http://192.168.3.66:3000/api/v3"
-		: "https://vip-admin.vercel.app/api/v3";
+		? "http://192.168.3.66:3000/api/mobile"
+		: "https://vip-admin.vercel.app/api/mobile";
 
 	constructor() {
 		console.log("Storage base inicializado");
@@ -36,12 +37,6 @@ export default class Storage {
 
 	private async tryFreeSpace() {
 		try {
-			await AsyncStorage.removeItem(this.keys.QUESTS_KEY);
-		} catch (e) {
-			console.error("Erro ao limpar cache de quests:", e);
-		}
-
-		try {
 			const rawEvents = await AsyncStorage.getItem(this.keys.EVENTOS_KEY);
 			if (!rawEvents) return;
 
@@ -53,17 +48,15 @@ export default class Storage {
 				return;
 			}
 
-			if (Array.isArray(parsed) && parsed.length > 200) {
-				const trimmed = parsed.slice(-200);
+			if (Array.isArray(parsed) && parsed.length > 300) {
+				const trimmed = parsed.slice(-200); // remove os 100 primeiros
 				await AsyncStorage.setItem(
 					this.keys.EVENTOS_KEY,
 					JSON.stringify(trimmed),
 				);
-			} else {
-				await AsyncStorage.removeItem(this.keys.EVENTOS_KEY);
 			}
 		} catch (e) {
-			console.error("Erro ao liberar espaco no AsyncStorage:", e);
+			console.error("Erro ao liberar espaço no AsyncStorage:", e);
 		}
 	}
 

@@ -81,84 +81,79 @@ export default function Funcao() {
 	}, []);
 
 	return (
-		<KeyboardAvoidingView
-			style={{ flex: 1 }}
-			behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS usa padding, Android height
+		<Container
+			scrollRef={scrollRef}
+			style={styles.formContainer}
+			contentContainerStyle={{ paddingBottom: kbHeight + 24 }}
+			scroller
+			avoidKeyboard
 		>
-			<Container
-				scrollRef={scrollRef}
-				style={styles.formContainer}
-				contentContainerStyle={{ paddingBottom: kbHeight + 24 }}
-				scroller
-				avoidKeyboard
-			>
-				<Input
-					placeholder="Digite o nome da função"
-					value={funcao.nome}
-					onChange={funcao.setNome}
-					ref={(ref) => {
-						if (ref) refs.current[0] = ref;
-					}}
-					returnKeyType={0 === campos - 1 ? "done" : "next"}
-					onSubmitEditing={() => focarProximo(0)}
-				/>
-				<Input
-					placeholder="Digite a descrição da função"
-					value={funcao.description}
-					onChange={funcao.setDescription}
-					ref={(ref) => {
-						if (ref) refs.current[1] = ref;
-					}}
-					returnKeyType={1 === campos - 1 ? "done" : "next"}
-					onSubmitEditing={() => focarProximo(1)}
-				/>
-				<Input
-					placeholder="Digite os funcionarios da função"
-					value={funcao.funcionarios}
-					onChange={funcao.setFuncionarios}
-					ref={(ref) => {
-						if (ref) refs.current[2] = ref;
-					}}
-					returnKeyType={2 === campos - 1 ? "done" : "next"}
-					onSubmitEditing={() => focarProximo(2)}
-				/>
+			<Input
+				placeholder="Digite o nome da função"
+				value={funcao.nome}
+				onChange={funcao.setNome}
+				ref={(ref) => {
+					if (ref) refs.current[0] = ref;
+				}}
+				returnKeyType={0 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(0)}
+			/>
+			<Input
+				placeholder="Digite a descrição da função"
+				value={funcao.description}
+				onChange={funcao.setDescription}
+				ref={(ref) => {
+					if (ref) refs.current[1] = ref;
+				}}
+				returnKeyType={1 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(1)}
+			/>
+			<Input
+				placeholder="Digite os funcionarios da função"
+				value={funcao.funcionarios}
+				onChange={funcao.setFuncionarios}
+				ref={(ref) => {
+					if (ref) refs.current[2] = ref;
+				}}
+				returnKeyType={2 === campos - 1 ? "done" : "next"}
+				onSubmitEditing={() => focarProximo(2)}
+			/>
 
-				<RiscoForm />
+			<RiscoForm />
 
-				{!params.funcao && (
-					<Button
-						onPress={() => {
-							handleCreateFuncao();
-						}}
-					>
-						Adicionar
-					</Button>
-				)}
-				{params.funcao && (
-					<Button
-						onPress={() => {
-							if (!funcao.nome.trim())
-								return Alert.alert("Digite o nome da função");
-							if (!funcao.description.trim())
-								return Alert.alert("Digite a descrição da função");
-							if (!funcao.funcionarios.trim())
-								return Alert.alert("Digite o nome dos funcionarios da função");
-							//Se tudo tiver ok
-							setor.setFuncoes(
-								setor.funcoes.map((a) => {
-									if (a.id !== params.funcao) return a;
-									console.log(a);
-									return funcao;
-								}),
-							);
-							nav.back();
-						}}
-					>
-						Atualizar
-					</Button>
-				)}
-			</Container>
-		</KeyboardAvoidingView>
+			{!params.funcao && (
+				<Button
+					onPress={() => {
+						handleCreateFuncao();
+					}}
+				>
+					Adicionar
+				</Button>
+			)}
+			{params.funcao && (
+				<Button
+					onPress={() => {
+						if (!funcao.nome.trim())
+							return Alert.alert("Digite o nome da função");
+						if (!funcao.description.trim())
+							return Alert.alert("Digite a descrição da função");
+						if (!funcao.funcionarios.trim())
+							return Alert.alert("Digite o nome dos funcionarios da função");
+						//Se tudo tiver ok
+						setor.setFuncoes(
+							setor.funcoes.map((a) => {
+								if (a.id !== params.funcao) return a;
+								console.log(a);
+								return funcao;
+							}),
+						);
+						nav.back();
+					}}
+				>
+					Atualizar
+				</Button>
+			)}
+		</Container>
 	);
 }
 

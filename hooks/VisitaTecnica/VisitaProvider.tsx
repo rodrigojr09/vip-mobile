@@ -5,7 +5,6 @@ import {
 	useEffect,
 	useState,
 } from "react";
-import type { VIPEmpresaType } from "@/types/VisitaTecnica/VIPEmpresaType";
 import type { VIPVisitaType } from "@/types/VisitaTecnica/VIPVisitaType";
 import manager from "@/utils/Data/manager";
 

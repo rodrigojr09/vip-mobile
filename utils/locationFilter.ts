@@ -14,6 +14,7 @@ export type FilterOptions = {
 	stopSpeed?: number;
 	stopTime?: number;
 	throttleTime?: number;
+	idleHeartbeatTime?: number;
 };
 
 export class LocationFilter {
@@ -31,6 +32,7 @@ export class LocationFilter {
 			stopSpeed: 0.5,
 			stopTime: 30000,
 			throttleTime: 5000,
+			idleHeartbeatTime: 180000,
 			...options,
 		};
 	}
@@ -54,24 +56,26 @@ export class LocationFilter {
 		const distance = getDistance(this.lastAccepted, point);
 		const now = Date.now();
 		const speed = point.speed ?? 0;
+		const timeSinceLastSend = now - this.lastSentTime;
 
 		if (speed < this.opts.stopSpeed && distance < this.opts.minDistance) {
 			if (!this.stoppedSince) {
 				this.stoppedSince = now;
 			}
-
-			if (now - this.stoppedSince > this.opts.stopTime) {
-				return null;
-			}
 		} else {
 			this.stoppedSince = null;
 		}
 
-		if (distance < this.opts.minDistance) {
+		const stoppedLongEnough =
+			this.stoppedSince !== null && now - this.stoppedSince > this.opts.stopTime;
+		const canSendHeartbeat =
+			stoppedLongEnough && timeSinceLastSend >= this.opts.idleHeartbeatTime;
+
+		if (distance < this.opts.minDistance && !canSendHeartbeat) {
 			return null;
 		}
 
-		if (now - this.lastSentTime < this.opts.throttleTime) {
+		if (timeSinceLastSend < this.opts.throttleTime) {
 			return null;
 		}
 

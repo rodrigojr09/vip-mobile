@@ -7,6 +7,8 @@ import * as Network from "expo-network";
 import {
 	AppState,
 	BackHandler,
+	PermissionsAndroid,
+	Platform,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
@@ -130,6 +132,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 	const startBackgroundLocation = async () => {
 		try {
+			if (
+				Platform.OS === "android" &&
+				typeof Platform.Version === "number" &&
+				Platform.Version >= 33
+			) {
+				try {
+					await PermissionsAndroid.request(
+						PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+					);
+				} catch (error) {
+					logger.warn("Location", "Failed to request notification permission", error);
+				}
+			}
+
 			// 🔐 Permissões
 			const { status: fgStatus } =
 				await Location.requestForegroundPermissionsAsync();
@@ -176,7 +192,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 				foregroundService: {
 					notificationTitle: "Vip Mobile",
-					notificationBody: "Rastreamento ativo em segundo plano",
+					notificationBody: "Aplicativo ativo em segundo plano",
 					notificationColor: "#0000ff",
 				},
 

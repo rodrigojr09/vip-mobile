@@ -54,6 +54,15 @@ export default function Config() {
 			<Button onPress={() => nav.push("/Config/visitas")}>
 				Visitas Técnicas Salvas
 			</Button>
+
+			<Button onPress={() => nav.push("/Config/psicossociais")}>
+				Relatórios Psicossociais Salvos
+			</Button>
+
+			<Button onPress={() => nav.push("/Config/backup")}>
+				Backup de Dados
+			</Button>
+
 			<View style={{ marginTop: 40, width: "100%", gap: 10 }}>
 				<Text style={styles.title}>Nome do Dispositivo</Text>
 				<Input
@@ -87,5 +96,5 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		marginBottom: 20,
 		color: "#22c55e",
-	},
+	}
 });

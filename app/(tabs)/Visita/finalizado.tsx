@@ -10,6 +10,7 @@ import {
 	type FinalizedVisitLink,
 	finalizeVisita,
 } from "@/utils/services/visitaFinalization";
+import { events } from "@/utils/API/Event";
 
 export default function Finalizado() {
 	const nav = useNavigationHistory();
@@ -26,7 +27,7 @@ export default function Finalizado() {
 					visita,
 					query.get("assinatura") || "",
 					query.get("salvar") === "separado" ? "separado" : "junto",
-				);
+                );
 
 				for (const token of finalizedTokens) {
 					if (token.token === "offline") {
@@ -45,7 +46,8 @@ export default function Finalizado() {
 					"Nao foi possivel concluir a visita. Tente novamente.",
 				);
 			} finally {
-				setLoading(false);
+                setLoading(false);
+                events.endEvent();
 			}
 		})();
 	}, []);

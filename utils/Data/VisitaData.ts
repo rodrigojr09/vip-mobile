@@ -58,7 +58,7 @@ export default class VisitaData extends Storage {
     private async loadEmpresas(): Promise<void> {
         try {
             console.log("🌐 Buscando empresas da API...");
-            const res = await fetch(`${Storage.base_url}/empresas?exclude=true`);
+            const res = await fetch(`${Storage.base_url}/empresas`);
 
             if (res.ok) {
                 const empresas = await res.json();

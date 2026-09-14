@@ -64,7 +64,7 @@ class Event {
 
 	public async sendEventWithLocation(
 		evento: string,
-		localizacao?: VIPLocalizacao,
+		localizacao?: VIPLocalizacao | null,
 		contextOverride?: string | null,
 	) {
 		const { data, hora } = this.formatDateTime();
@@ -76,7 +76,8 @@ class Event {
 			data,
 			hora,
 			msg,
-			localizacao: localizacao ?? (await getCurrentLocation()),
+			localizacao:
+				localizacao === null ? undefined : localizacao ?? (await getCurrentLocation()),
 		};
 
 		try {
@@ -95,7 +96,7 @@ class Event {
 		}
 
 		try {
-			const res = await fetch(`${Storage.base_url}/eventos/send`, {
+			const res = await fetch(`${Storage.base_url}/eventos/enviar`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(novoEvento),
@@ -133,7 +134,7 @@ class Event {
 
 	private async setEventos(eventos: VIPEvento[]) {
 		try {
-			const res = await fetch(`${Storage.base_url}/eventos/set`, {
+			const res = await fetch(`${Storage.base_url}/eventos/atualizar`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(eventos),

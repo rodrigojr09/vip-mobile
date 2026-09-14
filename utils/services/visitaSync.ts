@@ -7,7 +7,7 @@ async function syncSingleVisita(visita: VIPVisitaType): Promise<boolean> {
 	if (!visita.id || !visita.assinatura) return false;
 
 	try {
-		const response = await fetch(`${Storage.base_url}/visitas/${visita.id}`);
+		const response = await fetch(`${Storage.base_url}/visitas/verify?id=${visita.id}`);
 
 		if (response.status === 404) {
 			const created = await manager.visitas.create(visita);

@@ -11,6 +11,7 @@
             "android"
         ],
         "newArchEnabled": true,
+        
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./assets/images/icon.png",
@@ -18,6 +19,7 @@
             },
             "package": "mobile.vipsst.com.br",
             "permissions": [
+                "POST_NOTIFICATIONS",
                 "FOREGROUND_SERVICE_LOCATION",
                 "RECEIVE_BOOT_COMPLETED",
                 "ACCESS_FINE_LOCATION",

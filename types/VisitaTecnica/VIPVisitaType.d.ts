@@ -16,5 +16,4 @@ export interface VIPVisitaType {
     respostas: VIPRespostaType[];
     setores: VIPSetorType[];
     assinatura?: string;
-
 }
